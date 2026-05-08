@@ -1,0 +1,17 @@
+﻿bin/
+obj/
+.vs/
+*.user
+*.suo
+.idea/
+node_modules/
+*.log
+.env
+appsettings.json
+appsettings.Development.json
+publish/
+pgdata/
+PROJE_YAPİLACAKLAR/
+**/PROJE_YAPİLACAKLAR/
+.DS_Store
+Thumbs.db

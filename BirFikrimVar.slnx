@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="BirFikrimVar.API/BirFikrimVar.API.csproj" />
+  <Project Path="BirFikrimVar.Core/BirFikrimVar.Core.csproj" />
+  <Project Path="BirFikrimVar.Data/BirFikrimVar.Data.csproj" />
+  <Project Path="BirFikrimVar.Service/BirFikrimVar.Service.csproj" />
+  <Project Path="BirFikrimVar.Web/BirFikrimVar.Web.csproj" />
+</Solution>
