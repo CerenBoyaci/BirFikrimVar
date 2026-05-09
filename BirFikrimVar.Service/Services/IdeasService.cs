@@ -280,6 +280,12 @@ namespace BirFikrimVar.Service.Services
             if (fikir.Durum != FikirDurumu.KomisyonOnayiBekliyor)
                 return "Fikir şu an komisyon değerlendirmesine açık değil.";
 
+            var mevcutPuanSayisi = await _context.Set<KomisyonDegerlendirmesi>()
+        .CountAsync(d => d.FikirId == fikirId);
+
+            if (mevcutPuanSayisi >= 3)
+                return "Bu fikir için maksimum komisyon değerlendirme sayısına (3) zaten ulaşıldı.";
+
             var mevcutMu = await _context.Set<KomisyonDegerlendirmesi>()
                 .AnyAsync(d => d.FikirId == fikirId && d.DegerlendiriciId == userId);
 
