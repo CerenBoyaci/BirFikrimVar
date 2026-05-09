@@ -6,65 +6,79 @@
 
 <div class="card shadow-sm border-0">
     <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="bi bi-list-task me-2"></i>Tüm Fikirler Yönetimi</h5>
-        <span class="badge bg-light text-danger rounded-pill">Toplam: @(Model?.Count ?? 0) Kayıt</span>
+        <h5 class="mb-0"><i class="bi bi-lightbulb-fill me-2"></i>Tüm Fikirler ve Yönetim Paneli</h5>
     </div>
     <div class="card-body">
-        @if (Model != null && Model.Any())
-        {
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Başlık</th>
-                            <th>Başvuru Sahibi</th>
-                            <th>Tarih</th>
-                            <th>Durum</th>
-                            <th class="text-end">İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var fikir in Model)
-                        {
-                            <tr>
-                                <td>#@fikir.Id</td>
-                                <td class="fw-bold">@fikir.Baslik</td>
-                                <td>@fikir.BasvuruSahibiAdSoyad</td>
-                                <td>@fikir.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</td>
-                                <td>
-                                    @{
-                                        // Duruma göre Bootstrap renk sınıflarını belirliyoruz
-                                        var badgeClass = fikir.Durum switch
-                                        {
-                                            "Taslak" => "bg-secondary",
-                                            "OnOnayBekliyor" => "bg-warning text-dark",
-                                            "KomisyonOnayiBekliyor" => "bg-info text-dark",
-                                            "KomisyonOnayli" => "bg-success",
-                                            "OnOnayRetli" => "bg-danger",
-                                            "KomisyonOnayiRetli" => "bg-danger",
-                                            _ => "bg-primary"
-                                        };
-                                    }
-                                    <span class="badge @badgeClass">@fikir.Durum</span>
-                                </td>
-                                <td class="text-end">
-                                    <!-- İleride Admin'in fikri detaylı inceleyip durumunu manuel değiştireceği bir sayfaya (Örn: Admin/IdeaDetail) bağlayabilirsiniz -->
-                                    <a href="#" class="btn btn-sm btn-outline-danger" title="Fikri İncele ve Yönet">
-                                        <i class="bi bi-gear-fill"></i> Yönet
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-info text-center border-0 mb-0">
-                <i class="bi bi-info-circle-fill me-2"></i> Sistemde henüz kayıtlı bir fikir bulunmamaktadır.
-            </div>
-        }
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Başlık</th>
+                    <th>Başvuru Sahibi</th>
+                    <th>Durum</th>
+                    <th class="text-end">Sistem İşlemleri</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fikir in Model)
+                {
+                    <tr>
+                        <td>#@fikir.Id</td>
+                        <td class="fw-bold">@fikir.Baslik</td>
+                        <td>@fikir.BasvuruSahibiAdSoyad</td>
+                        <td><span class="badge bg-secondary">@fikir.Durum</span></td>
+                        <td class="text-end">
+                            <a asp-action="IdeaMonitoring" asp-route-id="@fikir.Id" class="btn btn-sm btn-dark text-white" title="Sistem İzleme / Loglar">
+                                <i class="bi bi-activity"></i> İzleme
+                            </a>
+                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#overrideModal-@fikir.Id" title="Sürece Müdahale Et">
+                                <i class="bi bi-shield-exclamation"></i> Override
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Override Modal -->
+                    <div class="modal fade" id="overrideModal-@fikir.Id" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content border-0">
+                                <form asp-action="OverrideDurum" method="post">
+                                    <div class="modal-header bg-warning">
+                                        <h5 class="modal-title text-dark fw-bold">Manuel Müdahale (Fikir #@fikir.Id)</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body text-start">
+                                        <div class="alert alert-danger small">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Sistem otomasyonunu bypass ediyorsunuz. Bu işlem güvenlik politikası gereği kalıcı olarak loglanacaktır.
+                                        </div>
+                                        <input type="hidden" name="FikirId" value="@fikir.Id" />
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold text-dark">Hedef Durum</label>
+                                            <select name="YeniDurum" class="form-select border-dark" required>
+                                                <option value="1">Taslak</option>
+                                                <option value="2">Ön Onay Bekliyor</option>
+                                                <option value="3">Komisyon Onayı Bekliyor</option>
+                                                <option value="4">Ön Onay Retli</option>
+                                                <option value="5">Komisyon Onayı Retli</option>
+                                                <option value="6">Komisyon Onaylı</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold text-dark">Müdahale Gerekçesi (Audit Log)</label>
+                                            <textarea name="Aciklama" class="form-control border-dark" rows="3" required placeholder="Gerekçenizi detaylı şekilde yazın..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer bg-light">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                        <button type="submit" class="btn btn-danger">Müdahaleyi Kaydet</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

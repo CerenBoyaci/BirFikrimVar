@@ -105,4 +105,75 @@ public class AdminController : Controller
 
         return RedirectToAction("Users");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Categories()
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.GetAsync("admin/categories");
+        if (response.IsSuccessStatusCode)
+        {
+            var categories = await response.Content.ReadFromJsonAsync<List<KategoriViewModel>>();
+            return View(categories ?? new List<KategoriViewModel>());
+        }
+        return View(new List<KategoriViewModel>());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> KaydetKategori(KategoriViewModel model)
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        HttpResponseMessage response;
+        if (model.Id == 0)
+            response = await client.PostAsJsonAsync("admin/categories", model);
+        else
+            response = await client.PutAsJsonAsync($"admin/categories/{model.Id}", model);
+
+        if (response.IsSuccessStatusCode)
+            TempData["BasariMesaji"] = "Kategori işlemi başarılı.";
+        else
+            TempData["HataMesaji"] = "Kategori kaydedilirken hata oluştu.";
+
+        return RedirectToAction("Categories");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> OverrideDurum(OverrideStatusViewModel model)
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+       
+        var payload = new { YeniDurum = model.YeniDurum, Aciklama = model.Aciklama };
+        var response = await client.PostAsJsonAsync($"admin/ideas/{model.FikirId}/override-status", payload);
+
+        if (response.IsSuccessStatusCode)
+            TempData["BasariMesaji"] = "Sürece başarıyla müdahale edildi ve loglandı.";
+        else
+            TempData["HataMesaji"] = "Durum değiştirilirken bir hata oluştu.";
+
+        return RedirectToAction("AllIdeas");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> IdeaMonitoring(int id)
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.GetAsync($"admin/ideas/{id}/monitoring");
+        if (response.IsSuccessStatusCode)
+        {
+            //performans odaklı yaklaşımına uygun olarak JsonElement ile
+            var data = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+            return View(data);
+        }
+
+        TempData["HataMesaji"] = "İzleme verisi alınamadı.";
+        return RedirectToAction("AllIdeas");
+    }
 }

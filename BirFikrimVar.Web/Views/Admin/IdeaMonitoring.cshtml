@@ -1,0 +1,71 @@
+﻿@model System.Text.Json.JsonElement
+
+@{
+    ViewData["Title"] = "Sistem İzleme ve Loglar";
+    var fikir = Model.GetProperty("fikirBilgisi");
+    var durumGecmisi = Model.GetProperty("durumGecmisi");
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-display me-2"></i>Fikir Bilgisi</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Başlık:</strong> @fikir.GetProperty("baslik").GetString()</p>
+                <p><strong>Başvuru Sahibi:</strong> @fikir.GetProperty("sahibi").GetString()</p>
+                <hr />
+                <p class="mb-0">
+                    <strong>Anlık Durum:</strong>
+                    <span class="badge bg-primary fs-6">@fikir.GetProperty("durum").GetString()</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="d-grid">
+            <a asp-action="AllIdeas" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Listeye Dön</a>
+        </div>
+    </div>
+
+    <!-- Sağ Panel: Loglar ve Audit Trail -->
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 border-top border-warning border-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-dark"><i class="bi bi-terminal me-2"></i>Durum Logları (Audit Trail)</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @foreach (var log in durumGecmisi.EnumerateArray())
+                    {
+                        var aciklama = log.GetProperty("aciklama").GetString() ?? "";
+                        var isOverride = aciklama.Contains("[ADMIN MÜDAHALESİ");
+
+                        <li class="list-group-item @(isOverride ? "list-group-item-danger border-danger" : "")">
+                            <div class="d-flex justify-content-between w-100">
+                                <h6 class="mb-1">
+                                    <span class="text-muted">@log.GetProperty("eskiDurum").GetString()</span>
+                                    <i class="bi bi-arrow-right fw-bold mx-1"></i>
+                                    <span class="fw-bold">@log.GetProperty("yeniDurum").GetString()</span>
+                                </h6>
+                                <small class="text-muted">@Convert.ToDateTime(log.GetProperty("tarih").GetString()).ToString("dd.MM.yyyy HH:mm:ss")</small>
+                            </div>
+                            <p class="mb-1 small">Sorumlu: <strong>@log.GetProperty("islemYapan").GetString()</strong></p>
+
+                            @if (isOverride)
+                            {
+                                <div class="text-danger mt-2 p-2 bg-white rounded border border-danger small">
+                                    <strong><i class="bi bi-shield-lock-fill"></i> Override Nedeni:</strong> @aciklama.Replace("[ADMIN MÜDAHALESİ - OVERRIDE] ", "")
+                                </div>
+                            }
+                            else
+                            {
+                                <small class="text-muted"><i class="bi bi-card-text"></i> @aciklama</small>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

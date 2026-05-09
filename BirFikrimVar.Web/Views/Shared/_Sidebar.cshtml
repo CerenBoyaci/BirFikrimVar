@@ -1,6 +1,5 @@
 ﻿@*
-    NOT: Aşağıdaki User.IsInRole kontrolleri sadece UI görünürlüğü içindir.
-    Yetki kontrolü mutlaka backend/controller katmanında yapılmalıdır.
+    
 *@
 
 @{
@@ -40,7 +39,7 @@
     {
         <div class="menu-heading">Başvurular</div>
         <a asp-controller="Ideas" asp-action="Index"
-           class="menu-link @(ctrl == "Ideas" && action == "Index" ? "active" : "")">
+           class="menu-link @(ctrl == "Ideas" && action != "Olustur" ? "active" : "")">
             <i class="bi bi-collection"></i> Fikirlerim
         </a>
         <a asp-controller="Ideas" asp-action="Olustur"
@@ -56,7 +55,7 @@
         @if (User.IsInRole("OnOnayci") || User.IsInRole("Admin"))
         {
             <a asp-controller="Approval" asp-action="PreApprovalList"
-               class="menu-link @(ctrl == "Approval" && action == "PreApprovalList" ? "active" : "")">
+               class="menu-link @(ctrl == "Approval" && (action == "PreApprovalList" || action == "Evaluate") ? "active" : "")">
                 <i class="bi bi-ui-checks"></i> Ön Onay Paneli
                 @* ileride bekleyen sayısı buraya eklenebilir *@
             </a>
@@ -65,7 +64,7 @@
         @if (User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
         {
             <a asp-controller="Approval" asp-action="CommissionList"
-               class="menu-link @(ctrl == "Approval" && action == "CommissionList" ? "active" : "")">
+               class="menu-link @(ctrl == "Approval" && (action == "CommissionList" || action == "CommissionEvaluate") ? "active" : "")">
                 <i class="bi bi-award"></i> Komisyon Paneli
             </a>
         }
@@ -75,7 +74,7 @@
     {
         <div class="menu-heading">Yönetim</div>
         <a asp-controller="Admin" asp-action="AllIdeas"
-           class="menu-link @(ctrl == "Admin" && action == "AllIdeas" ? "active" : "")">
+           class="menu-link @(ctrl == "Admin" && (action == "AllIdeas" || action == "IdeaMonitoring") ? "active" : "")">
             <i class="bi bi-inboxes"></i> Tüm Fikirler
         </a>
         <a asp-controller="Admin" asp-action="Users"
@@ -86,12 +85,12 @@
            class="menu-link @(ctrl == "Admin" && action == "Categories" ? "active" : "")">
             <i class="bi bi-tags"></i> Kategori Yönetimi
         </a>
+        @* Eğer Rolleri ayrı bir sayfada yöneteceksen burası kalabilir. Biz Users sayfasında yapmıştık. *@
         <a asp-controller="Admin" asp-action="Roles"
            class="menu-link @(ctrl == "Admin" && action == "Roles" ? "active" : "")">
             <i class="bi bi-shield-check"></i> Rol Yönetimi
         </a>
     }
-
 </div>
 
 <div class="sidebar-footer">
@@ -106,17 +105,14 @@
                 }
                 else if (User.IsInRole("OnOnayci"))
                 {
-
                     <text>Ön Onaycı</text>
                 }
                 else if (User.IsInRole("KomisyonUyesi"))
                 {
-
                     <text>Komisyon Üyesi</text>
                 }
                 else
                 {
-
                     <text>Standart Kullanıcı</text>
                 }
             </div>

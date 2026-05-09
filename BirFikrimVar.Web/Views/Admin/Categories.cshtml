@@ -1,0 +1,73 @@
+﻿@model List<BirFikrimVar.Web.Models.KategoriViewModel>
+
+@{
+    ViewData["Title"] = "Puanlama Kategorileri";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-tags-fill me-2"></i>Mevcut Kategoriler</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Kategori Adı</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var kat in Model)
+                        {
+                            <tr>
+                                <td>@kat.Id</td>
+                                <td class="fw-bold">@kat.Ad</td>
+                                <td>
+                                    @if (kat.AktifMi)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Pasif</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 border-top border-primary border-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-primary">Yeni Kategori Ekle</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="KaydetKategori" method="post">
+                    <input type="hidden" name="Id" value="0" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kategori Adı</label>
+                        <input type="text" name="Ad" class="form-control" required placeholder="Örn: Stratejik Uyum" />
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="AktifMi" value="true" checked>
+                        <label class="form-check-label fw-bold">Aktif Olarak Başlat</label>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
