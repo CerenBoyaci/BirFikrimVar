@@ -1,4 +1,5 @@
-﻿using BirFikrimVar.Core.Dtos.Fikir;
+﻿using BirFikrimVar.Core.Dtos.Admin;
+using BirFikrimVar.Core.Dtos.Fikir;
 using BirFikrimVar.Core.Entities;
 using BirFikrimVar.Core.Enums;
 using BirFikrimVar.Data.Context;
@@ -407,7 +408,19 @@ namespace BirFikrimVar.Service.Services
             return (tamFizikselYol, dosya.OrijinalDosyaAdi, contentType);
         }
 
-     
+        public async Task<IEnumerable<KategoriDto>> GetActiveCategoriesAsync()
+        {
+            return await _context.Kategoriler
+                .Where(k => k.AktifMi == true)
+                .Select(k => new KategoriDto
+                {
+                    Id = k.Id,
+                    Ad = k.Ad,
+                    AktifMi = k.AktifMi
+                })
+                .ToListAsync();
+        }
+
         private string GetContentType(string path)
         {
             var types = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)

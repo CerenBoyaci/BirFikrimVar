@@ -54,6 +54,7 @@ namespace BirFikrimVar.Web.Controllers
             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
             AddTokenToHeader(client);
 
+          
             var response = await client.GetAsync($"ideas/{id}");
             if (!response.IsSuccessStatusCode)
                 return NotFound("Fikir bulunamadı veya erişim yetkiniz yok.");
@@ -61,19 +62,24 @@ namespace BirFikrimVar.Web.Controllers
             var fikir = await response.Content.ReadFromJsonAsync<FikirDetayViewModel>();
 
          
+            var categoryResponse = await client.GetAsync("ideas/active-categories");
+            var activeCategories = new List<KategoriViewModel>();
+
+            if (categoryResponse.IsSuccessStatusCode)
+            {
+                activeCategories = await categoryResponse.Content.ReadFromJsonAsync<List<KategoriViewModel>>();
+            }
+
+          
             var model = new OnOnayDegerlendirmeViewModel
             {
                 FikirId = id,
                 Fikir = fikir,
-                KategoriPuanlari = new List<KategoriPuanViewModel>
+                KategoriPuanlari = activeCategories.Select(k => new KategoriPuanViewModel
                 {
-                    new KategoriPuanViewModel { KategoriId = 1, KategoriAdi = "Stratejik Uyum" },
-                    new KategoriPuanViewModel { KategoriId = 2, KategoriAdi = "Yenilikçilik" },
-                    new KategoriPuanViewModel { KategoriId = 3, KategoriAdi = "Uygulanabilirlik" },
-                    new KategoriPuanViewModel { KategoriId = 4, KategoriAdi = "Beklenen Fayda" },
-                    new KategoriPuanViewModel { KategoriId = 5, KategoriAdi = "Risk ve Sürdürülebilirlik" },
-                    new KategoriPuanViewModel { KategoriId = 6, KategoriAdi = "Kaynak İhtiyacı" }
-                }
+                    KategoriId = k.Id,
+                    KategoriAdi = k.Ad
+                }).ToList()
             };
 
             return View(model);

@@ -148,5 +148,12 @@ namespace BirFikrimVar.API.Controllers
                 _ => BadRequest(new { mesaj = sonuc })
             };
         }
+
+        [HttpGet("active-categories")]
+        public async Task<IActionResult> GetActiveCategories()
+        {
+            var categories = await _ideasService.GetActiveCategoriesAsync();
+            return Ok(categories);
+        }
     }
 }

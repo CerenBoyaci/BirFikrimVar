@@ -1,4 +1,5 @@
-﻿using BirFikrimVar.Core.Dtos.Fikir;
+﻿using BirFikrimVar.Core.Dtos.Admin;
+using BirFikrimVar.Core.Dtos.Fikir;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -21,5 +22,6 @@ namespace BirFikrimVar.Service.Interfaces
         Task<string> UploadIdeaAttachmentsAsync(int fikirId, List<IFormFile> files, string userId);
      
         Task<(string filePath, string fileName, string contentType)> GetAttachmentForDownloadAsync(int fikirId, int fileId, string userId, IList<string> userRoles);
+        Task<IEnumerable<KategoriDto>> GetActiveCategoriesAsync();
     }
 }

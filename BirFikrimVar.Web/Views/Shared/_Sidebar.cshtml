@@ -57,7 +57,7 @@
             <a asp-controller="Approval" asp-action="PreApprovalList"
                class="menu-link @(ctrl == "Approval" && (action == "PreApprovalList" || action == "Evaluate") ? "active" : "")">
                 <i class="bi bi-ui-checks"></i> Ön Onay Paneli
-                @* ileride bekleyen sayısı buraya eklenebilir *@
+               
             </a>
         }
 
@@ -85,11 +85,7 @@
            class="menu-link @(ctrl == "Admin" && action == "Categories" ? "active" : "")">
             <i class="bi bi-tags"></i> Kategori Yönetimi
         </a>
-        @* Eğer Rolleri ayrı bir sayfada yöneteceksen burası kalabilir. Biz Users sayfasında yapmıştık. *@
-        <a asp-controller="Admin" asp-action="Roles"
-           class="menu-link @(ctrl == "Admin" && action == "Roles" ? "active" : "")">
-            <i class="bi bi-shield-check"></i> Rol Yönetimi
-        </a>
+        
     }
 </div>
 
