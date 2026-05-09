@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+
 [Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
@@ -26,11 +27,12 @@ public class AdminController : Controller
         var response = await client.GetAsync("admin/users");
         if (response.IsSuccessStatusCode)
         {
-           
-            var users = await response.Content.ReadFromJsonAsync<List<dynamic>>();
+            //json element kullanma sebebim yüksek performans ve düşük bellek tüketimi
+            var users = await response.Content.ReadFromJsonAsync<List<System.Text.Json.JsonElement>>();
             return View(users);
         }
-        return View();
+
+        return View(new List<System.Text.Json.JsonElement>());
     }
 
     [HttpPost]
@@ -63,5 +65,44 @@ public class AdminController : Controller
         }
 
         return View(new List<FikirListeViewModel>());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> KullaniciOlustur(AdminKullaniciOlusturViewModel model)
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.PostAsJsonAsync("admin/users", model);
+        if (response.IsSuccessStatusCode)
+        {
+            TempData["BasariMesaji"] = "Kullanıcı başarıyla oluşturuldu.";
+        }
+        else
+        {
+            var error = await response.Content.ReadFromJsonAsync<ApiMesajViewModel>();
+            TempData["HataMesaji"] = error?.Mesaj ?? "Kullanıcı oluşturulurken bir hata meydana geldi.";
+        }
+
+        return RedirectToAction("Users");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DurumDegistir(string userId)
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.PostAsync($"admin/users/{userId}/toggle-status", null);
+        if (response.IsSuccessStatusCode)
+        {
+            TempData["BasariMesaji"] = "Kullanıcı durumu başarıyla güncellendi.";
+        }
+        else
+        {
+            TempData["HataMesaji"] = "Durum güncellenirken bir hata oluştu.";
+        }
+
+        return RedirectToAction("Users");
     }
 }
