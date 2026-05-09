@@ -40,6 +40,7 @@ namespace BirFikrimVar.API.Controllers
                 Ad = model.Ad,
                 Soyad = model.Soyad,
                 AktifMi = true
+               
             };
 
             var result = await _userManager.CreateAsync(user, model.Parola);
@@ -49,15 +50,25 @@ namespace BirFikrimVar.API.Controllers
                 return BadRequest(new { mesaj = $"Kullanıcı oluşturulamadı: {errors}" });
             }
 
-            
             await _userManager.AddToRoleAsync(user, "StandartKullanici");
 
+         
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+          
+            var webUrl = "https://localhost:7112/";
+            var confirmationLink = $"{webUrl}/Account/EmailOnayla?email={user.Email}&token={Uri.EscapeDataString(token)}";
+
+          
+            Console.WriteLine("\n\n################################################");
+            Console.WriteLine("YENİ KULLANICI KAYDI YAPILDI");
+            Console.WriteLine($"E-POSTA: {user.Email}");
+            Console.WriteLine($"ONAY LİNKİ (TIKLAYIN): {confirmationLink}");
+            Console.WriteLine("################################################\n\n");
 
             return Ok(new
             {
-                mesaj = "Kayıt başarılı. Lütfen e-posta adresinizi doğrulayın.",
-                dogrulamaTokeni = token,
+                mesaj = "Kayıt başarılı. Lütfen e-posta adresinize gönderilen (veya log ekranındaki) linke tıklayarak hesabınızı doğrulayın.",
                 email = user.Email
             });
         }

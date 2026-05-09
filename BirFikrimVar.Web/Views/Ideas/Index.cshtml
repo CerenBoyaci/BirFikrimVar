@@ -1,0 +1,53 @@
+﻿@model IEnumerable<BirFikrimVar.Web.Models.FikirListeViewModel>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="bi bi-list-task"></i> Fikirlerim</h3>
+    <a asp-action="Olustur" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Yeni Fikir Oluştur</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover shadow-sm bg-white">
+        <thead class="table-dark">
+            <tr>
+                <th>Başlık</th>
+                <th>Tarih</th>
+                <th>Durum</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Baslik</td>
+                    <td>@item.OlusturmaTarihi.ToShortDateString()</td>
+                    <td>
+                        <span class="badge @GetBadgeClass(item.Durum)">@item.Durum</span>
+                    </td>
+                    <td>
+                        @if (item.Durum == "Taslak")
+                        {
+                            <form asp-action="OnOnayaGonder" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-send"></i> Ön Onaya Gönder
+                                </button>
+                            </form>
+                        }
+                        <a href="#" class="btn btn-sm btn-outline-primary">Detay</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@functions {
+    string GetBadgeClass(string durum) => durum switch
+    {
+        "Taslak" => "bg-secondary",
+        "OnOnayBekliyor" => "bg-warning text-dark",
+        "KomisyonOnayiBekliyor" => "bg-info text-dark",
+        "KomisyonOnayli" => "bg-success",
+        _ => "bg-danger"
+    };
+}

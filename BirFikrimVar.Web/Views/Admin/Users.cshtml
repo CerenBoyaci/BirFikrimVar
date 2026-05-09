@@ -1,0 +1,45 @@
+﻿@model List<dynamic>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>Kullanıcı Yönetimi</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Email</th>
+                    <th>Mevcut Rol</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.GetProperty("ad") @user.GetProperty("soyad")</td>
+                        <td>@user.GetProperty("email")</td>
+                        <td>
+                            <span class="badge bg-info text-dark">
+                                @string.Join(", ", user.GetProperty("roller").EnumerateArray())
+                            </span>
+                        </td>
+                        <td>
+                            <form asp-action="RolGuncelle" method="post" class="d-flex gap-2">
+                                <input type="hidden" name="userId" value="@user.GetProperty("id")" />
+                                <select name="roleName" class="form-select form-select-sm" style="width: 150px;">
+                                    <option value="StandartKullanici">Standart</option>
+                                    <option value="OnOnayci">Ön Onaycı</option>
+                                    <option value="KomisyonUyesi">Komisyon Üyesi</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm">Güncelle</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

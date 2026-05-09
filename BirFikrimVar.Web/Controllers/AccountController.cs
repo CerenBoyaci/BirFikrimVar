@@ -28,7 +28,8 @@ namespace BirFikrimVar.Web.Controllers
 
             if (yanit.IsSuccessStatusCode)
             {
-                TempData["BasariMesaji"] = "Kayıt başarılı! Lütfen e-posta adresinizi doğrulayarak giriş yapın.";
+                
+                TempData["BasariMesaji"] = "Kaydınız alındı. Hesabınızı kullanabilmek için e-posta doğrulaması yapmanız gerekmektedir. (Lütfen API Konsol ekranındaki linke tıklayın)";
                 return RedirectToAction("Giris");
             }
 
@@ -52,7 +53,7 @@ namespace BirFikrimVar.Web.Controllers
             {
                 var loginData = await yanit.Content.ReadFromJsonAsync<KimlikYanitViewModel>();
 
-                // Kullanıcı bilgilerini ve JWT token'ı Cookie'ye gömüyoruz
+                
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, loginData.Email),
@@ -82,6 +83,28 @@ namespace BirFikrimVar.Web.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Giris");
+        }
+        [HttpGet]
+        public async Task<IActionResult> EmailOnayla(string email, string token)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+            {
+                return View("Hata", new ApiMesajViewModel { Mesaj = "Geçersiz onay isteği." });
+            }
+
+            var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+
+         
+            var response = await client.GetAsync($"auth/confirm-email?email={email}&token={Uri.EscapeDataString(token)}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["BasariMesaji"] = "E-posta adresiniz başarıyla doğrulandı! Şimdi giriş yapabilirsiniz.";
+                return RedirectToAction("Giris");
+            }
+
+            ViewBag.Hata = "E-posta doğrulaması başarısız oldu. Token süresi dolmuş olabilir.";
+            return View();
         }
     }
 }

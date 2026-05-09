@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "E-posta Doğrulama";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            @if (ViewBag.Hata != null)
+            {
+                <div class="alert alert-danger shadow-sm">
+                    <i class="bi bi-exclamation-triangle-fill fs-1 d-block mb-3"></i>
+                    <h4>İşlem Başarısız</h4>
+                    <p>@ViewBag.Hata</p>
+                    <a asp-action="Giris" class="btn btn-primary mt-3">Giriş Sayfasına Dön</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
