@@ -39,6 +39,27 @@ namespace BirFikrimVar.Data.Context
                 .WithMany(k => k.Degerlendirmeler)
                 .HasForeignKey(d => d.DegerlendiriciId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //fikir ve dosya ekleri ilişkisi (fikir silinirse ekleri de silinmeli)
+            builder.Entity<DosyaEki>()
+                .HasOne(d => d.Fikir)
+                .WithMany(f => f.EkDosyalar)
+                .HasForeignKey(d => d.FikirId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //fikir ve Değerlendirmeler ilişkisi (fikir silinirse değerlendirmeleri de silinmeli)
+            builder.Entity<Degerlendirme>()
+                .HasOne(d => d.Fikir)
+                .WithMany(f => f.Degerlendirmeler)
+                .HasForeignKey(d => d.FikirId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //fikir ve durum geçmişi ilişkisi (fikir silinirse durum geçmişleri de silinmeli)
+            builder.Entity<FikirDurumGecmisi>()
+                .HasOne(fd => fd.Fikir)
+                .WithMany(f => f.DurumGecmisleri)
+                .HasForeignKey(fd => fd.FikirId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
