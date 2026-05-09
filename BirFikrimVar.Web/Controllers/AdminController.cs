@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using BirFikrimVar.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Authorize(Roles = "Admin")]
@@ -45,5 +46,22 @@ public class AdminController : Controller
             TempData["HataMesaji"] = "Rol güncellenirken bir hata oluştu.";
 
         return RedirectToAction("Users");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AllIdeas()
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.GetAsync("ideas");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var model = await response.Content.ReadFromJsonAsync<List<FikirListeViewModel>>();
+            return View(model ?? new List<FikirListeViewModel>());
+        }
+
+        return View(new List<FikirListeViewModel>());
     }
 }

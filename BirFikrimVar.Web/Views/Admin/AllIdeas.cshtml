@@ -1,0 +1,70 @@
+﻿@model List<BirFikrimVar.Web.Models.FikirListeViewModel>
+
+@{
+    ViewData["Title"] = "Tüm Fikirler (Admin)";
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-list-task me-2"></i>Tüm Fikirler Yönetimi</h5>
+        <span class="badge bg-light text-danger rounded-pill">Toplam: @(Model?.Count ?? 0) Kayıt</span>
+    </div>
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Başlık</th>
+                            <th>Başvuru Sahibi</th>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var fikir in Model)
+                        {
+                            <tr>
+                                <td>#@fikir.Id</td>
+                                <td class="fw-bold">@fikir.Baslik</td>
+                                <td>@fikir.BasvuruSahibiAdSoyad</td>
+                                <td>@fikir.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    @{
+                                        // Duruma göre Bootstrap renk sınıflarını belirliyoruz
+                                        var badgeClass = fikir.Durum switch
+                                        {
+                                            "Taslak" => "bg-secondary",
+                                            "OnOnayBekliyor" => "bg-warning text-dark",
+                                            "KomisyonOnayiBekliyor" => "bg-info text-dark",
+                                            "KomisyonOnayli" => "bg-success",
+                                            "OnOnayRetli" => "bg-danger",
+                                            "KomisyonOnayiRetli" => "bg-danger",
+                                            _ => "bg-primary"
+                                        };
+                                    }
+                                    <span class="badge @badgeClass">@fikir.Durum</span>
+                                </td>
+                                <td class="text-end">
+                                    <!-- İleride Admin'in fikri detaylı inceleyip durumunu manuel değiştireceği bir sayfaya (Örn: Admin/IdeaDetail) bağlayabilirsiniz -->
+                                    <a href="#" class="btn btn-sm btn-outline-danger" title="Fikri İncele ve Yönet">
+                                        <i class="bi bi-gear-fill"></i> Yönet
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center border-0 mb-0">
+                <i class="bi bi-info-circle-fill me-2"></i> Sistemde henüz kayıtlı bir fikir bulunmamaktadır.
+            </div>
+        }
+    </div>
+</div>

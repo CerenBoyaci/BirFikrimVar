@@ -14,14 +14,14 @@ namespace BirFikrimVar.Data.Context
         public DbSet<FikirDurumGecmisi> FikirDurumGecmisleri { get; set; }
         public DbSet<Kategori> Kategoriler { get; set; }
 
-        // GÜNCELLEME 1: DosyaEki tamamen kaldırıldı, sadece FikirDosyalari var.
+      
         public DbSet<FikirDosyasi> FikirDosyalari { get; set; }
 
-        // GÜNCELLEME 2: Service katmanında kullandığın yeni değerlendirme tabloları eklendi.
+       
         public DbSet<OnOnayDegerlendirmesi> OnOnayDegerlendirmeleri { get; set; }
         public DbSet<KomisyonDegerlendirmesi> KomisyonDegerlendirmeleri { get; set; }
 
-        // (Eski tip Degerlendirme tablosunu sistemden tamamen silmediysen diye burada tutuyorum)
+      
         public DbSet<Degerlendirme> Degerlendirmeler { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -44,7 +44,7 @@ namespace BirFikrimVar.Data.Context
                 .HasForeignKey(d => d.DegerlendiriciId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // GÜNCELLEME 3: İlişki DosyaEki yerine FikirDosyasi üzerinden kuruldu.
+         
             // (Fikir silinirse ekleri de silinmeli)
             builder.Entity<FikirDosyasi>()
                 .HasOne(d => d.Fikir)
@@ -65,6 +65,15 @@ namespace BirFikrimVar.Data.Context
                 .WithMany(f => f.DurumGecmisleri)
                 .HasForeignKey(fd => fd.FikirId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Kategori>().HasData(
+        new Kategori { Id = 1, Ad = "Stratejik Uyum", AktifMi = true },
+        new Kategori { Id = 2, Ad = "Yenilikçilik", AktifMi = true },
+        new Kategori { Id = 3, Ad = "Uygulanabilirlik", AktifMi = true },
+        new Kategori { Id = 4, Ad = "Beklenen Fayda", AktifMi = true },
+        new Kategori { Id = 5, Ad = "Risk ve Sürdürülebilirlik", AktifMi = true },
+        new Kategori { Id = 6, Ad = "Kaynak İhtiyacı", AktifMi = true }
+    );
         }
     }
 }

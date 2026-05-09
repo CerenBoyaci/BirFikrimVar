@@ -26,14 +26,16 @@
                                 <a class="nav-link text-dark" asp-controller="Ideas" asp-action="Index">Fikirlerim</a>
                             </li>
 
-                            @if (User.IsInRole("OnOnayci"))
+                            <!-- Güncellenen Kısım: Admin de görebilir -->
+                            @if (User.IsInRole("OnOnayci") || User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-success" asp-controller="Approval" asp-action="PreApprovalList">Ön Onay Paneli</a>
                                 </li>
                             }
 
-                            @if (User.IsInRole("KomisyonUyesi"))
+                            <!-- Güncellenen Kısım: Admin de görebilir -->
+                            @if (User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-info" asp-controller="Approval" asp-action="CommissionList">Komisyon Paneli</a>

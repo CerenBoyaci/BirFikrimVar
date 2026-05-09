@@ -1,0 +1,98 @@
+﻿@model BirFikrimVar.Web.Models.OnOnayDegerlendirmeViewModel
+
+@{
+    ViewData["Title"] = "Fikir Ön Onay Değerlendirmesi";
+}
+
+<div class="row">
+
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Fikir Detayı: @Model.Fikir.Baslik</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="text-primary fw-bold">Özet</h6>
+                <p>@Model.Fikir.Ozet</p>
+                <hr />
+                <h6 class="text-primary fw-bold">Kapsam</h6>
+                <p>@Model.Fikir.Kapsam</p>
+                <hr />
+                <h6 class="text-primary fw-bold">Yenilikçi Yanı</h6>
+                <p>@Model.Fikir.YenilikciYan</p>
+
+                <h5 class="mt-4 border-bottom pb-2">SWOT Analizi</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border-start border-success border-4">
+                            <strong class="text-success">Güçlü Yönler</strong>
+                            <p class="mb-0 small">@Model.Fikir.GucluYonler</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border-start border-danger border-4">
+                            <strong class="text-danger">Zayıf Yönler</strong>
+                            <p class="mb-0 small">@Model.Fikir.ZayifYonler</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border-start border-info border-4">
+                            <strong class="text-info">Fırsatlar</strong>
+                            <p class="mb-0 small">@Model.Fikir.Firsatlar</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border-start border-warning border-4">
+                            <strong class="text-warning">Tehditler</strong>
+                            <p class="mb-0 small">@Model.Fikir.Tehditler</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 border-top border-primary border-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-primary"><i class="bi bi-star-fill me-2"></i>Puanlama (1-10)</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Evaluate" method="post">
+                    <input type="hidden" asp-for="FikirId" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    @for (int i = 0; i < Model.KategoriPuanlari.Count; i++)
+                    {
+                        <div class="mb-3 d-flex align-items-center justify-content-between">
+                            <input type="hidden" asp-for="KategoriPuanlari[i].KategoriId" />
+                            <input type="hidden" asp-for="KategoriPuanlari[i].KategoriAdi" />
+
+                            <label class="form-label mb-0 fw-bold w-50">@Model.KategoriPuanlari[i].KategoriAdi</label>
+                            <div class="w-50">
+                                <input asp-for="KategoriPuanlari[i].Puan" type="number" min="1" max="10" class="form-control text-center" placeholder="Puan (1-10)" required />
+                                <span asp-validation-for="KategoriPuanlari[i].Puan" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="alert alert-secondary small mt-4">
+                        <i class="bi bi-info-circle me-1"></i> Ortalama <strong>6'nın üzerindeyse</strong> fikir komisyon aşamasına aktarılır. <strong>6 veya altındaysa</strong> reddedilir.
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Değerlendirmeyi Tamamla</button>
+                        <a asp-action="PreApprovalList" class="btn btn-outline-secondary">Listeye Dön</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
