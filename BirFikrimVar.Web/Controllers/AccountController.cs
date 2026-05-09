@@ -28,8 +28,12 @@ namespace BirFikrimVar.Web.Controllers
 
             if (yanit.IsSuccessStatusCode)
             {
-                
-                TempData["BasariMesaji"] = "Kaydınız alındı. Hesabınızı kullanabilmek için e-posta doğrulaması yapmanız gerekmektedir. (Lütfen API Konsol ekranındaki linke tıklayın)";
+                var responseData = await yanit.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+                var onayLinki = responseData.GetProperty("onayLinki").GetString();
+
+                TempData["BasariMesaji"] = "Kayıt başarılı! Lütfen e-posta adresinizi doğrulayarak giriş yapın.";
+                TempData["DevModeOnayLinki"] = onayLinki; 
+
                 return RedirectToAction("Giris");
             }
 
@@ -87,24 +91,32 @@ namespace BirFikrimVar.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> EmailOnayla(string email, string token)
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(token))
             {
-                return View("Hata", new ApiMesajViewModel { Mesaj = "Geçersiz onay isteği." });
+                TempData["HataMesaji"] = "Geçersiz veya eksik doğrulama bağlantısı.";
+                return RedirectToAction("Giris");
             }
 
             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
 
-         
-            var response = await client.GetAsync($"auth/confirm-email?email={email}&token={Uri.EscapeDataString(token)}");
+            
+            var response = await client.GetAsync($"auth/confirm-email?email={Uri.EscapeDataString(email)}&token={Uri.EscapeDataString(token)}");
 
             if (response.IsSuccessStatusCode)
             {
-                TempData["BasariMesaji"] = "E-posta adresiniz başarıyla doğrulandı! Şimdi giriş yapabilirsiniz.";
-                return RedirectToAction("Giris");
+                TempData["BasariMesaji"] = "E-posta adresiniz başarıyla doğrulandı. Artık giriş yapabilirsiniz.";
+            }
+            else
+            {
+             
+                var error = await response.Content.ReadFromJsonAsync<ApiMesajViewModel>();
+                TempData["HataMesaji"] = error?.Mesaj ?? "E-posta doğrulama işlemi başarısız oldu veya token süresi doldu.";
             }
 
-            ViewBag.Hata = "E-posta doğrulaması başarısız oldu. Token süresi dolmuş olabilir.";
-            return View();
+            
+            return RedirectToAction("Giris");
         }
+
+
     }
 }

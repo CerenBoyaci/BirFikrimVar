@@ -56,7 +56,7 @@ namespace BirFikrimVar.API.Controllers
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
           
-            var webUrl = "https://localhost:7112/";
+            var webUrl = "https://localhost:7112";
             var confirmationLink = $"{webUrl}/Account/EmailOnayla?email={user.Email}&token={Uri.EscapeDataString(token)}";
 
           
@@ -69,7 +69,8 @@ namespace BirFikrimVar.API.Controllers
             return Ok(new
             {
                 mesaj = "Kayıt başarılı. Lütfen e-posta adresinize gönderilen (veya log ekranındaki) linke tıklayarak hesabınızı doğrulayın.",
-                email = user.Email
+                email = user.Email,
+                onayLinki = confirmationLink
             });
         }
 
