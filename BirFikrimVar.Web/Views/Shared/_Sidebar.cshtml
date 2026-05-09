@@ -1,0 +1,132 @@
+﻿@*
+    NOT: Aşağıdaki User.IsInRole kontrolleri sadece UI görünürlüğü içindir.
+    Yetki kontrolü mutlaka backend/controller katmanında yapılmalıdır.
+*@
+
+@{
+    var initials = "";
+    var username = User.Identity?.Name ?? "";
+    if (username.Length >= 2)
+    {
+        initials = username.Substring(0, 2).ToUpper();
+    }
+    else if (username.Length == 1)
+    {
+        initials = username.Substring(0, 1).ToUpper();
+    }
+
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<a asp-controller="Home" asp-action="Index" class="sidebar-brand">
+    <div class="sidebar-brand-icon">💡</div>
+    <div>
+        <div class="sidebar-brand-text">Bir Fikrim Var</div>
+        <div class="sidebar-brand-sub">Fikir Yönetim Sistemi</div>
+    </div>
+</a>
+
+<div class="sidebar-menu">
+
+    @* Her role açık bölümler *@
+    <div class="menu-heading">Genel</div>
+    <a asp-controller="Home" asp-action="Index"
+       class="menu-link @(ctrl == "Home" && action == "Index" ? "active" : "")">
+        <i class="bi bi-grid-1x2"></i> Dashboard
+    </a>
+
+    @if (!User.IsInRole("OnOnayci") && !User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
+    {
+        <div class="menu-heading">Başvurular</div>
+        <a asp-controller="Ideas" asp-action="Index"
+           class="menu-link @(ctrl == "Ideas" && action == "Index" ? "active" : "")">
+            <i class="bi bi-collection"></i> Fikirlerim
+        </a>
+        <a asp-controller="Ideas" asp-action="Olustur"
+           class="menu-link @(ctrl == "Ideas" && action == "Olustur" ? "active" : "")">
+            <i class="bi bi-plus-square"></i> Yeni Fikir
+        </a>
+    }
+
+    @if (User.IsInRole("OnOnayci") || User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
+    {
+        <div class="menu-heading">Değerlendirme</div>
+
+        @if (User.IsInRole("OnOnayci") || User.IsInRole("Admin"))
+        {
+            <a asp-controller="Approval" asp-action="PreApprovalList"
+               class="menu-link @(ctrl == "Approval" && action == "PreApprovalList" ? "active" : "")">
+                <i class="bi bi-ui-checks"></i> Ön Onay Paneli
+                @* ileride bekleyen sayısı buraya eklenebilir *@
+            </a>
+        }
+
+        @if (User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
+        {
+            <a asp-controller="Approval" asp-action="CommissionList"
+               class="menu-link @(ctrl == "Approval" && action == "CommissionList" ? "active" : "")">
+                <i class="bi bi-award"></i> Komisyon Paneli
+            </a>
+        }
+    }
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="menu-heading">Yönetim</div>
+        <a asp-controller="Admin" asp-action="AllIdeas"
+           class="menu-link @(ctrl == "Admin" && action == "AllIdeas" ? "active" : "")">
+            <i class="bi bi-inboxes"></i> Tüm Fikirler
+        </a>
+        <a asp-controller="Admin" asp-action="Users"
+           class="menu-link @(ctrl == "Admin" && action == "Users" ? "active" : "")">
+            <i class="bi bi-people"></i> Kullanıcı Yönetimi
+        </a>
+        <a asp-controller="Admin" asp-action="Categories"
+           class="menu-link @(ctrl == "Admin" && action == "Categories" ? "active" : "")">
+            <i class="bi bi-tags"></i> Kategori Yönetimi
+        </a>
+        <a asp-controller="Admin" asp-action="Roles"
+           class="menu-link @(ctrl == "Admin" && action == "Roles" ? "active" : "")">
+            <i class="bi bi-shield-check"></i> Rol Yönetimi
+        </a>
+    }
+
+</div>
+
+<div class="sidebar-footer">
+    <div class="sidebar-user-info">
+        <div class="sidebar-avatar">@initials</div>
+        <div>
+            <div class="sidebar-username">@username</div>
+            <div class="sidebar-userrole">
+                @if (User.IsInRole("Admin"))
+                {
+                    <text>Admin</text>
+                }
+                else if (User.IsInRole("OnOnayci"))
+                {
+
+                    <text>Ön Onaycı</text>
+                }
+                else if (User.IsInRole("KomisyonUyesi"))
+                {
+
+                    <text>Komisyon Üyesi</text>
+                }
+                else
+                {
+
+                    <text>Standart Kullanıcı</text>
+                }
+            </div>
+        </div>
+    </div>
+    <form asp-controller="Account" asp-action="Cikis" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="menu-link w-100 border-0 bg-transparent text-start"
+                style="color: rgba(255,100,100,0.6); font-size: 12.5px;">
+            <i class="bi bi-box-arrow-left"></i> Çıkış Yap
+        </button>
+    </form>
+</div>

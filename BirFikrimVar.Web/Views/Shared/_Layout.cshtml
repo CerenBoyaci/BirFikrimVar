@@ -4,124 +4,49 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Bir Fikrim Var</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
-   
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity?.IsAuthenticated == true)
     {
- 
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <div class="app-wrapper">
-          
-            <aside class="sidebar">
-                <a asp-controller="Home" asp-action="Index" class="sidebar-brand">
-                    <i class="bi bi-lightbulb-fill fs-4 me-2" style="color: #fd7e14;"></i>
-                    <span class="fs-5 fw-bold text-dark">Bir Fikrim Var</span>
-                </a>
-
-                <div class="sidebar-menu">
-                 
-                    <div class="menu-heading">Başvurular</div>
-                    <a asp-controller="Ideas" asp-action="Index" class="menu-link">
-                        <i class="bi bi-grid-1x2"></i> Fikirlerim
-                    </a>
-                    <a asp-controller="Ideas" asp-action="Olustur" class="menu-link">
-                        <i class="bi bi-plus-square"></i> Yeni Fikir Ekle
-                    </a>
-
-                  
-                    @if (User.IsInRole("OnOnayci") || User.IsInRole("Admin") || User.IsInRole("KomisyonUyesi"))
-                    {
-                        <div class="menu-heading">Değerlendirme</div>
-
-                        @if (User.IsInRole("OnOnayci") || User.IsInRole("Admin"))
-                        {
-                            <a asp-controller="Approval" asp-action="PreApprovalList" class="menu-link">
-                                <i class="bi bi-ui-checks"></i> Ön Onay Paneli
-                            </a>
-                        }
-
-                        @if (User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
-                        {
-                            <a asp-controller="Approval" asp-action="CommissionList" class="menu-link">
-                                <i class="bi bi-award"></i> Komisyon Paneli
-                            </a>
-                        }
-                    }
-
-             
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <div class="menu-heading">Yönetim</div>
-                        <a asp-controller="Admin" asp-action="AllIdeas" class="menu-link">
-                            <i class="bi bi-inboxes"></i> Tüm Fikirler
-                        </a>
-                        <a asp-controller="Admin" asp-action="Users" class="menu-link">
-                            <i class="bi bi-people"></i> Kullanıcı Yönetimi
-                        </a>
-                    }
-
-                
-                    <div class="menu-heading">Hesap</div>
-                    <a asp-controller="Account" asp-action="Cikis" class="menu-link text-danger">
-                        <i class="bi bi-box-arrow-left text-danger"></i> Çıkış Yap
-                    </a>
-                </div>
+            <aside class="sidebar" id="sidebar">
+                @await Html.PartialAsync("_Sidebar")
             </aside>
 
-            <main class="main-wrapper">
-            
-                <header class="topbar">
-                    <div class="user-profile">
-                        <span>@User.Identity.Name</span>
-                        <div class="user-icon">
-                            <i class="bi bi-person-fill"></i>
-                        </div>
-                    </div>
-                </header>
+            <div class="main-wrapper">
+                @await Html.PartialAsync("_Topbar")
 
-            
                 <div class="content-area">
                     @if (TempData["BasariMesaji"] != null)
                     {
-                        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
-                            <i class="bi bi-check-circle-fill me-2"></i> @TempData["BasariMesaji"]
+                        <div class="alert alert-success alert-dismissible fade show border-0 mb-4" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>@TempData["BasariMesaji"]
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     }
                     @if (TempData["HataMesaji"] != null)
                     {
-                        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["HataMesaji"]
+                        <div class="alert alert-danger alert-dismissible fade show border-0 mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["HataMesaji"]
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     }
 
                     @RenderBody()
                 </div>
-            </main>
+            </div>
         </div>
     }
     else
     {
-  
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm">
-            <div class="container">
-                <a class="navbar-brand fw-bold text-dark" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-lightbulb-fill" style="color: #fd7e14;"></i> Bir Fikrim Var
-                </a>
-                <div class="d-flex gap-2">
-                    <a class="btn btn-outline-secondary btn-sm px-3" asp-controller="Account" asp-action="Giris">Giriş Yap</a>
-                    <a class="btn btn-sm px-3 text-white" style="background-color: #fd7e14; border-color: #fd7e14;" asp-controller="Account" asp-action="Kayit">Kayıt Ol</a>
-                </div>
-            </div>
-        </nav>
-
-        <div class="container mt-5 pt-3">
+        <div class="auth-page">
             @RenderBody()
         </div>
     }
@@ -129,19 +54,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
- 
-    <script>
-        $(document).ready(function () {
-        var currentUrl = window.location.pathname;
-        $('.menu-link').each(function () {
-        if ($(this).attr('href') === currentUrl) {
-        $(this).addClass('active');
-        }
-        });
-        });
-    </script>
-
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
