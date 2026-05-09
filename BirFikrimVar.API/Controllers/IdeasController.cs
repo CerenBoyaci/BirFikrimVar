@@ -73,5 +73,80 @@ namespace BirFikrimVar.API.Controllers
                 _ => BadRequest(new { mesaj = sonuc })
             };
         }
+
+        // --- ÖN ONAY ENDPOINTLERİ ---
+
+        [HttpPost("{id}/pre-approval-evaluations")]
+        [Authorize(Roles = "OnOnayci,Admin")]
+        public async Task<IActionResult> EvaluatePreApproval(int id, [FromBody] OnOnayPuanEkleDto model)
+        {
+            var sonuc = await _ideasService.SubmitPreApprovalEvaluationAsync(id, model, GetUserId());
+            return sonuc switch
+            {
+                "Bulunamadi" => NotFound(new { mesaj = "Fikir bulunamadı." }),
+                "Basarili" => Ok(new { mesaj = "Ön onay puanınız eklendi." }),
+                _ => BadRequest(new { mesaj = sonuc })
+            };
+        }
+
+        [HttpPut("{id}/pre-approval-evaluations/me")]
+        [Authorize(Roles = "OnOnayci,Admin")]
+        public async Task<IActionResult> UpdatePreApprovalEvaluation(int id, [FromBody] OnOnayPuanEkleDto model)
+        {
+            var sonuc = await _ideasService.UpdatePreApprovalEvaluationAsync(id, model, GetUserId());
+            return sonuc switch
+            {
+                "Bulunamadi" => NotFound(new { mesaj = "Fikir bulunamadı." }),
+                "Basarili" => Ok(new { mesaj = "Ön onay puanınız güncellendi." }),
+                _ => BadRequest(new { mesaj = sonuc })
+            };
+        }
+
+
+      
+
+        [HttpPost("{id}/commission-evaluations")]
+        [Authorize(Roles = "KomisyonUyesi,Admin")]
+        public async Task<IActionResult> EvaluateCommission(int id, [FromBody] KomisyonPuanEkleDto model)
+        {
+            var sonuc = await _ideasService.SubmitCommissionEvaluationAsync(id, model, GetUserId());
+            return sonuc switch
+            {
+                "Bulunamadi" => NotFound(new { mesaj = "Fikir bulunamadı." }),
+                "Basarili" => Ok(new { mesaj = "Komisyon puanınız kaydedildi. Nihai sonuç için diğer üyeler bekleniyor." }),
+                "KomisyonTamamlandi" => Ok(new { mesaj = "3 üyenin değerlendirmesi tamamlandı ve fikrin nihai durumu belirlendi." }),
+                _ => BadRequest(new { mesaj = sonuc })
+            };
+        }
+
+        [HttpPut("{id}/commission-evaluations/me")]
+        [Authorize(Roles = "KomisyonUyesi,Admin")]
+        public async Task<IActionResult> UpdateCommissionEvaluation(int id, [FromBody] KomisyonPuanEkleDto model)
+        {
+            var sonuc = await _ideasService.UpdateCommissionEvaluationAsync(id, model, GetUserId());
+            return sonuc switch
+            {
+                "Bulunamadi" => NotFound(new { mesaj = "Fikir bulunamadı." }),
+                "Basarili" => Ok(new { mesaj = "Komisyon puanınız başarıyla güncellendi." }),
+                _ => BadRequest(new { mesaj = sonuc })
+            };
+        }
+
+        [HttpPost("{id}/attachments")]
+        public async Task<IActionResult> UploadAttachments(int id, [FromForm] List<IFormFile> files)
+        {
+            if (files == null || !files.Any())
+                return BadRequest(new { mesaj = "Lütfen en az bir dosya seçin." });
+
+            var sonuc = await _ideasService.UploadIdeaAttachmentsAsync(id, files, GetUserId());
+
+            return sonuc switch
+            {
+                "Bulunamadi" => NotFound(new { mesaj = "Fikir bulunamadı." }),
+                "Yetkisiz" => Forbid(),
+                "Basarili" => Ok(new { mesaj = "Dosyalar başarıyla yüklendi." }),
+                _ => BadRequest(new { mesaj = sonuc })
+            };
+        }
     }
 }

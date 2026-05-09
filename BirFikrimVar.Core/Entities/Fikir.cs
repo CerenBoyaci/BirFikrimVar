@@ -26,7 +26,7 @@ namespace BirFikrimVar.Core.Entities
         public string BasvuruSahibiId { get; set; }
         public Kullanici BasvuruSahibi { get; set; }
 
-        public ICollection<DosyaEki> EkDosyalar { get; set; }
+        public ICollection<FikirDosyasi> FikirDosyalari { get; set; }
         public ICollection<Degerlendirme> Degerlendirmeler { get; set; }
         public ICollection<FikirDurumGecmisi> DurumGecmisleri { get; set; }
     }

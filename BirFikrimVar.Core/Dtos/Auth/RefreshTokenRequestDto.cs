@@ -6,6 +6,6 @@ namespace BirFikrimVar.Core.Dtos.Auth
 {
     public class RefreshTokenRequestDto
     {
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
     }
 }

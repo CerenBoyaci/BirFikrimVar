@@ -1,5 +1,7 @@
 using BirFikrimVar.Core.Entities;
 using BirFikrimVar.Data.Context;
+using BirFikrimVar.Service.Interfaces;
+using BirFikrimVar.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +58,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<BirFikrimVar.Service.Interfaces.IIdeasService, BirFikrimVar.Service.Services.IdeasService>();
+builder.Services.AddScoped<IStorageService, LocalStorageService>();
 
 var app = builder.Build();
 
