@@ -1,0 +1,66 @@
+﻿@model BirFikrimVar.Web.Models.KayitViewModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Yeni Hesap Oluştur</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Kayit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Ad" class="form-label small fw-bold">Ad</label>
+                            <input asp-for="Ad" class="form-control" placeholder="Adınız" />
+                            <span asp-validation-for="Ad" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Soyad" class="form-label small fw-bold">Soyad</label>
+                            <input asp-for="Soyad" class="form-control" placeholder="Soyadınız" />
+                            <span asp-validation-for="Soyad" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label small fw-bold">E-posta Adresi</label>
+                        <input asp-for="Email" class="form-control" placeholder="ornek@sirket.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Parola" class="form-label small fw-bold">Parola</label>
+                        <input asp-for="Parola" type="password" class="form-control" placeholder="********" />
+                        <span asp-validation-for="Parola" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ParolaTekrar" class="form-label small fw-bold">Parola Tekrar</label>
+                        <input asp-for="ParolaTekrar" type="password" class="form-control" placeholder="********" />
+                        <span asp-validation-for="ParolaTekrar" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary py-2">Hesap Oluştur</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light text-center py-3">
+                <span class="small text-muted">Zaten hesabınız var mı?</span>
+                <a asp-action="Giris" class="small fw-bold text-decoration-none ms-1">Giriş Yap</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
