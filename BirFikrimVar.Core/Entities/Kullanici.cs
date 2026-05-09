@@ -18,6 +18,8 @@ namespace BirFikrimVar.Core.Entities
         public string Soyad { get; set; }
         public bool AktifMi { get; set; } = true;
 
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenEndDate { get; set; }
 
         public ICollection<Fikir> Fikirler { get; set; }
         public ICollection<Degerlendirme> Degerlendirmeler { get; set; }
