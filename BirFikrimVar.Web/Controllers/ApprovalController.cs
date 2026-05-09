@@ -104,13 +104,11 @@ namespace BirFikrimVar.Web.Controllers
                 return RedirectToAction("PreApprovalList");
             }
 
-         
             var errorContent = await response.Content.ReadAsStringAsync();
             string goruntulenecekHata = "Değerlendirme gönderilirken bir hata oluştu.";
 
             try
             {
-           
                 var errorData = System.Text.Json.JsonSerializer.Deserialize<ApiMesajViewModel>(
                     errorContent,
                     new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -118,6 +116,26 @@ namespace BirFikrimVar.Web.Controllers
                 if (errorData != null && !string.IsNullOrWhiteSpace(errorData.Mesaj))
                 {
                     goruntulenecekHata = errorData.Mesaj;
+
+              
+                    if (goruntulenecekHata.Contains("PUT") || goruntulenecekHata.Contains("zaten"))
+                    {
+                        var putResponse = await client.PutAsJsonAsync($"ideas/{model.FikirId}/pre-approval-evaluations/me", payload);
+
+                        if (putResponse.IsSuccessStatusCode)
+                        {
+                            var putData = await putResponse.Content.ReadFromJsonAsync<ApiMesajViewModel>();
+                            TempData["BasariMesaji"] = putData?.Mesaj ?? "Ön onay değerlendirmeniz başarıyla güncellendi.";
+                            return RedirectToAction("PreApprovalList");
+                        }
+                        else
+                        {
+                            var putErrorContent = await putResponse.Content.ReadAsStringAsync();
+                            var putErrorData = System.Text.Json.JsonSerializer.Deserialize<ApiMesajViewModel>(
+                                putErrorContent, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                            goruntulenecekHata = putErrorData?.Mesaj ?? "Güncelleme sırasında hata oluştu.";
+                        }
+                    }
                 }
                 else
                 {
@@ -126,11 +144,11 @@ namespace BirFikrimVar.Web.Controllers
             }
             catch
             {
-               
                 goruntulenecekHata += $" (Sunucu Yanıtı: {errorContent})";
             }
 
             ModelState.AddModelError("", goruntulenecekHata);
+
         
             var fikirResponse = await client.GetAsync($"ideas/{model.FikirId}");
             if (fikirResponse.IsSuccessStatusCode)
