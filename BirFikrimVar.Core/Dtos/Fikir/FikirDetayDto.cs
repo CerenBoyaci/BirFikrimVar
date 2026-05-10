@@ -19,12 +19,19 @@ namespace BirFikrimVar.Core.Dtos.Fikir
         public string BasvuruSahibiAdSoyad { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
         public List<FikirDosyaDto> Dosyalar { get; set; } = new List<FikirDosyaDto>();
+        public List<OnOnayPuanDetayDto> MevcutOnOnayPuanlari { get; set; } = new();
     }
 
     public class FikirDosyaDto
     {
         public int Id { get; set; }
         public string DosyaAdi { get; set; }
+    }
+
+    public class OnOnayPuanDetayDto
+    {
+        public int KategoriId { get; set; }
+        public double Puan { get; set; }
     }
 
 }

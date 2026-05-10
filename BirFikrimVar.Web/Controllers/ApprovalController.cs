@@ -31,20 +31,20 @@ namespace BirFikrimVar.Web.Controllers
             AddTokenToHeader(client);
 
             var response = await client.GetAsync("ideas");
-
             if (response.IsSuccessStatusCode)
             {
                 var model = await response.Content.ReadFromJsonAsync<List<FikirListeViewModel>>();
-
-              
                 if (model != null)
                 {
-                    model = model.Where(f => f.Durum == "OnOnayBekliyor").ToList();
+
+                    model = model.Where(f => f.Durum == "OnOnayBekliyor"
+                                          || f.Durum == "KomisyonOnayiBekliyor"
+                                          || f.Durum == "OnOnayRetli"
+                                          || f.Durum == "KomisyonOnayli"
+                                          || f.Durum == "KomisyonOnayiRetli").ToList();
                 }
-
-                return View(model ?? new List<FikirListeViewModel>());
+                return View(model);
             }
-
             return View(new List<FikirListeViewModel>());
         }
 
@@ -54,31 +54,27 @@ namespace BirFikrimVar.Web.Controllers
             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
             AddTokenToHeader(client);
 
-          
             var response = await client.GetAsync($"ideas/{id}");
-            if (!response.IsSuccessStatusCode)
-                return NotFound("Fikir bulunamadı veya erişim yetkiniz yok.");
+            if (!response.IsSuccessStatusCode) return NotFound();
 
             var fikir = await response.Content.ReadFromJsonAsync<FikirDetayViewModel>();
 
-         
             var categoryResponse = await client.GetAsync("ideas/active-categories");
-            var activeCategories = new List<KategoriViewModel>();
+            var activeCategories = await categoryResponse.Content.ReadFromJsonAsync<List<KategoriViewModel>>();
 
-            if (categoryResponse.IsSuccessStatusCode)
-            {
-                activeCategories = await categoryResponse.Content.ReadFromJsonAsync<List<KategoriViewModel>>();
-            }
-
-          
             var model = new OnOnayDegerlendirmeViewModel
             {
                 FikirId = id,
                 Fikir = fikir,
-                KategoriPuanlari = activeCategories.Select(k => new KategoriPuanViewModel
-                {
-                    KategoriId = k.Id,
-                    KategoriAdi = k.Ad
+                KategoriPuanlari = activeCategories.Select(k => {
+                
+                    var mevcutPuan = fikir.MevcutOnOnayPuanlari?.FirstOrDefault(p => p.KategoriId == k.Id);
+                    return new KategoriPuanViewModel
+                    {
+                        KategoriId = k.Id,
+                        KategoriAdi = k.Ad,
+                        Puan = mevcutPuan != null ? (int)mevcutPuan.Puan : 0 
+                    };
                 }).ToList()
             };
 
@@ -275,6 +271,31 @@ namespace BirFikrimVar.Web.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "OnOnayci,Admin")]
+        public async Task<IActionResult> EvaluateUpdate(OnOnayDegerlendirmeViewModel model)
+        {
+            var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+            AddTokenToHeader(client);
+
+            var payload = new
+            {
+                KategoriPuanlari = model.KategoriPuanlari.Select(k => new { k.KategoriId, k.Puan }).ToList()
+            };
+
+            var response = await client.PutAsJsonAsync($"ideas/{model.FikirId}/pre-approval-evaluations/me", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["BasariMesaji"] = "Ön onay değerlendirmeniz başarıyla güncellendi.";
+                return RedirectToAction("PreApprovalList");
+            }
+
+            var errorContent = await response.Content.ReadAsStringAsync();
+            TempData["HataMesaji"] = "Güncelleme yapılamadı: " + errorContent;
+            return RedirectToAction("Evaluate", new { id = model.FikirId });
         }
     }
 }

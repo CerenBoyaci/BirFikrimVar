@@ -49,6 +49,7 @@ namespace BirFikrimVar.Web.Models
         public string BasvuruSahibiAdSoyad { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
         public List<FikirDosyaViewModel> Dosyalar { get; set; } = new List<FikirDosyaViewModel>();
+        public List<OnOnayPuanDetayViewModel> MevcutOnOnayPuanlari { get; set; } = new();
     }
 
     public class FikirDosyaViewModel
@@ -56,6 +57,11 @@ namespace BirFikrimVar.Web.Models
         public int Id { get; set; }
         public string DosyaAdi { get; set; }
         public string Uzanti { get; set; }
+    }
+    public class OnOnayPuanDetayViewModel
+    {
+        public int KategoriId { get; set; }
+        public double Puan { get; set; }
     }
 }
 

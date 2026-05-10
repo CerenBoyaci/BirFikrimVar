@@ -59,7 +59,7 @@
                 <h5 class="mb-0 text-primary"><i class="bi bi-star-fill me-2"></i>Puanlama (1-10)</h5>
             </div>
             <div class="card-body">
-                <form asp-action="Evaluate" method="post">
+                <form asp-controller="Approval" asp-action="@(Model.KategoriPuanlari.Any(x => x.Puan > 0) ? "EvaluateUpdate" : "Evaluate")" method="post">
                     <input type="hidden" asp-for="FikirId" />
                     <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
@@ -82,7 +82,16 @@
                     </div>
 
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Değerlendirmeyi Tamamla</button>
+                        <button type="submit" class="btn btn-primary">
+                            @if (Model.KategoriPuanlari.Any(x => x.Puan > 0))
+                            {
+                                <i class="bi bi-arrow-repeat"></i> <span>Değerlendirmeyi Güncelle</span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-check-circle"></i> <span>Değerlendirmeyi Tamamla</span>
+                            }
+                        </button>
                         <a asp-action="PreApprovalList" class="btn btn-outline-secondary">Listeye Dön</a>
                     </div>
                 </form>

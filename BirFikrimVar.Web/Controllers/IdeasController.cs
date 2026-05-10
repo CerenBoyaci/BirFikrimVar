@@ -179,5 +179,5 @@ public class IdeasController : Controller
 
         TempData["HataMesaji"] = $"Dosya indirilemedi. API Hatası: {response.StatusCode}";
         return RedirectToAction("Detay", new { id = fikirId });
-    }
+    } 
 }
