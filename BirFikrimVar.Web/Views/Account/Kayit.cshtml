@@ -47,6 +47,7 @@
                                 <div class="form-floating">
                                     <input asp-for="Parola" type="password" class="form-control border-0 bg-light" id="floatingParola" placeholder="Parola">
                                     <label asp-for="Parola" class="text-muted">Parola</label>
+                                    <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password-icon" style="z-index: 10; cursor: pointer;"></i>
                                     <span asp-validation-for="Parola" class="text-danger small"></span>
                                 </div>
                             </div>
@@ -54,6 +55,7 @@
                                 <div class="form-floating">
                                     <input asp-for="ParolaTekrar" type="password" class="form-control border-0 bg-light" id="floatingParolaTekrar" placeholder="Parola Tekrar">
                                     <label asp-for="ParolaTekrar" class="text-muted">Parola Tekrar</label>
+                                    <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password-icon" style="z-index: 10; cursor: pointer;"></i>
                                     <span asp-validation-for="ParolaTekrar" class="text-danger small"></span>
                                 </div>
                             </div>
@@ -87,4 +89,28 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+   
+            const toggleIcons = document.querySelectorAll('.bi-eye-slash, .bi-eye, #toggle-password, .toggle-password-icon');
+
+            toggleIcons.forEach(icon => {
+                icon.addEventListener('click', function () {
+                  
+                    const input = this.parentElement.querySelector('input');
+
+                    if (input.type === "password") {
+                        input.type = "text";
+                        this.classList.remove("bi-eye-slash");
+                        this.classList.add("bi-eye");
+                    } else {
+                        input.type = "password";
+                        this.classList.remove("bi-eye");
+                        this.classList.add("bi-eye-slash");
+                    }
+                });
+            });
+        });
+    </script>
 }
