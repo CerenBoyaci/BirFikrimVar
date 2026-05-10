@@ -58,6 +58,29 @@
                     </div>
                 </div>
 
+                <h5 class="mt-4"><i class="bi bi-paperclip"></i> Ekli Dosyalar</h5>
+                <div class="list-group mb-3">
+                    @if (Model.Dosyalar != null && Model.Dosyalar.Any())
+                    {
+                        @foreach (var dosya in Model.Dosyalar)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-file-earmark"></i> @dosya.DosyaAdi</span>
+                                <a asp-action="DosyaIndir"
+                                   asp-route-fikirId="@Model.Id"
+                                   asp-route-dosyaId="@dosya.Id"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-download"></i> İndir
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="list-group-item text-muted small">Yüklü dosya bulunamadı.</div>
+                    }
+                </div>
+
                 <div class="row mt-3 bg-light p-3 rounded">
                     <div class="col-md-6">
                         <p class="mb-0"><strong>Başvuru Sahibi:</strong> @Model.BasvuruSahibiAdSoyad</p>

@@ -88,7 +88,10 @@ namespace BirFikrimVar.Service.Services
 
         public async Task<FikirDetayDto> GetIdeaDetailAsync(int id, string userId, IList<string> userRoles)
         {
-            var fikir = await _context.Fikirler.Include(f => f.BasvuruSahibi).FirstOrDefaultAsync(f => f.Id == id);
+            var fikir = await _context.Fikirler
+        .Include(f => f.BasvuruSahibi)
+        .Include(f => f.FikirDosyalari) 
+        .FirstOrDefaultAsync(f => f.Id == id);
 
             if (fikir == null) return null;
 
@@ -110,7 +113,12 @@ namespace BirFikrimVar.Service.Services
                 Tehditler = fikir.Tehditler,
                 Durum = fikir.Durum.ToString(),
                 BasvuruSahibiAdSoyad = fikir.BasvuruSahibi.Ad + " " + fikir.BasvuruSahibi.Soyad,
-                OlusturmaTarihi = fikir.OlusturmaTarihi
+                OlusturmaTarihi = fikir.OlusturmaTarihi,
+                Dosyalar = fikir.FikirDosyalari.Select(d => new FikirDosyaDto
+                {
+                    Id = d.Id,
+                    DosyaAdi = d.OrijinalDosyaAdi
+                }).ToList()
             };
         }
 

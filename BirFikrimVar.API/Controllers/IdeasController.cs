@@ -149,6 +149,17 @@ namespace BirFikrimVar.API.Controllers
             };
         }
 
+        [HttpGet("{id}/attachments/{fileId}")]
+        public async Task<IActionResult> DownloadAttachment(int id, int fileId)
+        {
+            var (filePath, fileName, contentType) = await _ideasService.GetAttachmentForDownloadAsync(id, fileId, GetUserId(), GetUserRoles());
+
+            if (filePath == null) return NotFound(new { mesaj = "Dosya bulunamadı veya yetkisiz erişim." });
+
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            return File(fileBytes, contentType, fileName);
+        }
+
         [HttpGet("active-categories")]
         public async Task<IActionResult> GetActiveCategories()
         {
