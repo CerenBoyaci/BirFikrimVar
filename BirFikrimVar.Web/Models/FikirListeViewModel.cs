@@ -48,5 +48,6 @@ namespace BirFikrimVar.Web.Models
         public string Durum { get; set; }
         public string BasvuruSahibiAdSoyad { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
+  
     }
 }

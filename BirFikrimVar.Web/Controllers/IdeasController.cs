@@ -89,4 +89,45 @@ public class IdeasController : Controller
 
         return RedirectToAction("Index");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Detay(int id)
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.GetAsync($"ideas/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            var model = await response.Content.ReadFromJsonAsync<FikirDetayViewModel>();
+            return View(model);
+        }
+
+        TempData["HataMesaji"] = "Fikir detayları alınamadı.";
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Guncelle(FikirDetayViewModel model)
+    {
+     
+        if (model.Durum != "Taslak")
+        {
+            TempData["HataMesaji"] = "Sadece taslak aşamasındaki fikirleri güncelleyebilirsiniz.";
+            return RedirectToAction("Detay", new { id = model.Id });
+        }
+
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.PutAsJsonAsync($"ideas/{model.Id}", model);
+        if (response.IsSuccessStatusCode)
+        {
+            TempData["BasariMesaji"] = "Fikriniz başarıyla güncellendi.";
+            return RedirectToAction("Index");
+        }
+
+        ModelState.AddModelError("", "Güncelleme sırasında bir hata oluştu.");
+        return View("Detay", model);
+    }
 }

@@ -1,0 +1,85 @@
+﻿@model BirFikrimVar.Web.Models.FikirDetayViewModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Fikir Detayı";
+    bool canEdit = Model.Durum == "Taslak";
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi-search"></i> Fikir Detayı / Güncelle</h4>
+            <span class="badge bg-light text-primary fs-6">Durum: @Model.Durum</span>
+        </div>
+        <div class="card-body">
+            <form asp-action="Guncelle" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Durum" />
+
+                <div class="mb-3">
+                    <label asp-for="Baslik" class="form-label fw-bold">Fikir Başlığı</label>
+                    <input asp-for="Baslik" class="form-control" readonly="@(!canEdit)" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Ozet" class="form-label fw-bold">Özet</label>
+                        <textarea asp-for="Ozet" class="form-control" rows="3" readonly="@(!canEdit)"></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Kapsam" class="form-label fw-bold">Kapsam</label>
+                        <textarea asp-for="Kapsam" class="form-control" rows="3" readonly="@(!canEdit)"></textarea>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="YenilikciYan" class="form-label fw-bold">Yenilikçi Yanı</label>
+                    <textarea asp-for="YenilikciYan" class="form-control" rows="2" readonly="@(!canEdit)"></textarea>
+                </div>
+
+                <h5 class="border-bottom pb-2 mt-4 text-secondary">SWOT Analizi</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3 text-success">
+                        <label asp-for="GucluYonler" class="form-label fw-bold">Güçlü Yönler (Strengths)</label>
+                        <textarea asp-for="GucluYonler" class="form-control" readonly="@(!canEdit)"></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3 text-danger">
+                        <label asp-for="ZayifYonler" class="form-label fw-bold">Zayıf Yönler (Weaknesses)</label>
+                        <textarea asp-for="ZayifYonler" class="form-control" readonly="@(!canEdit)"></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3 text-info">
+                        <label asp-for="Firsatlar" class="form-label fw-bold">Fırsatlar (Opportunities)</label>
+                        <textarea asp-for="Firsatlar" class="form-control" readonly="@(!canEdit)"></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3 text-warning">
+                        <label asp-for="Tehditler" class="form-label fw-bold">Tehditler (Threats)</label>
+                        <textarea asp-for="Tehditler" class="form-control" readonly="@(!canEdit)"></textarea>
+                    </div>
+                </div>
+
+                <div class="row mt-3 bg-light p-3 rounded">
+                    <div class="col-md-6">
+                        <p class="mb-0"><strong>Başvuru Sahibi:</strong> @Model.BasvuruSahibiAdSoyad</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-0"><strong>Oluşturma Tarihi:</strong> @Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+
+                    @if (canEdit)
+                    {
+                        <button type="submit" class="btn btn-success px-5">Değişiklikleri Güncelle</button>
+                    }
+                    else
+                    {
+                        <span class="text-muted"><i class="bi bi-lock-fill"></i> Süreç başladığı için düzenleme yapılamaz.</span>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
