@@ -34,6 +34,10 @@
        class="menu-link @(ctrl == "Home" && action == "Index" ? "active" : "")">
         <i class="bi bi-grid-1x2"></i> Dashboard
     </a>
+    <a asp-controller="Account" asp-action="Profil"
+       class="menu-link @(ctrl == "Account" && action == "Profil" ? "active" : "")">
+        <i class="bi bi-grid-1x2"></i> Profil
+    </a>
 
     @if (!User.IsInRole("OnOnayci") && !User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
     {

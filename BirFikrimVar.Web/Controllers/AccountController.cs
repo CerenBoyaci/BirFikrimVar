@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using BirFikrimVar.Web.Models;
+﻿using BirFikrimVar.Web.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 
 namespace BirFikrimVar.Web.Controllers
@@ -57,15 +59,13 @@ namespace BirFikrimVar.Web.Controllers
             {
                 var loginData = await yanit.Content.ReadFromJsonAsync<KimlikYanitViewModel>();
 
-                
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, loginData.Email),
-                    new Claim("Token", loginData.Token),
-                    new Claim("RefreshToken", loginData.RefreshToken)
-                };
+        {
+            new Claim(ClaimTypes.Name, loginData.Email),
+            new Claim("Token", loginData.Token),
+            new Claim("RefreshToken", loginData.RefreshToken)
+        };
 
-             
                 foreach (var rol in loginData.Roller.Split(','))
                 {
                     claims.Add(new Claim(ClaimTypes.Role, rol));
@@ -78,9 +78,70 @@ namespace BirFikrimVar.Web.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
+            else if (yanit.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var hata = await yanit.Content.ReadFromJsonAsync<ApiMesajViewModel>();
 
-            ModelState.AddModelError("", "E-posta veya parola hatalı ya da hesabınız doğrulanmamış.");
+                //doğrulayın içeriyorsa linki tekrar üret
+                if (hata?.Mesaj.Contains("doğrulayın") == true)
+                {
+                    //api ye git
+                    var tokenResponse = await client.GetAsync($"auth/resend-confirmation-token?email={model.Email}");
+
+                    if (tokenResponse.IsSuccessStatusCode)
+                    {
+                        var tokenData = await tokenResponse.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+                        var token = tokenData.GetProperty("token").GetString();
+
+                       
+                        var webUrl = "https://localhost:7112"; 
+                        TempData["DevModeOnayLinki"] = $"{webUrl}/Account/EmailOnayla?email={model.Email}&token={Uri.EscapeDataString(token)}";
+
+                        ModelState.AddModelError("", "E-postanız henüz doğrulanmamış. Sayfanın üstündeki test butonunu kullanarak hesabınızı onaylayabilirsiniz.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Hesabınız doğrulanmamış ve yeni onay linki oluşturulamadı.");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", hata?.Mesaj ?? "E-posta veya parola hatalı.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Giriş işlemi sırasında bir hata oluştu.");
+            }
+
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EpostaDogrula(string email)
+        {
+            var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+
+            //api den yeni token alma
+            var response = await client.GetAsync($"auth/resend-confirmation-token?email={email}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<dynamic>();
+                string token = data.GetProperty("token").GetString();
+
+                //bu token ile doğrulama işlemi yapma
+                var confirmResponse = await client.GetAsync($"auth/confirm-email?email={email}&token={Uri.EscapeDataString(token)}");
+
+                if (confirmResponse.IsSuccessStatusCode)
+                {
+                    TempData["BasariMesaji"] = "E-postanız başarıyla doğrulandı! Şimdi giriş yapabilirsiniz.";
+                    return RedirectToAction("Giris");
+                }
+            }
+
+            TempData["HataMesaji"] = "Doğrulama işlemi sırasında bir hata oluştu.";
+            return RedirectToAction("Giris");
         }
 
         public async Task<IActionResult> Cikis()
@@ -117,6 +178,53 @@ namespace BirFikrimVar.Web.Controllers
             return RedirectToAction("Giris");
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Profil()
+        {
+            var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+
+            //headera token ekledim
+            var token = User.FindFirst("Token")?.Value;
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync("auth/me");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var userDetail = await response.Content.ReadFromJsonAsync<ProfilGuncelleViewModel>();
+                return View(userDetail);
+            }
+
+            TempData["HataMesaji"] = "Profil bilgileri yüklenemedi.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Profil(ProfilGuncelleViewModel model)
+        {
+
+            if (!ModelState.IsValid) return View(model);
+
+            var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+            var token = User.FindFirst("Token")?.Value;
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.PutAsJsonAsync("auth/update-profile", model);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["BasariMesaji"] = "Profiliniz güncellendi.";
+                return RedirectToAction("Profil"); 
+            }
+
+         
+            var errorData = await response.Content.ReadFromJsonAsync<ApiMesajViewModel>();
+            ModelState.AddModelError("", errorData?.Mesaj ?? "Güncelleme sırasında bir hata oluştu.");
+
+            return View(model);
+        }
 
     }
 }

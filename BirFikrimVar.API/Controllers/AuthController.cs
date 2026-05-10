@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using BirFikrimVar.Core.Dtos.Auth;
+﻿using BirFikrimVar.Core.Dtos.Auth;
 using BirFikrimVar.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -157,8 +158,8 @@ namespace BirFikrimVar.API.Controllers
 
            
             user.RefreshToken = newRefreshToken;
-            //kullanıcı 15 günün sonunda sistemden atılmasın diye
-            user.RefreshTokenEndDate = DateTime.UtcNow.AddDays(15); //her başarılı yenilemede süreyi ileri atar
+            //kullanıcı 7 günün sonunda sistemden atılmasın diye
+            user.RefreshTokenEndDate = DateTime.UtcNow.AddDays(7); //her başarılı yenilemede süreyi ileri atar
             await _userManager.UpdateAsync(user);
 
             return Ok(new
@@ -200,6 +201,91 @@ namespace BirFikrimVar.API.Controllers
             );
 
             return token;
+        }
+
+        //kullanıcı giriş yapmak istiyor ama e postası doğrulanmamış o zaman gidip doğrulaması gerekiyor
+        [HttpGet("resend-confirmation-token")]
+        public async Task<IActionResult> ResendConfirmationToken([FromQuery] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return NotFound(new { mesaj = "Kullanıcı bulunamadı." });
+
+            if (user.EmailConfirmed) return BadRequest(new { mesaj = "Bu e-posta zaten doğrulanmış." });
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+           //token ı döndürüyorum
+            return Ok(new
+            {
+                mesaj = "Doğrulama bağlantısı oluşturuldu.",
+                token = token,
+                email = user.Email
+            });
+        }
+
+        //kullanıcının mevcut bilgilerini getirmek için kullandım
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null) return NotFound();
+
+            return Ok(new
+            {
+                user.Ad,
+                user.Soyad,
+                user.Email
+            });
+        }
+
+        [Authorize]
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] ProfilGuncelleDto model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null) return NotFound(new { mesaj = "Kullanıcı bulunamadı." });
+
+            // 1. Temel Bilgileri Güncelle
+            user.Ad = model.Ad;
+            user.Soyad = model.Soyad;
+
+            if (user.Email != model.Email)
+            {
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                if (existingUser != null && existingUser.Id != user.Id)
+                    return BadRequest(new { mesaj = "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor." });
+
+                user.Email = model.Email;
+                user.UserName = model.Email;
+                user.EmailConfirmed = false;
+            }
+
+            // 2. Önce Şifre Değiştirme (Eğer istenmişse)
+            if (!string.IsNullOrWhiteSpace(model.YeniParola))
+            {
+                if (string.IsNullOrWhiteSpace(model.MevcutParola))
+                    return BadRequest(new { mesaj = "Şifre değiştirmek için mevcut şifrenizi girmelisiniz." });
+
+                var passwordResult = await _userManager.ChangePasswordAsync(user, model.MevcutParola, model.YeniParola);
+                if (!passwordResult.Succeeded)
+                {
+                    var error = passwordResult.Errors.FirstOrDefault()?.Description ?? "Şifre değiştirilemedi.";
+                    return BadRequest(new { mesaj = $"Şifre hatası: {error}" });
+                }
+            }
+
+            // 3. Son olarak User objesini güncelle
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+                return Ok(new { mesaj = "Profil bilgileriniz başarıyla güncellendi." });
+
+            return BadRequest(new { mesaj = "Güncelleme sırasında bir hata oluştu." });
         }
     }
 }
