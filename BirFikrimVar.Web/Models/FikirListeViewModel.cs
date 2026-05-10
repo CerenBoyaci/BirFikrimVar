@@ -48,6 +48,7 @@ namespace BirFikrimVar.Web.Models
         public string Durum { get; set; }
         public string BasvuruSahibiAdSoyad { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
+        public int? MevcutKomisyonPuani { get; set; }
         public List<FikirDosyaViewModel> Dosyalar { get; set; } = new List<FikirDosyaViewModel>();
         public List<OnOnayPuanDetayViewModel> MevcutOnOnayPuanlari { get; set; } = new();
     }

@@ -187,15 +187,15 @@ namespace BirFikrimVar.Web.Controllers
             AddTokenToHeader(client);
 
             var response = await client.GetAsync($"ideas/{id}");
-            if (!response.IsSuccessStatusCode)
-                return NotFound("Fikir bulunamadı veya erişim yetkiniz yok.");
+            if (!response.IsSuccessStatusCode) return NotFound();
 
             var fikir = await response.Content.ReadFromJsonAsync<FikirDetayViewModel>();
 
             var model = new KomisyonDegerlendirmeViewModel
             {
                 FikirId = id,
-                Fikir = fikir
+                Fikir = fikir,
+                Puan = fikir.MevcutKomisyonPuani ?? 0
             };
 
             return View(model);
@@ -297,5 +297,7 @@ namespace BirFikrimVar.Web.Controllers
             TempData["HataMesaji"] = "Güncelleme yapılamadı: " + errorContent;
             return RedirectToAction("Evaluate", new { id = model.FikirId });
         }
+
+       
     }
 }

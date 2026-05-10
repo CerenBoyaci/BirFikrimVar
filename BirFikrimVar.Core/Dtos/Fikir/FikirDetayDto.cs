@@ -20,6 +20,7 @@ namespace BirFikrimVar.Core.Dtos.Fikir
         public DateTime OlusturmaTarihi { get; set; }
         public List<FikirDosyaDto> Dosyalar { get; set; } = new List<FikirDosyaDto>();
         public List<OnOnayPuanDetayDto> MevcutOnOnayPuanlari { get; set; } = new();
+        public int? MevcutKomisyonPuani { get; set; }
     }
 
     public class FikirDosyaDto

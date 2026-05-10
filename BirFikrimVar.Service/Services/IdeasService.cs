@@ -113,6 +113,9 @@ namespace BirFikrimVar.Service.Services
                     Puan = d.Puan
                 }).ToListAsync();
 
+            var komisyonPuani = await _context.Set<KomisyonDegerlendirmesi>()
+    .FirstOrDefaultAsync(d => d.FikirId == id && d.DegerlendiriciId == userId);
+
             return new FikirDetayDto
             {
                 Id = fikir.Id,
@@ -133,7 +136,8 @@ namespace BirFikrimVar.Service.Services
                     DosyaAdi = d.OrijinalDosyaAdi
                 }).ToList(),
 
-                MevcutOnOnayPuanlari = puanlar
+                MevcutOnOnayPuanlari = puanlar,
+                MevcutKomisyonPuani = komisyonPuani?.Puan
             };
         }
 
@@ -321,46 +325,33 @@ namespace BirFikrimVar.Service.Services
             if (fikir.Durum != FikirDurumu.KomisyonOnayiBekliyor)
                 return "Fikir şu an komisyon değerlendirmesine açık değil.";
 
-            var mevcutPuanSayisi = await _context.Set<KomisyonDegerlendirmesi>()
-        .CountAsync(d => d.FikirId == fikirId);
-
-            if (mevcutPuanSayisi >= 3)
-                return "Bu fikir için maksimum komisyon değerlendirme sayısına (3) zaten ulaşıldı.";
-
+   
             var mevcutMu = await _context.Set<KomisyonDegerlendirmesi>()
                 .AnyAsync(d => d.FikirId == fikirId && d.DegerlendiriciId == userId);
 
             if (mevcutMu) return "Bu fikre zaten puan verdiniz. Güncellemek için PUT kullanın.";
 
+            var toplamPuanSayisi = await _context.Set<KomisyonDegerlendirmesi>().CountAsync(d => d.FikirId == fikirId);
+            if (toplamPuanSayisi >= 3) return "Bu fikir için 3 kişilik komisyon kotası dolmuştur.";
+
+         
             _context.Set<KomisyonDegerlendirmesi>().Add(new KomisyonDegerlendirmesi
             {
                 FikirId = fikirId,
                 DegerlendiriciId = userId,
-                Puan = model.Puan
+                Puan = model.Puan,
+                DegerlendirmeTarihi = DateTime.UtcNow
             });
 
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
 
-          
             var komisyonPuanlari = await _context.Set<KomisyonDegerlendirmesi>().Where(d => d.FikirId == fikirId).ToListAsync();
-
             if (komisyonPuanlari.Count == 3)
             {
                 double ortalama = komisyonPuanlari.Average(d => d.Puan);
-                var eskiDurum = fikir.Durum;
-
                 fikir.Durum = ortalama >= 8 ? FikirDurumu.KomisyonOnayli : FikirDurumu.KomisyonOnayiRetli;
                 fikir.GuncellemeTarihi = DateTime.UtcNow;
 
-                _context.FikirDurumGecmisleri.Add(new FikirDurumGecmisi
-                {
-                    FikirId = fikir.Id,
-                    EskiDurum = eskiDurum,
-                    YeniDurum = fikir.Durum,
-                    IslemYapanKullaniciId = userId,
-                    IslemTarihi = DateTime.UtcNow,
-                    Aciklama = $"3 üyenin puanlaması tamamlandı. Komisyon Ortalaması: {ortalama:F2}"
-                });
                 await _context.SaveChangesAsync();
                 return "KomisyonTamamlandi";
             }
