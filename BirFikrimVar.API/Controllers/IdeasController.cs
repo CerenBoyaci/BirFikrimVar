@@ -160,6 +160,19 @@ namespace BirFikrimVar.API.Controllers
             return File(fileBytes, contentType, fileName);
         }
 
+        [HttpDelete("{id}/attachments/{fileId}")]
+        public async Task<IActionResult> DeleteAttachment(int id, int fileId)
+        {
+            var sonuc = await _ideasService.DeleteIdeaAttachmentAsync(id, fileId, GetUserId());
+            return sonuc switch
+            {
+                "Bulunamadi" => NotFound(new { mesaj = "Fikir bulunamadı." }),
+                "Yetkisiz" => Forbid(),
+                "Basarili" => Ok(new { mesaj = "Dosya başarıyla silindi." }),
+                _ => BadRequest(new { mesaj = sonuc })
+            };
+        }
+
         [HttpGet("active-categories")]
         public async Task<IActionResult> GetActiveCategories()
         {

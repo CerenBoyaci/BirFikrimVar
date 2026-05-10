@@ -13,7 +13,8 @@
             <span class="badge bg-light text-primary fs-6">Durum: @Model.Durum</span>
         </div>
         <div class="card-body">
-            <form asp-action="Guncelle" method="post">
+     
+            <form asp-action="Guncelle" method="post" enctype="multipart/form-data">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="Durum" />
 
@@ -58,20 +59,28 @@
                     </div>
                 </div>
 
-                <h5 class="mt-4"><i class="bi bi-paperclip"></i> Ekli Dosyalar</h5>
+          
+                <h5 class="mt-4 border-bottom pb-2 text-secondary"><i class="bi bi-paperclip"></i> Ekli Dosyalar</h5>
                 <div class="list-group mb-3">
                     @if (Model.Dosyalar != null && Model.Dosyalar.Any())
                     {
                         @foreach (var dosya in Model.Dosyalar)
                         {
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="list-group-item d-flex justify-content-between align-items-center bg-light shadow-sm mb-2">
                                 <span><i class="bi bi-file-earmark"></i> @dosya.DosyaAdi</span>
-                                <a asp-action="DosyaIndir"
-                                   asp-route-fikirId="@Model.Id"
-                                   asp-route-dosyaId="@dosya.Id"
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-download"></i> İndir
-                                </a>
+                                <div class="btn-group">
+                                    <a asp-action="DosyaIndir" asp-route-fikirId="@Model.Id" asp-route-dosyaId="@dosya.Id" class="btn btn-sm btn-info text-white">
+                                        <i class="bi bi-download"></i> İndir
+                                    </a>
+
+                                    @if (canEdit)
+                                    {
+                                        <button type="submit" asp-action="DosyaSil" asp-route-fikirId="@Model.Id" asp-route-dosyaId="@dosya.Id"
+                                                class="btn btn-sm btn-danger" onclick="return confirm('Dosyayı silmek istediğinize emin misiniz?')">
+                                            <i class="bi bi-trash"></i> Sil
+                                        </button>
+                                    }
+                                </div>
                             </div>
                         }
                     }
@@ -80,6 +89,16 @@
                         <div class="list-group-item text-muted small">Yüklü dosya bulunamadı.</div>
                     }
                 </div>
+
+        
+                @if (canEdit)
+                {
+                    <div class="card bg-light border p-3 mb-3" style="border-style: dashed !important;">
+                        <label class="form-label fw-bold"><i class="bi bi-plus-lg"></i> Yeni Dosya Ekle</label>
+                        <input type="file" name="YeniDosyalar" class="form-control" multiple />
+                        <small class="text-muted">Mevcut dosyalara ek olarak yüklenir. PDF, Görsel, Word (Max 5MB)</small>
+                    </div>
+                }
 
                 <div class="row mt-3 bg-light p-3 rounded">
                     <div class="col-md-6">
@@ -95,7 +114,7 @@
 
                     @if (canEdit)
                     {
-                        <button type="submit" class="btn btn-success px-5">Değişiklikleri Güncelle</button>
+                        <button type="submit" class="btn btn-success px-5">Değişiklikleri Kaydet</button>
                     }
                     else
                     {

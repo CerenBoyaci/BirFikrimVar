@@ -108,27 +108,50 @@ public class IdeasController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Guncelle(FikirDetayViewModel model)
+    public async Task<IActionResult> Guncelle(FikirDetayViewModel model, List<IFormFile> YeniDosyalar)
     {
-     
-        if (model.Durum != "Taslak")
-        {
-            TempData["HataMesaji"] = "Sadece taslak aşamasındaki fikirleri güncelleyebilirsiniz.";
-            return RedirectToAction("Detay", new { id = model.Id });
-        }
+        if (model.Durum != "Taslak") return RedirectToAction("Detay", new { id = model.Id });
 
         var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
         AddTokenToHeader(client);
 
+        //metindekileri güncelleme
         var response = await client.PutAsJsonAsync($"ideas/{model.Id}", model);
+
         if (response.IsSuccessStatusCode)
         {
-            TempData["BasariMesaji"] = "Fikriniz başarıyla güncellendi.";
-            return RedirectToAction("Index");
-        }
+            //yeni dosyalar var ise ekleme
+            if (YeniDosyalar != null && YeniDosyalar.Any())
+            {
+                var content = new MultipartFormDataContent();
+                foreach (var file in YeniDosyalar)
+                {
+                    var fileContent = new StreamContent(file.OpenReadStream());
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                    content.Add(fileContent, "files", file.FileName);
+                }
+                await client.PostAsync($"ideas/{model.Id}/attachments", content);
+            }
 
-        ModelState.AddModelError("", "Güncelleme sırasında bir hata oluştu.");
+            TempData["BasariMesaji"] = "Fikir ve yeni dosyalar güncellendi.";
+            return RedirectToAction("Detay", new { id = model.Id });
+        }
         return View("Detay", model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DosyaSil(int fikirId, int dosyaId)
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.DeleteAsync($"ideas/{fikirId}/attachments/{dosyaId}");
+        if (response.IsSuccessStatusCode)
+            TempData["BasariMesaji"] = "Dosya başarıyla silindi.";
+        else
+            TempData["HataMesaji"] = "Dosya silinemedi.";
+
+        return RedirectToAction("Detay", new { id = fikirId });
     }
 
     [HttpGet]

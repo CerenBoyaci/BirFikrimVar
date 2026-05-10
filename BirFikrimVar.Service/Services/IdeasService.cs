@@ -453,5 +453,31 @@ namespace BirFikrimVar.Service.Services
             var ext = Path.GetExtension(path).ToLowerInvariant();
             return types.ContainsKey(ext) ? types[ext] : "application/octet-stream";
         }
+
+
+
+
+        public async Task<string> DeleteIdeaAttachmentAsync(int fikirId, int fileId, string userId)
+        {
+            var fikir = await _context.Fikirler.FindAsync(fikirId);
+            if (fikir == null) return "Bulunamadi";
+            if (fikir.BasvuruSahibiId != userId) return "Yetkisiz";
+            if (fikir.Durum != FikirDurumu.Taslak) return "Sadece taslak durumundaki fikirlerin dosyaları silinebilir.";
+
+            var dosya = await _context.Set<FikirDosyasi>().FirstOrDefaultAsync(d => d.Id == fileId && d.FikirId == fikirId);
+            if (dosya == null) return "DosyaBulunamadi";
+
+          
+            _storageService.DeleteFile(dosya.KayitliDosyaYolu);
+
+       
+            _context.Set<FikirDosyasi>().Remove(dosya);
+            await _context.SaveChangesAsync();
+
+            return "Basarili";
+        }
+
     }
+
+
 }
