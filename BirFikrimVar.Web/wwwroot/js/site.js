@@ -1,7 +1,7 @@
 ﻿(function () {
     'use strict';
 
-    // ===== Sidebar toggle (mobil) =====
+    // ── Sidebar toggle (mobil) ──────────────────
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
     var toggleBtn = document.getElementById('sidebarToggle');
@@ -9,31 +9,33 @@
     function openSidebar() {
         if (!sidebar) return;
         sidebar.classList.add('open');
-        if (overlay) overlay.classList.add('open');
+        overlay && overlay.classList.add('open');
         document.body.style.overflow = 'hidden';
     }
 
     function closeSidebar() {
         if (!sidebar) return;
         sidebar.classList.remove('open');
-        if (overlay) overlay.classList.remove('open');
+        overlay && overlay.classList.remove('open');
         document.body.style.overflow = '';
     }
 
     if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
     if (overlay) overlay.addEventListener('click', closeSidebar);
 
-    // ===== Aktif menü linkini URL'den bul =====
-    var currentPath = window.location.pathname.toLowerCase();
+    // ── Aktif menü URL'den ──────────────────────
+    var path = window.location.pathname.toLowerCase();
     document.querySelectorAll('.menu-link').forEach(function (link) {
-        var href = link.getAttribute('href');
-        if (!href) return;
-        if (href !== '/' && currentPath.indexOf(href.toLowerCase()) === 0) {
+        var href = (link.getAttribute('href') || '').toLowerCase();
+        if (!href || href === '#') return;
+        if (href !== '/' && path.startsWith(href)) {
+            link.classList.add('active');
+        } else if (href === '/' && path === '/') {
             link.classList.add('active');
         }
     });
 
-    // ===== Puanlama ortalama hesaplama =====
+    // ── Puanlama ortalama ───────────────────────
     function initPuanlama() {
         var inputs = document.querySelectorAll('.puan-input');
         var display = document.querySelector('.puan-ortalama-val');

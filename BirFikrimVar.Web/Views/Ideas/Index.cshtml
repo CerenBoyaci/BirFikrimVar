@@ -1,55 +1,95 @@
 ﻿@model IEnumerable<BirFikrimVar.Web.Models.FikirListeViewModel>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3><i class="bi bi-list-task"></i> Fikirlerim</h3>
-    <a asp-action="Olustur" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Yeni Fikir Oluştur</a>
-</div>
-
-<div class="table-responsive">
-    <table class="table table-hover shadow-sm bg-white">
-        <thead class="table-dark">
-            <tr>
-                <th>Başlık</th>
-                <th>Tarih</th>
-                <th>Durum</th>
-                <th>İşlemler</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Baslik</td>
-                    <td>@item.OlusturmaTarihi.ToShortDateString()</td>
-                    <td>
-                        <span class="badge @GetBadgeClass(item.Durum)">@item.Durum</span>
-                    </td>
-                    <td>
-                        @if (item.Durum == "Taslak")
-                        {
-                            <form asp-action="OnOnayaGonder" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-sm btn-outline-success">
-                                    <i class="bi bi-send"></i> Ön Onaya Gönder
-                                </button>
-                            </form>
-                        }
-                        <a asp-action="Detay" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-eye"></i> Detay
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-@functions {
-    string GetBadgeClass(string durum) => durum switch
-    {
-        "Taslak" => "bg-secondary",
-        "OnOnayBekliyor" => "bg-warning text-dark",
-        "KomisyonOnayiBekliyor" => "bg-info text-dark",
-        "KomisyonOnayli" => "bg-success",
-        _ => "bg-danger"
-    };
+@{
+    ViewData["Title"] = "Fikirlerim";
+    ViewData["PageTitle"] = "Fikirlerim";
 }
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-header-title">
+            <i class="bi bi-collection me-2" style="color:#9ca3af;"></i>Fikirlerim
+        </span>
+        <a asp-action="Olustur"
+           class="btn-table"
+           style="color:#15803d; border-color:#d1fae5; background:#f0fdf4;">
+            <i class="bi bi-plus me-1"></i>Yeni Fikir
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Başlık</th>
+                    <th style="width:110px;">Tarih</th>
+                    <th style="width:160px;">Durum</th>
+                    <th style="width:160px; text-align:right;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var (badgeClass, badgeLabel) = item.Durum switch
+                    {
+                        "Taslak" => ("badge-taslak", "Taslak"),
+                        "OnOnayBekliyor" => ("badge-on-bekliyor", "Ön Onay Bekliyor"),
+                        "OnOnayRetli" => ("badge-on-retli", "Ön Onay Retli"),
+                        "KomisyonOnayiBekliyor" => ("badge-kom-bekliyor", "Komisyon Bekliyor"),
+                        "KomisyonOnayli" => ("badge-kom-onaylı", "Komisyon Onaylı"),
+                        "KomisyonOnayiRetli" => ("badge-kom-retli", "Komisyon Retli"),
+                        _ => ("badge-taslak", item.Durum)
+                    };
+
+                    <tr>
+                        <td class="td-primary">@item.Baslik</td>
+                        <td class="td-muted">@item.OlusturmaTarihi.ToShortDateString()</td>
+                        <td><span class="badge @badgeClass">@badgeLabel</span></td>
+                        <td style="text-align:right;">
+                            <div style="display:flex; gap:6px; justify-content:flex-end;">
+                                @if (item.Durum == "Taslak")
+                                {
+                                    <form asp-action="OnOnayaGonder"
+                                          asp-route-id="@item.Id"
+                                          method="post"
+                                          style="display:inline;">
+                                        <button type="submit"
+                                                class="btn-table"
+                                                style="color:#15803d; border-color:#d1fae5; background:#f0fdf4;">
+                                            <i class="bi bi-send me-1"></i>Ön Onaya Gönder
+                                        </button>
+                                    </form>
+                                }
+                                <a asp-action="Detay"
+                                   asp-route-id="@item.Id"
+                                   class="btn-table">
+                                    <i class="bi bi-eye me-1"></i>Detay
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div style="padding:48px 20px; text-align:center;">
+            <div style="width:44px; height:44px; border-radius:10px; background:#fff7ed; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                <i class="bi bi-lightbulb" style="font-size:20px; color:#f97316;"></i>
+            </div>
+            <div style="font-size:13.5px; font-weight:600; color:#111827; margin-bottom:4px;">
+                Henüz fikir eklemediniz
+            </div>
+            <div style="font-size:12.5px; color:#9ca3af; margin-bottom:16px;">
+                İlk fikrinizi ekleyerek süreci başlatın.
+            </div>
+            <a asp-action="Olustur"
+               class="btn-table"
+               style="color:#15803d; border-color:#d1fae5; background:#f0fdf4; display:inline-flex; align-items:center; gap:5px;">
+                <i class="bi bi-plus"></i>Yeni Fikir Oluştur
+            </a>
+        </div>
+    }
+</div>

@@ -1,12 +1,381 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Ana Sayfa";
+    ViewData["PageTitle"] = "Ana Sayfa";
+    Layout = "_Layout";
 }
 
-<div class="text-center">
-    <!-- Resim Buraya Eklendi -->
-    <div class="mb-4">
-        <img src="~/imgs/BirFikrimVar.jpeg" alt="Bir Fikrim Var Logo" class="img-fluid" style="max-width: 500px;" />
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+        <img src="~/imgs/BirFikrimVar.png"
+             alt="Bir Fikrim Var"
+             style="width:42px; height:42px; border-radius:10px; object-fit:cover; border:1px solid #f0f0f0;" />
+        <div>
+            <div style="font-size:16px; font-weight:800; color:#111827; letter-spacing:-0.02em;">
+                Hoş geldin, @User.Identity?.Name 👋
+            </div>
+            <div style="font-size:12px; color:#9ca3af; margin-top:1px;">
+                İşte fikir sisteminin genel durumu
+            </div>
+        </div>
     </div>
 
-    
-</div>
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <div class="stat-icon si-orange">💡</div>
+                <span class="stat-trend up">+6</span>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-value">48</div>
+                <div class="stat-label">Toplam Fikir</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <div class="stat-icon si-blue">⏳</div>
+                <span class="stat-trend warn">Bekliyor</span>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Ön Onay Bekleyen</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <div class="stat-icon si-violet">📋</div>
+                <span class="stat-trend warn">Bekliyor</span>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-value">7</div>
+                <div class="stat-label">Komisyon Bekleyen</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <div class="stat-icon si-green">✅</div>
+                <span class="stat-trend up">%48</span>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-value">23</div>
+                <div class="stat-label">Onaylanan Fikirler</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-header">
+            <span class="card-header-title">Son Fikirler</span>
+            <a asp-controller="Ideas" asp-action="Index" class="btn-table">Tümünü gör →</a>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Başlık</th>
+                    <th>Kategori</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="td-primary">Üretim sürecinde enerji tasarrufu</td>
+                    <td class="td-muted">Operasyon</td>
+                    <td class="td-muted">08.05.25</td>
+                    <td><span class="badge badge-on-bekliyor">Ön Onay Bekliyor</span></td>
+                    <td><a href="#" class="btn-table">Detay</a></td>
+                </tr>
+                <tr>
+                    <td class="td-primary">Müşteri geri bildirim sistemi</td>
+                    <td class="td-muted">Müşteri Deneyimi</td>
+                    <td class="td-muted">06.05.25</td>
+                    <td><span class="badge badge-kom-onaylı">Komisyon Onaylı</span></td>
+                    <td><a href="#" class="btn-table">Detay</a></td>
+                </tr>
+                <tr>
+                    <td class="td-primary">Depo otomasyon önerisi</td>
+                    <td class="td-muted">Lojistik</td>
+                    <td class="td-muted">01.05.25</td>
+                    <td><span class="badge badge-taslak">Taslak</span></td>
+                    <td><a href="#" class="btn-table">Detay</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="landing-page">
+        <canvas id="bgCanvas"></canvas>
+
+        <div class="landing-inner">
+
+            <div class="landing-logo-wrap">
+                <img src="~/imgs/BirFikrimVar.png"
+                     alt="Bir Fikrim Var Logo"
+                     class="landing-logo" />
+            </div>
+
+            <h1 class="landing-title">Bir Fikrim Var</h1>
+            <p class="landing-sub">
+                Hayallerinizi gerçeğe dönüştürün.<br />
+                Fikirlerinizi paylaşın, değerlendirin, hayata geçirin.
+            </p>
+
+            <div class="landing-actions">
+                <a asp-controller="Account" asp-action="Giris" class="landing-btn-primary">
+                    Giriş Yap
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </a>
+                <a asp-controller="Account" asp-action="Kayit" class="landing-btn-secondary">
+                    Kayıt Ol
+                </a>
+            </div>
+
+            <div class="landing-features">
+                <div class="landing-feature">
+                   
+                    <span>Fikir Üret</span>
+                </div>
+                <div class="landing-feature-sep"></div>
+                <div class="landing-feature">
+               
+                    <span>Onay Süreci</span>
+                </div>
+                <div class="landing-feature-sep"></div>
+                <div class="landing-feature">
+               
+                    <span>Hayata Geçir</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        body {
+            overflow: hidden !important;
+        }
+
+        .landing-page {
+            position: fixed;
+            inset: 0;
+            background: #080b12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #bgCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .landing-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 32px 24px;
+            max-width: 520px;
+        }
+
+        .landing-logo-wrap {
+            width: 280px;
+            height: 280px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            margin-bottom: 32px;
+            background: radial-gradient(circle, rgba(249,115,22,0.1) 0%, rgba(0,0,0,0) 75%);
+            border: 1px solid rgba(249,115,22,0.22);
+            box-shadow: 0 0 0 12px rgba(249,115,22,0.05), 0 0 0 28px rgba(249,115,22,0.025);
+            animation: pulse-ring 3.5s ease-in-out infinite;
+        }
+
+        .landing-logo {
+            width: 250%;
+            height: 250%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 28px rgba(249,115,22,0.4));
+            position: relative;
+            top: 20px;
+            left: 10px;
+        }
+
+        @@keyframes pulse-ring {
+            0%, 100% {
+                box-shadow: 0 0 0 10px rgba(249,115,22,0.05), 0 0 0 24px rgba(249,115,22,0.025);
+            }
+
+            50% {
+                box-shadow: 0 0 0 14px rgba(249,115,22,0.09), 0 0 0 32px rgba(249,115,22,0.04);
+            }
+        }
+
+        .landing-title {
+            font-size: 40px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.03em;
+            margin: 0 0 12px;
+            line-height: 1.1;
+        }
+
+        .landing-sub {
+            font-size: 15px;
+            color: rgba(255,255,255,0.42);
+            line-height: 1.7;
+            margin: 0 0 36px;
+            max-width: 360px;
+        }
+
+        .landing-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 44px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .landing-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 30px;
+            background: #f97316;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: -0.01em;
+            transition: background 0.15s, transform 0.15s;
+        }
+
+            .landing-btn-primary:hover {
+                background: #ea6c0a;
+                color: #fff;
+                transform: translateY(-1px);
+            }
+
+        .landing-btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            padding: 13px 30px;
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.65);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+        }
+
+            .landing-btn-secondary:hover {
+                background: rgba(255,255,255,0.11);
+                color: #fff;
+            }
+
+        .landing-features {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .landing-feature {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12.5px;
+            color: rgba(255,255,255,0.3);
+            font-weight: 500;
+        }
+
+        .lf-icon {
+            font-size: 14px;
+        }
+
+        .landing-feature-sep {
+            width: 1px;
+            height: 14px;
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+
+    <script>
+        (function () {
+            var canvas = document.getElementById('bgCanvas');
+            var ctx = canvas.getContext('2d');
+            var particles = [];
+            var W, H;
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+
+            function rand(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            function createParticle() {
+                return {
+                    x: rand(0, W),
+                    y: rand(0, H),
+                    r: rand(0.8, 2.2),
+                    vx: rand(-0.12, 0.12),
+                    vy: rand(-0.28, -0.06),
+                    alpha: rand(0.15, 0.5)
+                };
+            }
+
+            function init() {
+                resize();
+                particles = [];
+                for (var i = 0; i < 120; i++) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+
+                particles.forEach(function (p) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(249,115,22,' + p.alpha + ')';
+                    ctx.fill();
+
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.y < -4) {
+                        p.y = H + 4;
+                        p.x = rand(0, W);
+                    }
+                    if (p.x < -4) p.x = W + 4;
+                    if (p.x > W + 4) p.x = -4;
+                });
+
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            init();
+            draw();
+        }());
+    </script>
+}

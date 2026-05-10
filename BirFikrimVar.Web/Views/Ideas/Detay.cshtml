@@ -3,125 +3,244 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Fikir Detayı";
+    ViewData["PageTitle"] = "Fikir Detayı";
+
     bool canEdit = Model.Durum == "Taslak";
+
+    var (badgeClass, badgeLabel) = Model.Durum switch
+    {
+        "Taslak" => ("badge-taslak", "Taslak"),
+        "OnOnayBekliyor" => ("badge-on-bekliyor", "Ön Onay Bekliyor"),
+        "OnOnayRetli" => ("badge-on-retli", "Ön Onay Retli"),
+        "KomisyonOnayiBekliyor" => ("badge-kom-bekliyor", "Komisyon Bekliyor"),
+        "KomisyonOnayli" => ("badge-kom-onaylı", "Komisyon Onaylı"),
+        "KomisyonOnayiRetli" => ("badge-kom-retli", "Komisyon Retli"),
+        _ => ("badge-taslak", Model.Durum)
+    };
+
+    var readonlyStyle = "background:#fafafa; color:#6b7280;";
 }
 
-<div class="container mt-4">
-    <div class="card shadow border-0">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0"><i class="bi bi-search"></i> Fikir Detayı / Güncelle</h4>
-            <span class="badge bg-light text-primary fs-6">Durum: @Model.Durum</span>
+<form asp-action="Guncelle" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Durum" />
+
+    <div style="display:flex; flex-direction:column; gap:14px;">
+
+        @* Üst bilgi şeridi *@
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span class="badge @badgeClass">@badgeLabel</span>
+                <span style="font-size:12px; color:#9ca3af;">
+                    @Model.BasvuruSahibiAdSoyad — @Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")
+                </span>
+            </div>
+            @if (!canEdit)
+            {
+                <span style="font-size:12px; color:#9ca3af; display:flex; align-items:center; gap:5px;">
+                    <i class="bi bi-lock" style="font-size:13px;"></i>
+                    Süreç başladığı için düzenleme yapılamaz.
+                </span>
+            }
         </div>
-        <div class="card-body">
-     
-            <form asp-action="Guncelle" method="post" enctype="multipart/form-data">
-                <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="Durum" />
 
-                <div class="mb-3">
-                    <label asp-for="Baslik" class="form-label fw-bold">Fikir Başlığı</label>
-                    <input asp-for="Baslik" class="form-control" readonly="@(!canEdit)" />
-                </div>
+        @* Temel bilgiler *@
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-lightbulb me-2" style="color:#9ca3af;"></i>Fikir Bilgileri
+                </span>
+            </div>
+            <div class="card-body" style="display:flex; flex-direction:column; gap:14px;">
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Ozet" class="form-label fw-bold">Özet</label>
-                        <textarea asp-for="Ozet" class="form-control" rows="3" readonly="@(!canEdit)"></textarea>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Kapsam" class="form-label fw-bold">Kapsam</label>
-                        <textarea asp-for="Kapsam" class="form-control" rows="3" readonly="@(!canEdit)"></textarea>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="YenilikciYan" class="form-label fw-bold">Yenilikçi Yanı</label>
-                    <textarea asp-for="YenilikciYan" class="form-control" rows="2" readonly="@(!canEdit)"></textarea>
-                </div>
-
-                <h5 class="border-bottom pb-2 mt-4 text-secondary">SWOT Analizi</h5>
-                <div class="row">
-                    <div class="col-md-6 mb-3 text-success">
-                        <label asp-for="GucluYonler" class="form-label fw-bold">Güçlü Yönler (Strengths)</label>
-                        <textarea asp-for="GucluYonler" class="form-control" readonly="@(!canEdit)"></textarea>
-                    </div>
-                    <div class="col-md-6 mb-3 text-danger">
-                        <label asp-for="ZayifYonler" class="form-label fw-bold">Zayıf Yönler (Weaknesses)</label>
-                        <textarea asp-for="ZayifYonler" class="form-control" readonly="@(!canEdit)"></textarea>
-                    </div>
-                    <div class="col-md-6 mb-3 text-info">
-                        <label asp-for="Firsatlar" class="form-label fw-bold">Fırsatlar (Opportunities)</label>
-                        <textarea asp-for="Firsatlar" class="form-control" readonly="@(!canEdit)"></textarea>
-                    </div>
-                    <div class="col-md-6 mb-3 text-warning">
-                        <label asp-for="Tehditler" class="form-label fw-bold">Tehditler (Threats)</label>
-                        <textarea asp-for="Tehditler" class="form-control" readonly="@(!canEdit)"></textarea>
-                    </div>
-                </div>
-
-          
-                <h5 class="mt-4 border-bottom pb-2 text-secondary"><i class="bi bi-paperclip"></i> Ekli Dosyalar</h5>
-                <div class="list-group mb-3">
-                    @if (Model.Dosyalar != null && Model.Dosyalar.Any())
+                <div>
+                    <label asp-for="Baslik" class="form-label">Fikir Başlığı</label>
+                    @if (canEdit)
                     {
-                        @foreach (var dosya in Model.Dosyalar)
-                        {
-                            <div class="list-group-item d-flex justify-content-between align-items-center bg-light shadow-sm mb-2">
-                                <span><i class="bi bi-file-earmark"></i> @dosya.DosyaAdi</span>
-                                <div class="btn-group">
-                                    <a asp-action="DosyaIndir" asp-route-fikirId="@Model.Id" asp-route-dosyaId="@dosya.Id" class="btn btn-sm btn-info text-white">
-                                        <i class="bi bi-download"></i> İndir
-                                    </a>
-
-                                    @if (canEdit)
-                                    {
-                                        <button type="submit" asp-action="DosyaSil" asp-route-fikirId="@Model.Id" asp-route-dosyaId="@dosya.Id"
-                                                class="btn btn-sm btn-danger" onclick="return confirm('Dosyayı silmek istediğinize emin misiniz?')">
-                                            <i class="bi bi-trash"></i> Sil
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                        }
+                        <input asp-for="Baslik" class="form-control" />
                     }
                     else
                     {
-                        <div class="list-group-item text-muted small">Yüklü dosya bulunamadı.</div>
+                        <input asp-for="Baslik" class="form-control" readonly style="@readonlyStyle" />
                     }
                 </div>
 
-        
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <label asp-for="Ozet" class="form-label">Özet</label>
+                        @if (canEdit)
+                        {
+                            <textarea asp-for="Ozet" class="form-control" rows="4"></textarea>
+                        }
+                        else
+                        {
+                            <textarea asp-for="Ozet" class="form-control" rows="4" readonly style="@readonlyStyle"></textarea>
+                        }
+                    </div>
+                    <div>
+                        <label asp-for="Kapsam" class="form-label">Kapsam</label>
+                        @if (canEdit)
+                        {
+                            <textarea asp-for="Kapsam" class="form-control" rows="4"></textarea>
+                        }
+                        else
+                        {
+                            <textarea asp-for="Kapsam" class="form-control" rows="4" readonly style="@readonlyStyle"></textarea>
+                        }
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="YenilikciYan" class="form-label">Yenilikçi Yanı</label>
+                    @if (canEdit)
+                    {
+                        <textarea asp-for="YenilikciYan" class="form-control" rows="3"></textarea>
+                    }
+                    else
+                    {
+                        <textarea asp-for="YenilikciYan" class="form-control" rows="3" readonly style="@readonlyStyle"></textarea>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        @* SWOT *@
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-grid-2x2 me-2" style="color:#9ca3af;"></i>SWOT Analizi
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="swot-grid">
+                    <div class="swot-card swot-guclu">
+                        <div class="swot-label">Güçlü Yönler</div>
+                        @if (canEdit)
+                        {
+                            <textarea asp-for="GucluYonler" class="form-control" rows="4"></textarea>
+                        }
+                        else
+                        {
+                            <textarea asp-for="GucluYonler" class="form-control" rows="4" readonly style="@readonlyStyle"></textarea>
+                        }
+                    </div>
+                    <div class="swot-card swot-zayif">
+                        <div class="swot-label">Zayıf Yönler</div>
+                        @if (canEdit)
+                        {
+                            <textarea asp-for="ZayifYonler" class="form-control" rows="4"></textarea>
+                        }
+                        else
+                        {
+                            <textarea asp-for="ZayifYonler" class="form-control" rows="4" readonly style="@readonlyStyle"></textarea>
+                        }
+                    </div>
+                    <div class="swot-card swot-firsatlar">
+                        <div class="swot-label">Fırsatlar</div>
+                        @if (canEdit)
+                        {
+                            <textarea asp-for="Firsatlar" class="form-control" rows="4"></textarea>
+                        }
+                        else
+                        {
+                            <textarea asp-for="Firsatlar" class="form-control" rows="4" readonly style="@readonlyStyle"></textarea>
+                        }
+                    </div>
+                    <div class="swot-card swot-tehditler">
+                        <div class="swot-label">Tehditler</div>
+                        @if (canEdit)
+                        {
+                            <textarea asp-for="Tehditler" class="form-control" rows="4"></textarea>
+                        }
+                        else
+                        {
+                            <textarea asp-for="Tehditler" class="form-control" rows="4" readonly style="@readonlyStyle"></textarea>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Ekli dosyalar *@
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-paperclip me-2" style="color:#9ca3af;"></i>Ekli Dosyalar
+                </span>
+            </div>
+            <div class="card-body" style="display:flex; flex-direction:column; gap:8px;">
+
+                @if (Model.Dosyalar != null && Model.Dosyalar.Any())
+                {
+                    foreach (var dosya in Model.Dosyalar)
+                    {
+                        <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 12px; border:1px solid #f0f0f0; border-radius:6px; background:#fafafa;">
+                            <span style="font-size:12.5px; color:#374151; display:flex; align-items:center; gap:7px;">
+                                <i class="bi bi-file-earmark" style="color:#9ca3af;"></i>
+                                @dosya.DosyaAdi
+                            </span>
+                            <div style="display:flex; gap:6px;">
+                                <a asp-action="DosyaIndir"
+                                   asp-route-fikirId="@Model.Id"
+                                   asp-route-dosyaId="@dosya.Id"
+                                   class="btn-table"
+                                   style="color:#1d4ed8; border-color:#dbeafe; background:#eff6ff;">
+                                    <i class="bi bi-download me-1"></i>İndir
+                                </a>
+                                @if (canEdit)
+                                {
+                                    <button type="submit"
+                                            asp-action="DosyaSil"
+                                            asp-route-fikirId="@Model.Id"
+                                            asp-route-dosyaId="@dosya.Id"
+                                            class="btn-table"
+                                            style="color:#b91c1c; border-color:#fee2e2; background:#fef2f2;"
+                                            onclick="return confirm('Dosyayı silmek istediğinize emin misiniz?')">
+                                        <i class="bi bi-trash me-1"></i>Sil
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <span style="font-size:12.5px; color:#9ca3af;">Yüklü dosya bulunamadı.</span>
+                }
+
                 @if (canEdit)
                 {
-                    <div class="card bg-light border p-3 mb-3" style="border-style: dashed !important;">
-                        <label class="form-label fw-bold"><i class="bi bi-plus-lg"></i> Yeni Dosya Ekle</label>
+                    <div style="border:1px dashed #e5e7eb; border-radius:6px; padding:14px; margin-top:4px;">
+                        <label class="form-label">
+                            Yeni Dosya Ekle
+                            <span class="hint">— PDF, görsel veya Word, max 5MB</span>
+                        </label>
                         <input type="file" name="YeniDosyalar" class="form-control" multiple />
-                        <small class="text-muted">Mevcut dosyalara ek olarak yüklenir. PDF, Görsel, Word (Max 5MB)</small>
                     </div>
                 }
 
-                <div class="row mt-3 bg-light p-3 rounded">
-                    <div class="col-md-6">
-                        <p class="mb-0"><strong>Başvuru Sahibi:</strong> @Model.BasvuruSahibiAdSoyad</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="mb-0"><strong>Oluşturma Tarihi:</strong> @Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</p>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-between mt-4">
-                    <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
-
-                    @if (canEdit)
-                    {
-                        <button type="submit" class="btn btn-success px-5">Değişiklikleri Kaydet</button>
-                    }
-                    else
-                    {
-                        <span class="text-muted"><i class="bi bi-lock-fill"></i> Süreç başladığı için düzenleme yapılamaz.</span>
-                    }
-                </div>
-            </form>
+            </div>
         </div>
+
+        @* Butonlar *@
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:8px;">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Geri Dön
+            </a>
+            @if (canEdit)
+            {
+                <button type="submit" class="btn btn-primary" style="padding:8px 24px;">
+                    <i class="bi bi-floppy me-1"></i>Değişiklikleri Kaydet
+                </button>
+            }
+        </div>
+
     </div>
-</div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

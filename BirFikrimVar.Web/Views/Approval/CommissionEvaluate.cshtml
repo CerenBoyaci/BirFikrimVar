@@ -2,88 +2,124 @@
 
 @{
     ViewData["Title"] = "Komisyon Değerlendirmesi";
+    ViewData["PageTitle"] = "Komisyon Değerlendirmesi";
 }
 
-<div class="row">
- 
-    <div class="col-md-8">
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">Fikir Detayı: @Model.Fikir.Baslik</h5>
+<div style="display:grid; grid-template-columns:1fr 320px; gap:16px; align-items:start;">
+
+    @* Sol: Fikir detayı *@
+    <div style="display:flex; flex-direction:column; gap:14px;">
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-lightbulb me-2" style="color:#9ca3af;"></i>@Model.Fikir.Baslik
+                </span>
+            </div>
+            <div class="card-body" style="display:flex; flex-direction:column; gap:16px;">
+
+                <div>
+                    <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#9ca3af; margin-bottom:5px;">Özet</div>
+                    <p style="font-size:13px; color:#374151; line-height:1.6; margin:0;">@Model.Fikir.Ozet</p>
+                </div>
+
+                <div style="border-top:1px solid #f0f0f0; padding-top:14px;">
+                    <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#9ca3af; margin-bottom:5px;">Kapsam</div>
+                    <p style="font-size:13px; color:#374151; line-height:1.6; margin:0;">@Model.Fikir.Kapsam</p>
+                </div>
+
+                <div style="border-top:1px solid #f0f0f0; padding-top:14px;">
+                    <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#9ca3af; margin-bottom:5px;">Yenilikçi Yanı</div>
+                    <p style="font-size:13px; color:#374151; line-height:1.6; margin:0;">@Model.Fikir.YenilikciYan</p>
+                </div>
+
+            </div>
+        </div>
+
+        @* SWOT *@
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-grid-2x2 me-2" style="color:#9ca3af;"></i>SWOT Analizi
+                </span>
             </div>
             <div class="card-body">
-                <h6 class="text-primary fw-bold">Özet</h6>
-                <p>@Model.Fikir.Ozet</p>
-                <hr />
-                <h6 class="text-primary fw-bold">Kapsam</h6>
-                <p>@Model.Fikir.Kapsam</p>
-                <hr />
-                <h6 class="text-primary fw-bold">Yenilikçi Yanı</h6>
-                <p>@Model.Fikir.YenilikciYan</p>
-
-                <h5 class="mt-4 border-bottom pb-2">SWOT Analizi</h5>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="p-3 bg-light rounded border-start border-success border-4">
-                            <strong class="text-success">Güçlü Yönler</strong>
-                            <p class="mb-0 small">@Model.Fikir.GucluYonler</p>
-                        </div>
+                <div class="swot-grid">
+                    <div class="swot-card swot-guclu">
+                        <div class="swot-label">Güçlü Yönler</div>
+                        <p style="font-size:12.5px; color:#374151; line-height:1.55; margin:0;">@Model.Fikir.GucluYonler</p>
                     </div>
-                    <div class="col-md-6">
-                        <div class="p-3 bg-light rounded border-start border-danger border-4">
-                            <strong class="text-danger">Zayıf Yönler</strong>
-                            <p class="mb-0 small">@Model.Fikir.ZayifYonler</p>
-                        </div>
+                    <div class="swot-card swot-zayif">
+                        <div class="swot-label">Zayıf Yönler</div>
+                        <p style="font-size:12.5px; color:#374151; line-height:1.55; margin:0;">@Model.Fikir.ZayifYonler</p>
                     </div>
-                    <div class="col-md-6">
-                        <div class="p-3 bg-light rounded border-start border-info border-4">
-                            <strong class="text-info">Fırsatlar</strong>
-                            <p class="mb-0 small">@Model.Fikir.Firsatlar</p>
-                        </div>
+                    <div class="swot-card swot-firsatlar">
+                        <div class="swot-label">Fırsatlar</div>
+                        <p style="font-size:12.5px; color:#374151; line-height:1.55; margin:0;">@Model.Fikir.Firsatlar</p>
                     </div>
-                    <div class="col-md-6">
-                        <div class="p-3 bg-light rounded border-start border-warning border-4">
-                            <strong class="text-warning">Tehditler</strong>
-                            <p class="mb-0 small">@Model.Fikir.Tehditler</p>
-                        </div>
+                    <div class="swot-card swot-tehditler">
+                        <div class="swot-label">Tehditler</div>
+                        <p style="font-size:12.5px; color:#374151; line-height:1.55; margin:0;">@Model.Fikir.Tehditler</p>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-  
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 border-top border-info border-4 sticky-top" style="top: 20px;">
-            <div class="card-header bg-white">
-                <h5 class="mb-0 text-info"><i class="bi bi-award-fill me-2"></i>Komisyon Kararı</h5>
-            </div>
-            <div class="card-body">
-                <form asp-action="CommissionEvaluate" method="post">
-                    <input type="hidden" asp-for="FikirId" />
-                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+    @* Sağ: Değerlendirme formu *@
+    <div class="card">
+        <div class="card-header">
+            <span class="card-header-title">
+                <i class="bi bi-award me-2" style="color:#9ca3af;"></i>Komisyon Kararı
+            </span>
+        </div>
+        <div class="card-body">
+            <form asp-action="CommissionEvaluate" method="post">
+                <input type="hidden" asp-for="FikirId" />
 
-                    <div class="mb-4">
-                        <label asp-for="Puan" class="form-label fw-bold">Nihai Puanınız (1-10)</label>
-                        <input asp-for="Puan" type="number" min="1" max="10" class="form-control form-control-lg text-center fw-bold" placeholder="Örn: 8" required />
-                        <span asp-validation-for="Puan" class="text-danger small"></span>
-                    </div>
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger py-2 mb-3"
+                     style="font-size:12.5px; border-radius:6px;"></div>
 
-                    <div class="alert alert-light border small mt-2">
-                        <i class="bi bi-info-circle-fill text-info me-1"></i> Sistemdeki 3 komisyon üyesi değerlendirmesini tamamladığında ortalama hesaplanır.
-                        <strong>Ortalama 8 ve üzeri</strong> ise fikir kabul edilir.
-                    </div>
+                <div class="mb-3">
+                    <label asp-for="Puan" class="form-label">
+                        Nihai Puanınız
+                        <span class="hint">— 1 ile 10 arası</span>
+                    </label>
+                    <input asp-for="Puan"
+                           type="number"
+                           min="1"
+                           max="10"
+                           class="form-control puan-input"
+                           placeholder="8"
+                           required
+                           style="font-size:20px; font-weight:700; text-align:center; padding:12px;" />
+                    <span asp-validation-for="Puan"
+                          style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                </div>
 
-                    <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-info text-white fw-bold">
-                            <i class="bi bi-check-circle-fill"></i> Puanı Kaydet / Güncelle
-                        </button>
-                        <a asp-action="CommissionList" class="btn btn-outline-secondary">Listeye Dön</a>
+                <div style="background:#f9fafb; border:1px solid #f0f0f0; border-radius:6px; padding:11px 13px; margin-bottom:16px; display:flex; gap:8px; align-items:flex-start;">
+                    <i class="bi bi-info-circle" style="color:#9ca3af; font-size:13px; margin-top:1px; flex-shrink:0;"></i>
+                    <div style="font-size:11.5px; color:#6b7280; line-height:1.5;">
+                        Tüm komisyon üyeleri değerlendirmesini tamamladığında ortalama hesaplanır.
+                        <span style="font-weight:600; color:#374151;">Ortalama 8 ve üzeri</span> ise fikir kabul edilir.
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <button type="submit" class="btn btn-primary w-100" style="padding:9px;">
+                        <i class="bi bi-check me-1"></i>Puanı Kaydet / Güncelle
+                    </button>
+                    <a asp-action="CommissionList" class="btn btn-outline-secondary w-100" style="padding:8px; text-align:center;">
+                        Listeye Dön
+                    </a>
+                </div>
+
+            </form>
         </div>
     </div>
+
 </div>
 
 @section Scripts {

@@ -3,8 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Bir Fikrim Var</title>
-
+    <title>@ViewData["Title"] — Bir Fikrim Var</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -26,15 +25,15 @@
                 <div class="content-area">
                     @if (TempData["BasariMesaji"] != null)
                     {
-                        <div class="alert alert-success alert-dismissible fade show border-0 mb-4" role="alert">
-                            <i class="bi bi-check-circle-fill me-2"></i>@TempData["BasariMesaji"]
+                        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>@TempData["BasariMesaji"]
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     }
                     @if (TempData["HataMesaji"] != null)
                     {
-                        <div class="alert alert-danger alert-dismissible fade show border-0 mb-4" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["HataMesaji"]
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["HataMesaji"]
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     }

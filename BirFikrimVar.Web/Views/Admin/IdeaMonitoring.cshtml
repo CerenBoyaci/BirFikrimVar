@@ -1,71 +1,136 @@
 ﻿@model System.Text.Json.JsonElement
 
 @{
-    ViewData["Title"] = "Sistem İzleme ve Loglar";
+    ViewData["Title"] = "Sistem İzleme";
+    ViewData["PageTitle"] = "Sistem İzleme";
+
     var fikir = Model.GetProperty("fikirBilgisi");
     var durumGecmisi = Model.GetProperty("durumGecmisi");
+
+    var baslik = fikir.GetProperty("baslik").GetString();
+    var sahibi = fikir.GetProperty("sahibi").GetString();
+    var durum = fikir.GetProperty("durum").GetString();
+
+    var durumBadge = durum switch
+    {
+        "Taslak" => ("badge-taslak", "Taslak"),
+        "ÖnOnayBekliyor" => ("badge-on-bekliyor", "Ön Onay Bekliyor"),
+        "ÖnOnayRetli" => ("badge-on-retli", "Ön Onay Retli"),
+        "KomisyonOnayıBekliyor" => ("badge-kom-bekliyor", "Komisyon Bekliyor"),
+        "KomisyonOnaylı" => ("badge-kom-onaylı", "Komisyon Onaylı"),
+        "KomisyonOnayıRetli" => ("badge-kom-retli", "Komisyon Retli"),
+        _ => ("badge-taslak", durum)
+    };
 }
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0"><i class="bi bi-display me-2"></i>Fikir Bilgisi</h5>
+<div style="display:grid; grid-template-columns:300px 1fr; gap:16px; align-items:start;">
+
+    <div style="display:flex; flex-direction:column; gap:12px;">
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-info-circle me-2" style="color:#9ca3af;"></i>Fikir Bilgisi
+                </span>
             </div>
             <div class="card-body">
-                <p><strong>Başlık:</strong> @fikir.GetProperty("baslik").GetString()</p>
-                <p><strong>Başvuru Sahibi:</strong> @fikir.GetProperty("sahibi").GetString()</p>
-                <hr />
-                <p class="mb-0">
-                    <strong>Anlık Durum:</strong>
-                    <span class="badge bg-primary fs-6">@fikir.GetProperty("durum").GetString()</span>
-                </p>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+
+                    <div>
+                        <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#9ca3af; margin-bottom:3px;">
+                            Başlık
+                        </div>
+                        <div style="font-size:13px; font-weight:600; color:#111827; line-height:1.4;">
+                            @baslik
+                        </div>
+                    </div>
+
+                    <div style="border-top:1px solid #f0f0f0; padding-top:12px;">
+                        <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#9ca3af; margin-bottom:3px;">
+                            Başvuru Sahibi
+                        </div>
+                        <div style="font-size:13px; color:#374151;">@sahibi</div>
+                    </div>
+
+                    <div style="border-top:1px solid #f0f0f0; padding-top:12px;">
+                        <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#9ca3af; margin-bottom:6px;">
+                            Anlık Durum
+                        </div>
+                        <span class="badge @durumBadge.Item1">@durumBadge.Item2</span>
+                    </div>
+
+                </div>
             </div>
         </div>
 
-        <div class="d-grid">
-            <a asp-action="AllIdeas" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Listeye Dön</a>
-        </div>
+        <a asp-action="AllIdeas"
+           class="btn-table"
+           style="display:flex; align-items:center; gap:6px; justify-content:center; padding:8px;">
+            <i class="bi bi-arrow-left"></i> Listeye Dön
+        </a>
+
     </div>
 
-    <!-- Sağ Panel: Loglar ve Audit Trail -->
-    <div class="col-md-8">
-        <div class="card shadow-sm border-0 border-top border-warning border-4">
-            <div class="card-header bg-white">
-                <h5 class="mb-0 text-dark"><i class="bi bi-terminal me-2"></i>Durum Logları (Audit Trail)</h5>
-            </div>
-            <div class="card-body p-0">
-                <ul class="list-group list-group-flush">
-                    @foreach (var log in durumGecmisi.EnumerateArray())
-                    {
-                        var aciklama = log.GetProperty("aciklama").GetString() ?? "";
-                        var isOverride = aciklama.Contains("[ADMIN MÜDAHALESİ");
+    <div class="card">
+        <div class="card-header">
+            <span class="card-header-title">
+                <i class="bi bi-terminal me-2" style="color:#9ca3af;"></i>Durum Logları
+                <span style="font-size:11px; color:#9ca3af; font-weight:400; margin-left:4px;">— Audit Trail</span>
+            </span>
+        </div>
 
-                        <li class="list-group-item @(isOverride ? "list-group-item-danger border-danger" : "")">
-                            <div class="d-flex justify-content-between w-100">
-                                <h6 class="mb-1">
-                                    <span class="text-muted">@log.GetProperty("eskiDurum").GetString()</span>
-                                    <i class="bi bi-arrow-right fw-bold mx-1"></i>
-                                    <span class="fw-bold">@log.GetProperty("yeniDurum").GetString()</span>
-                                </h6>
-                                <small class="text-muted">@Convert.ToDateTime(log.GetProperty("tarih").GetString()).ToString("dd.MM.yyyy HH:mm:ss")</small>
-                            </div>
-                            <p class="mb-1 small">Sorumlu: <strong>@log.GetProperty("islemYapan").GetString()</strong></p>
+        <div>
+            @foreach (var log in durumGecmisi.EnumerateArray())
+            {
+                var aciklama = log.GetProperty("aciklama").GetString() ?? "";
+                var isOverride = aciklama.Contains("[ADMIN MÜDAHALESİ");
+                var eskiDurum = log.GetProperty("eskiDurum").GetString();
+                var yeniDurum = log.GetProperty("yeniDurum").GetString();
+                var sorumlu = log.GetProperty("islemYapan").GetString();
+                var tarih = Convert.ToDateTime(log.GetProperty("tarih").GetString()).ToString("dd.MM.yyyy HH:mm:ss");
+                var temizAciklama = aciklama.Replace("[ADMIN MÜDAHALESİ - OVERRIDE] ", "");
 
+                <div style="padding:14px 18px; border-bottom:1px solid #f9fafb; @(isOverride ? "background:#fffbeb;" : "")">
+                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:6px;">
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                             @if (isOverride)
                             {
-                                <div class="text-danger mt-2 p-2 bg-white rounded border border-danger small">
-                                    <strong><i class="bi bi-shield-lock-fill"></i> Override Nedeni:</strong> @aciklama.Replace("[ADMIN MÜDAHALESİ - OVERRIDE] ", "")
-                                </div>
+                                <span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; background:#fff7ed; color:#b45309; border:1px solid #fde68a; padding:2px 7px; border-radius:4px;">
+                                    <i class="bi bi-shield-exclamation"></i> ADMIN OVERRIDE
+                                </span>
                             }
-                            else
-                            {
-                                <small class="text-muted"><i class="bi bi-card-text"></i> @aciklama</small>
-                            }
-                        </li>
+                            <span style="font-size:12.5px; color:#9ca3af; font-weight:500;">@eskiDurum</span>
+                            <i class="bi bi-arrow-right" style="font-size:11px; color:#d1d5db;"></i>
+                            <span style="font-size:12.5px; font-weight:700; color:#111827;">@yeniDurum</span>
+                        </div>
+                        <span style="font-size:11px; color:#9ca3af; white-space:nowrap; font-variant-numeric:tabular-nums; flex-shrink:0;">
+                            @tarih
+                        </span>
+                    </div>
+
+                    <div style="font-size:11.5px; color:#6b7280; margin-bottom:@(isOverride ? "8px" : "0");">
+                        Sorumlu: <span style="font-weight:600; color:#374151;">@sorumlu</span>
+                    </div>
+
+                    @if (isOverride)
+                    {
+                        <div style="background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:9px 12px; display:flex; gap:8px; align-items:flex-start;">
+                            <i class="bi bi-shield-lock" style="color:#b45309; font-size:13px; margin-top:1px; flex-shrink:0;"></i>
+                            <div>
+                                <div style="font-size:10.5px; font-weight:700; color:#92400e; margin-bottom:2px;">Override Gerekçesi</div>
+                                <div style="font-size:12px; color:#78350f; line-height:1.5;">@temizAciklama</div>
+                            </div>
+                        </div>
                     }
-                </ul>
-            </div>
+                    else if (!string.IsNullOrWhiteSpace(aciklama))
+                    {
+                        <div style="font-size:11.5px; color:#9ca3af; margin-top:2px;">
+                            <i class="bi bi-chat-left-text me-1"></i>@aciklama
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </div>
+
 </div>

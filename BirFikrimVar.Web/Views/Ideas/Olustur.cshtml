@@ -1,69 +1,151 @@
 ﻿@model BirFikrimVar.Web.Models.FikirOlusturViewModel
+
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Fikir Oluştur";
+    ViewData["Title"] = "Yeni Fikir";
+    ViewData["PageTitle"] = "Yeni Fikir";
 }
-<div class="container mt-4">
-    <div class="card shadow border-0">
-        <div class="card-header bg-primary text-white">
-            <h4><i class="bi bi-lightbulb"></i> Yeni Fikir Paylaş</h4>
+
+<form asp-action="Olustur" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly"
+         class="alert alert-danger py-2 mb-4"
+         style="font-size:12.5px; border-radius:6px;"></div>
+
+    <div style="display:flex; flex-direction:column; gap:14px;">
+
+        @* Temel bilgiler *@
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-lightbulb me-2" style="color:#9ca3af;"></i>Fikir Bilgileri
+                </span>
+            </div>
+            <div class="card-body" style="display:flex; flex-direction:column; gap:14px;">
+
+                <div>
+                    <label asp-for="Baslik" class="form-label">
+                        Fikir Başlığı
+                        <span class="hint">— kısa ve açıklayıcı olsun</span>
+                    </label>
+                    <input asp-for="Baslik"
+                           class="form-control"
+                           placeholder="Fikrinize kısa bir isim verin" />
+                    <span asp-validation-for="Baslik"
+                          style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <label asp-for="Ozet" class="form-label">Özet</label>
+                        <textarea asp-for="Ozet"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Fikrinizi kısaca özetleyin..."></textarea>
+                        <span asp-validation-for="Ozet"
+                              style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Kapsam" class="form-label">
+                            Kapsam
+                            <span class="hint">— hangi birimler etkilenir?</span>
+                        </label>
+                        <textarea asp-for="Kapsam"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Hangi birimleri kapsıyor?"></textarea>
+                        <span asp-validation-for="Kapsam"
+                              style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="YenilikciYan" class="form-label">Yenilikçi Yanı</label>
+                    <textarea asp-for="YenilikciYan"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Bu fikri farklı kılan nedir?"></textarea>
+                    <span asp-validation-for="YenilikciYan"
+                          style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                </div>
+
+            </div>
         </div>
-        <div class="card-body">
-            <form asp-action="Olustur" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                <div class="mb-3">
-                    <label asp-for="Baslik" class="form-label fw-bold">Fikir Başlığı</label>
-                    <input asp-for="Baslik" class="form-control" placeholder="Fikrinize kısa bir isim verin" />
-                    <span asp-validation-for="Baslik" class="text-danger"></span>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Ozet" class="form-label fw-bold">Özet</label>
-                        <textarea asp-for="Ozet" class="form-control" rows="3"></textarea>
+        @* SWOT *@
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-grid-2x2 me-2" style="color:#9ca3af;"></i>SWOT Analizi
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="swot-grid">
+                    <div class="swot-card swot-guclu">
+                        <div class="swot-label">Güçlü Yönler — Strengths</div>
+                        <textarea asp-for="GucluYonler"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Bu fikrin güçlü yönleri neler?"></textarea>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Kapsam" class="form-label fw-bold">Kapsam</label>
-                        <textarea asp-for="Kapsam" class="form-control" rows="3" placeholder="Hangi birimleri kapsıyor?"></textarea>
+                    <div class="swot-card swot-zayif">
+                        <div class="swot-label">Zayıf Yönler — Weaknesses</div>
+                        <textarea asp-for="ZayifYonler"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Hangi zayıflıklar mevcut?"></textarea>
                     </div>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="YenilikciYan" class="form-label fw-bold">Yenilikçi Yanı</label>
-                    <textarea asp-for="YenilikciYan" class="form-control" rows="2"></textarea>
-                </div>
-
-                <h5 class="border-bottom pb-2 mt-4 text-secondary">SWOT Analizi</h5>
-                <div class="row">
-                    <div class="col-md-6 mb-3 text-success">
-                        <label asp-for="GucluYonler" class="form-label fw-bold">Güçlü Yönler (Strengths)</label>
-                        <textarea asp-for="GucluYonler" class="form-control"></textarea>
+                    <div class="swot-card swot-firsatlar">
+                        <div class="swot-label">Fırsatlar — Opportunities</div>
+                        <textarea asp-for="Firsatlar"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Hangi fırsatlar değerlendirilebilir?"></textarea>
                     </div>
-                    <div class="col-md-6 mb-3 text-danger">
-                        <label asp-for="ZayifYonler" class="form-label fw-bold">Zayıf Yönler (Weaknesses)</label>
-                        <textarea asp-for="ZayifYonler" class="form-control"></textarea>
-                    </div>
-                    <div class="col-md-6 mb-3 text-info">
-                        <label asp-for="Firsatlar" class="form-label fw-bold">Fırsatlar (Opportunities)</label>
-                        <textarea asp-for="Firsatlar" class="form-control"></textarea>
-                    </div>
-                    <div class="col-md-6 mb-3 text-warning">
-                        <label asp-for="Tehditler" class="form-label fw-bold">Tehditler (Threats)</label>
-                        <textarea asp-for="Tehditler" class="form-control"></textarea>
+                    <div class="swot-card swot-tehditler">
+                        <div class="swot-label">Tehditler — Threats</div>
+                        <textarea asp-for="Tehditler"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Olası riskler ve tehditler?"></textarea>
                     </div>
                 </div>
-
-                <div class="mb-4 mt-3">
-                    <label class="form-label fw-bold">Ek Dosyalar (PDF, Görsel, Word - Max 5MB)</label>
-                    <input type="file" name="Dosyalar" class="form-control" multiple />
-                </div>
-
-                <div class="d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-secondary">İptal</a>
-                    <button type="submit" class="btn btn-success px-5">Taslak Olarak Kaydet</button>
-                </div>
-            </form>
+            </div>
         </div>
+
+        @* Ek dosyalar *@
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">
+                    <i class="bi bi-paperclip me-2" style="color:#9ca3af;"></i>Ek Dosyalar
+                </span>
+            </div>
+            <div class="card-body">
+                <label class="form-label">
+                    Dosya Ekle
+                    <span class="hint">— PDF, görsel veya Word, max 5MB</span>
+                </label>
+                <input type="file"
+                       name="Dosyalar"
+                       class="form-control"
+                       multiple />
+            </div>
+        </div>
+
+        @* Butonlar *@
+        <div style="display:flex; justify-content:flex-end; gap:8px; padding-bottom:8px;">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                İptal
+            </a>
+            <button type="submit" class="btn btn-primary" style="padding:8px 24px;">
+                <i class="bi bi-floppy me-1"></i>Taslak Olarak Kaydet
+            </button>
+        </div>
+
     </div>
-</div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

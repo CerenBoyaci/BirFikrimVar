@@ -1,134 +1,140 @@
 ﻿@model List<BirFikrimVar.Web.Models.KategoriViewModel>
 
 @{
-    ViewData["Title"] = "Puanlama Kategorileri";
+    ViewData["Title"] = "Kategori Yönetimi";
+    ViewData["PageTitle"] = "Kategori Yönetimi";
 }
 
-<div class="row">
- 
-    <div class="col-md-8">
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-tags-fill me-2"></i>Mevcut Kategoriler</h5>
-            </div>
-            <div class="card-body">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Kategori Adı</th>
-                            <th>Durum</th>
-                            <th class="text-end">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var kat in Model)
-                        {
-                            <tr>
-                                <td>@kat.Id</td>
-                                <td class="fw-bold">@kat.Ad</td>
-                                <td>
-                                    @if (kat.AktifMi)
-                                    {
-                                        <span class="badge bg-success">Aktif</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger">Pasif</span>
-                                    }
-                                </td>
-                                <td class="text-end">
-                                    <!-- Düzenle Modalı Tetikleyici -->
-                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editModal-@kat.Id" title="Düzenle">
-                                        <i class="bi bi-pencil"></i>
+<div style="display:grid; grid-template-columns:1fr 320px; gap:16px; align-items:start;">
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-header-title">
+                <i class="bi bi-tags me-2" style="color:#9ca3af;"></i>Mevcut Kategoriler
+            </span>
+            <span style="font-size:11.5px; color:#9ca3af; font-weight:500;">
+                @Model.Count kategori
+            </span>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width:55px;">ID</th>
+                    <th>Kategori Adı</th>
+                    <th style="width:90px;">Durum</th>
+                    <th style="width:180px; text-align:right;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kat in Model)
+                {
+                    <tr>
+                        <td class="td-muted">#@kat.Id</td>
+                        <td class="td-primary">@kat.Ad</td>
+                        <td>
+                            @if (kat.AktifMi)
+                            {
+                                <span class="badge badge-kom-onaylı">Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-taslak">Pasif</span>
+                            }
+                        </td>
+                        <td style="text-align:right;">
+                            <div style="display:flex; gap:6px; justify-content:flex-end;">
+                                <button class="btn-table"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal-@kat.Id">
+                                    <i class="bi bi-pencil me-1"></i>Düzenle
+                                </button>
+                                <form asp-action="KaydetKategori" method="post" class="d-inline">
+                                    <input type="hidden" name="Id" value="@kat.Id" />
+                                    <input type="hidden" name="Ad" value="@kat.Ad" />
+                                    <input type="hidden" name="AktifMi" value="@(kat.AktifMi ? "false" : "true")" />
+                                    <button type="submit"
+                                            class="btn-table"
+                                            style="@(kat.AktifMi
+                                                                                            ? "color:#b91c1c;border-color:#fee2e2;background:#fef2f2;"
+                                                                                            : "color:#15803d;border-color:#d1fae5;background:#f0fdf4;")">
+                                        <i class="bi @(kat.AktifMi ? "bi-x-circle" : "bi-check-circle") me-1"></i>
+                                        @(kat.AktifMi ? "Pasife Al" : "Aktifleştir")
                                     </button>
-
-                                    <!-- Tek Tıkla Durum Değiştirme (Aktif <-> Pasif) -->
-                                    <form asp-action="KaydetKategori" method="post" class="d-inline">
-                                        <input type="hidden" name="Id" value="@kat.Id" />
-                                        <input type="hidden" name="Ad" value="@kat.Ad" />
-                                        <input type="hidden" name="AktifMi" value="@(kat.AktifMi ? "false" : "true")" />
-
-                                        <button type="submit" class="btn btn-sm @(kat.AktifMi ? "btn-danger" : "btn-success")" title="@(kat.AktifMi ? "Pasife Al" : "Aktifleştir")">
-                                            <i class="bi @(kat.AktifMi ? "bi-x-circle" : "bi-check-circle")"></i> @(kat.AktifMi ? "Pasife Al" : "Aktifleştir")
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-
-                            <!-- Düzenleme Modalı -->
-                            <div class="modal fade" id="editModal-@kat.Id" tabindex="-1">
-                                <div class="modal-dialog">
-                                    <div class="modal-content border-0">
-                                        <form asp-action="KaydetKategori" method="post">
-                                            <div class="modal-header bg-light">
-                                                <h5 class="modal-title text-dark fw-bold">Kategori Düzenle (#@kat.Id)</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body text-start">
-                                                <input type="hidden" name="Id" value="@kat.Id" />
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Kategori Adı</label>
-                                                    <input type="text" name="Ad" class="form-control" value="@kat.Ad" required />
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Durum</label>
-                                                    <select name="AktifMi" class="form-select">
-                                                        @if (kat.AktifMi)
-                                                        {
-                                                            <option value="true" selected>Aktif (Değerlendirmede Görünür)</option>
-                                                            <option value="false">Pasif (Gizli)</option>
-                                                        }
-                                                        else
-                                                        {
-                                                            <option value="true">Aktif (Değerlendirmede Görünür)</option>
-                                                            <option value="false" selected>Pasif (Gizli)</option>
-                                                        }
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer bg-light">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                                                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Değişiklikleri Kaydet</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
+                                </form>
                             </div>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                        </td>
+                    </tr>
+
+                    @* Düzenleme modal *@
+                    <div class="modal fade" id="editModal-@kat.Id" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog" style="max-width:420px;">
+                            <div class="modal-content" style="border:1px solid #e5e7eb; border-radius:10px; overflow:hidden;">
+                                <form asp-action="KaydetKategori" method="post">
+                                    <div style="padding:16px 20px; border-bottom:1px solid #f0f0f0; display:flex; align-items:center; justify-content:space-between;">
+                                        <div>
+                                            <div style="font-size:13px; font-weight:700; color:#111827;">Kategori Düzenle</div>
+                                            <div style="font-size:11px; color:#9ca3af;">#@kat.Id — @kat.Ad</div>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" style="font-size:12px;"></button>
+                                    </div>
+                                    <div style="padding:18px 20px;">
+                                        <input type="hidden" name="Id" value="@kat.Id" />
+                                        <div class="mb-3">
+                                            <label class="form-label">Kategori Adı</label>
+                                            <input type="text" name="Ad" class="form-control" value="@kat.Ad" required />
+                                        </div>
+                                        <div>
+                                            <label class="form-label">Durum</label>
+                                            <select name="AktifMi" class="form-control form-select">
+                                                <option value="true" selected="@(kat.AktifMi ? "selected" : null)">Aktif — Değerlendirmede görünür</option>
+                                                <option value="false" selected="@(!kat.AktifMi ? "selected" : null)">Pasif — Gizli</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="padding:12px 20px; border-top:1px solid #f0f0f0; display:flex; justify-content:flex-end; gap:8px; background:#fafafa;">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">İptal</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-check me-1"></i>Kaydet
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-header-title">
+                <i class="bi bi-plus-circle me-2" style="color:#9ca3af;"></i>Yeni Kategori
+            </span>
+        </div>
+        <div class="card-body">
+            <form asp-action="KaydetKategori" method="post">
+                <input type="hidden" name="Id" value="0" />
+                <div class="mb-3">
+                    <label class="form-label">Kategori Adı</label>
+                    <input type="text" name="Ad" class="form-control" required placeholder="Örn: Stratejik Uyum" />
+                </div>
+                <div class="mb-4" style="display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox"
+                           name="AktifMi"
+                           value="true"
+                           id="aktifCheck"
+                           checked
+                           style="width:16px; height:16px; cursor:pointer; accent-color:#0f1117;" />
+                    <label for="aktifCheck" class="form-label" style="margin:0; cursor:pointer;">
+                        Aktif olarak başlat
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-plus me-1"></i>Kategori Ekle
+                </button>
+            </form>
         </div>
     </div>
 
-   
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 border-top border-primary border-4">
-            <div class="card-header bg-white">
-                <h5 class="mb-0 text-primary"><i class="bi bi-plus-circle me-2"></i>Yeni Kategori Ekle</h5>
-            </div>
-            <div class="card-body">
-                <form asp-action="KaydetKategori" method="post">
-                    <input type="hidden" name="Id" value="0" />
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Kategori Adı</label>
-                        <input type="text" name="Ad" class="form-control" required placeholder="Örn: Stratejik Uyum" />
-                    </div>
-
-                    <div class="mb-3 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="AktifMi" value="true" checked>
-                        <label class="form-check-label fw-bold">Aktif Olarak Başlat</label>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Kaydet</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 </div>

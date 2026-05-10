@@ -1,19 +1,51 @@
 ﻿@{
     ViewData["Title"] = "E-posta Doğrulama";
+    ViewData["PageTitle"] = "E-posta Doğrulama";
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
-            @if (ViewBag.Hata != null)
-            {
-                <div class="alert alert-danger shadow-sm">
-                    <i class="bi bi-exclamation-triangle-fill fs-1 d-block mb-3"></i>
-                    <h4>İşlem Başarısız</h4>
-                    <p>@ViewBag.Hata</p>
-                    <a asp-action="Giris" class="btn btn-primary mt-3">Giriş Sayfasına Dön</a>
-                </div>
-            }
+<div class="auth-page">
+    <div class="auth-card" style="max-width:420px; text-align:center;">
+
+        <div class="auth-brand" style="justify-content:center;">
+            <div class="auth-brand-icon">💡</div>
+            <span class="auth-brand-name">Bir Fikrim Var</span>
         </div>
+
+        @if (ViewBag.Hata != null)
+        {
+            <div style="margin-top:8px;">
+                <div style="width:52px; height:52px; border-radius:12px; background:#fef2f2; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+                    <i class="bi bi-exclamation-triangle" style="font-size:22px; color:#ef4444;"></i>
+                </div>
+                <h1 class="auth-title" style="font-size:17px;">İşlem Başarısız</h1>
+                <p style="font-size:13px; color:#6b7280; margin:6px 0 20px; line-height:1.55;">
+                    @ViewBag.Hata
+                </p>
+                <a asp-action="Giris"
+                   class="btn btn-primary w-100"
+                   style="padding:9px;">
+                    <i class="bi bi-arrow-left me-1"></i>Giriş Sayfasına Dön
+                </a>
+            </div>
+        }
+        else
+        {
+            <div style="margin-top:8px;">
+                <div style="width:52px; height:52px; border-radius:12px; background:#f0fdf4; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+                    <i class="bi bi-envelope-check" style="font-size:22px; color:#16a34a;"></i>
+                </div>
+                <h1 class="auth-title" style="font-size:17px;">E-posta Doğrulandı</h1>
+                <p style="font-size:13px; color:#6b7280; margin:6px 0 20px; line-height:1.55;">
+                    E-posta adresiniz başarıyla doğrulandı. Artık giriş yapabilirsiniz.
+                </p>
+                <a asp-action="Giris"
+                   class="btn btn-primary w-100"
+                   style="padding:9px;">
+                    <i class="bi bi-arrow-right me-1"></i>Giriş Yap
+                </a>
+            </div>
+        }
+
     </div>
 </div>

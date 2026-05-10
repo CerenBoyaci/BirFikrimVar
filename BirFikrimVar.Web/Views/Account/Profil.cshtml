@@ -1,62 +1,144 @@
 ﻿@model BirFikrimVar.Web.Models.ProfilGuncelleViewModel
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0"><i class="bi bi-person-gear me-2"></i>Profil Ayarlarım</h5>
+@{
+    ViewData["Title"] = "Profilim";
+    ViewData["PageTitle"] = "Profilim";
+}
+
+<div style="max-width:560px;">
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <span class="card-header-title">
+                <i class="bi bi-person me-2" style="color:#9ca3af;"></i>Kişisel Bilgiler
+            </span>
+        </div>
+        <div class="card-body">
+            <form asp-action="Profil" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger py-2 mb-3"
+                     style="font-size:12.5px; border-radius:6px;"></div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;" class="mb-3">
+                    <div>
+                        <label asp-for="Ad" class="form-label">Ad</label>
+                        <input asp-for="Ad" class="form-control" />
+                        <span asp-validation-for="Ad"
+                              style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Soyad" class="form-label">Soyad</label>
+                        <input asp-for="Soyad" class="form-control" />
+                        <span asp-validation-for="Soyad"
+                              style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Profil" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger small mb-3"></div>
 
-                        <div class="mb-3">
-                            <label asp-for="Ad" class="form-label fw-bold"></label>
-                            <input asp-for="Ad" class="form-control" />
-                            <span asp-validation-for="Ad" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Soyad" class="form-label fw-bold"></label>
-                            <input asp-for="Soyad" class="form-control" />
-                            <span asp-validation-for="Soyad" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label fw-bold"></label>
-                            <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger small"></span>
-                        </div>
-
-                        <hr />
-                        <h6 class="fw-bold text-muted">Şifre İşlemleri</h6>
-
-                        <div class="mb-3">
-                            <label asp-for="MevcutParola" class="form-label fw-bold"></label>
-                            <input asp-for="MevcutParola" class="form-control" />
-                            <span asp-validation-for="MevcutParola" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="YeniParola" class="form-label fw-bold"></label>
-                            <input asp-for="YeniParola" class="form-control" />
-                            <span asp-validation-for="YeniParola" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="YeniParolaTekrar" class="form-label fw-bold"></label>
-                            <input asp-for="YeniParolaTekrar" class="form-control" />
-                            <span asp-validation-for="YeniParolaTekrar" class="text-danger small"></span>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 mt-3">Bilgileri Kaydet</button>
-                    </form>
+                <div class="mb-4">
+                    <label asp-for="Email" class="form-label">E-posta</label>
+                    <input asp-for="Email" class="form-control" autocomplete="email" />
+                    <span asp-validation-for="Email"
+                          style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
                 </div>
-            </div>
+
+                <div style="border-top:1px solid #f0f0f0; padding-top:18px; margin-bottom:16px;">
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#9ca3af; margin-bottom:14px;">
+                        Şifre Değiştir
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MevcutParola" class="form-label">Mevcut Şifre</label>
+                        <div style="position:relative;">
+                            <input asp-for="MevcutParola"
+                                   type="password"
+                                   class="form-control"
+                                   placeholder="••••••••"
+                                   id="mevcutParola"
+                                   style="padding-right:38px;" />
+                            <button type="button"
+                                    onclick="togglePass('mevcutParola','icon-mevcut')"
+                                    style="position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9ca3af;font-size:14px;padding:0;">
+                                <i class="bi bi-eye-slash" id="icon-mevcut"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="MevcutParola"
+                              style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;" class="mb-4">
+                        <div>
+                            <label asp-for="YeniParola" class="form-label">Yeni Şifre</label>
+                            <div style="position:relative;">
+                                <input asp-for="YeniParola"
+                                       type="password"
+                                       class="form-control"
+                                       placeholder="••••••••"
+                                       id="yeniParola"
+                                       style="padding-right:38px;" />
+                                <button type="button"
+                                        onclick="togglePass('yeniParola','icon-yeni')"
+                                        style="position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9ca3af;font-size:14px;padding:0;">
+                                    <i class="bi bi-eye-slash" id="icon-yeni"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="YeniParola"
+                                  style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                        </div>
+                        <div>
+                            <label asp-for="YeniParolaTekrar" class="form-label">Yeni Şifre Tekrar</label>
+                            <div style="position:relative;">
+                                <input asp-for="YeniParolaTekrar"
+                                       type="password"
+                                       class="form-control"
+                                       placeholder="••••••••"
+                                       id="yeniParolaTekrar"
+                                       style="padding-right:38px;" />
+                                <button type="button"
+                                        onclick="togglePass('yeniParolaTekrar','icon-tekrar')"
+                                        style="position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9ca3af;font-size:14px;padding:0;">
+                                    <i class="bi bi-eye-slash" id="icon-tekrar"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="YeniParolaTekrar"
+                                  style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px; justify-content:flex-end;">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                        Vazgeç
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-check me-1"></i> Kaydet
+                    </button>
+                </div>
+
+            </form>
         </div>
     </div>
+
+    <div style="font-size:11.5px; color:#9ca3af; display:flex; align-items:center; gap:5px;">
+        <i class="bi bi-info-circle" style="font-size:12px;"></i>
+        Şifre değiştirmek istemiyorsanız şifre alanlarını boş bırakın.
+    </div>
+
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function togglePass(inputId, iconId) {
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            }
+        }
+    </script>
 }

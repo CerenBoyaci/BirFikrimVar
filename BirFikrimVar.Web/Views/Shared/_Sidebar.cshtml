@@ -1,74 +1,68 @@
 ﻿@*
-    
+  
 *@
 
 @{
-    var initials = "";
-    var username = User.Identity?.Name ?? "";
-    if (username.Length >= 2)
-    {
-        initials = username.Substring(0, 2).ToUpper();
-    }
-    else if (username.Length == 1)
-    {
-        initials = username.Substring(0, 1).ToUpper();
-    }
+    var name = User.Identity?.Name ?? "";
+    var initials = name.Length >= 2
+        ? name.Substring(0, 2).ToUpper()
+        : name.ToUpper();
 
-    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
-    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    string IsActive(string c, string a)
+        => ctrl.Equals(c, StringComparison.OrdinalIgnoreCase)
+           && action.Equals(a, StringComparison.OrdinalIgnoreCase)
+           ? "active" : "";
+
+    string IsActiveCtrl(string c)
+        => ctrl.Equals(c, StringComparison.OrdinalIgnoreCase) ? "active" : "";
 }
 
 <a asp-controller="Home" asp-action="Index" class="sidebar-brand">
     <div class="sidebar-brand-icon">💡</div>
-    <div>
-        <div class="sidebar-brand-text">Bir Fikrim Var</div>
-        <div class="sidebar-brand-sub">Fikir Yönetim Sistemi</div>
-    </div>
+    <span class="sidebar-brand-name">Bir Fikrim Var</span>
 </a>
 
-<div class="sidebar-menu">
+<nav class="sidebar-menu">
 
-    @* Her role açık bölümler *@
-    <div class="menu-heading">Genel</div>
+    <p class="menu-heading">Genel</p>
     <a asp-controller="Home" asp-action="Index"
-       class="menu-link @(ctrl == "Home" && action == "Index" ? "active" : "")">
+       class="menu-link @IsActive("Home", "Index")">
         <i class="bi bi-grid-1x2"></i> Dashboard
-    </a>
-    <a asp-controller="Account" asp-action="Profil"
-       class="menu-link @(ctrl == "Account" && action == "Profil" ? "active" : "")">
-        <i class="bi bi-grid-1x2"></i> Profil
     </a>
 
     @if (!User.IsInRole("OnOnayci") && !User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
     {
-        <div class="menu-heading">Başvurular</div>
+        <p class="menu-heading">Başvurular</p>
         <a asp-controller="Ideas" asp-action="Index"
-           class="menu-link @(ctrl == "Ideas" && action != "Olustur" ? "active" : "")">
+           class="menu-link @IsActive("Ideas", "Index")">
             <i class="bi bi-collection"></i> Fikirlerim
         </a>
         <a asp-controller="Ideas" asp-action="Olustur"
-           class="menu-link @(ctrl == "Ideas" && action == "Olustur" ? "active" : "")">
+           class="menu-link @IsActive("Ideas", "Olustur")">
             <i class="bi bi-plus-square"></i> Yeni Fikir
         </a>
     }
 
     @if (User.IsInRole("OnOnayci") || User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
     {
-        <div class="menu-heading">Değerlendirme</div>
+        <p class="menu-heading">Değerlendirme</p>
 
         @if (User.IsInRole("OnOnayci") || User.IsInRole("Admin"))
         {
             <a asp-controller="Approval" asp-action="PreApprovalList"
-               class="menu-link @(ctrl == "Approval" && (action == "PreApprovalList" || action == "Evaluate") ? "active" : "")">
+               class="menu-link @IsActive("Approval", "PreApprovalList")">
                 <i class="bi bi-ui-checks"></i> Ön Onay Paneli
-               
             </a>
+          
         }
 
         @if (User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
         {
             <a asp-controller="Approval" asp-action="CommissionList"
-               class="menu-link @(ctrl == "Approval" && (action == "CommissionList" || action == "CommissionEvaluate") ? "active" : "")">
+               class="menu-link @IsActive("Approval", "CommissionList")">
                 <i class="bi bi-award"></i> Komisyon Paneli
             </a>
         }
@@ -76,52 +70,57 @@
 
     @if (User.IsInRole("Admin"))
     {
-        <div class="menu-heading">Yönetim</div>
+        <p class="menu-heading">Yönetim</p>
         <a asp-controller="Admin" asp-action="AllIdeas"
-           class="menu-link @(ctrl == "Admin" && (action == "AllIdeas" || action == "IdeaMonitoring") ? "active" : "")">
+           class="menu-link @IsActive("Admin", "AllIdeas")">
             <i class="bi bi-inboxes"></i> Tüm Fikirler
         </a>
         <a asp-controller="Admin" asp-action="Users"
-           class="menu-link @(ctrl == "Admin" && action == "Users" ? "active" : "")">
+           class="menu-link @IsActive("Admin", "Users")">
             <i class="bi bi-people"></i> Kullanıcı Yönetimi
         </a>
         <a asp-controller="Admin" asp-action="Categories"
-           class="menu-link @(ctrl == "Admin" && action == "Categories" ? "active" : "")">
+           class="menu-link @IsActive("Admin", "Categories")">
             <i class="bi bi-tags"></i> Kategori Yönetimi
         </a>
-        
+       
+       
     }
-</div>
+
+</nav>
 
 <div class="sidebar-footer">
-    <div class="sidebar-user-info">
+    <div class="sidebar-user">
         <div class="sidebar-avatar">@initials</div>
         <div>
-            <div class="sidebar-username">@username</div>
+            <div class="sidebar-username">@name</div>
             <div class="sidebar-userrole">
                 @if (User.IsInRole("Admin"))
                 {
-                    <text>Admin</text>
+                    <text>Sistem Yöneticisi</text>
                 }
                 else if (User.IsInRole("OnOnayci"))
                 {
+
                     <text>Ön Onaycı</text>
                 }
                 else if (User.IsInRole("KomisyonUyesi"))
                 {
+
                     <text>Komisyon Üyesi</text>
                 }
                 else
                 {
+
                     <text>Standart Kullanıcı</text>
                 }
             </div>
         </div>
     </div>
-    <form asp-controller="Account" asp-action="Cikis" method="post">
+
+    <form asp-controller="Account" asp-action="Cikis" method="post" class="mt-1">
         @Html.AntiForgeryToken()
-        <button type="submit" class="menu-link w-100 border-0 bg-transparent text-start"
-                style="color: rgba(255,100,100,0.6); font-size: 12.5px;">
+        <button type="submit" class="menu-link" style="color:#4b5563">
             <i class="bi bi-box-arrow-left"></i> Çıkış Yap
         </button>
     </form>

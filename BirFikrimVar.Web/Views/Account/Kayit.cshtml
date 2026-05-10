@@ -2,115 +2,303 @@
 
 @{
     ViewData["Title"] = "Kayıt Ol";
+    Layout = "_Layout";
 }
 
-<div class="container">
-    <div class="row justify-content-center align-items-center" style="min-height: 85vh;">
-        <div class="col-12 col-md-8 col-lg-6">
+<div class="landing-page">
+    <canvas id="bgCanvas"></canvas>
 
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header bg-success text-white text-center py-4 border-0 rounded-top-4">
-                    <i class="bi bi-person-plus-fill fs-1 d-block mb-2"></i>
-                    <h3 class="fw-bold mb-0">Yeni Hesap Oluştur</h3>
-                    <p class="text-white-50 small mb-0">Fikirlerini paylaşmak için aramıza katıl</p>
-                </div>
+    <div class="auth-inner" style="max-width:460px;">
 
-                <div class="card-body p-4 p-lg-5">
-                    <form asp-action="Kayit" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-3"></div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input asp-for="Ad" class="form-control border-0 bg-light" id="floatingAd" placeholder="Adınız">
-                                    <label asp-for="Ad" class="text-muted">Ad</label>
-                                    <span asp-validation-for="Ad" class="text-danger small"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input asp-for="Soyad" class="form-control border-0 bg-light" id="floatingSoyad" placeholder="Soyadınız">
-                                    <label asp-for="Soyad" class="text-muted">Soyad</label>
-                                    <span asp-validation-for="Soyad" class="text-danger small"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <input asp-for="Email" class="form-control border-0 bg-light" id="floatingEmail" placeholder="name@example.com">
-                            <label asp-for="Email" class="text-muted">E-posta Adresi</label>
-                            <span asp-validation-for="Email" class="text-danger small"></span>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input asp-for="Parola" type="password" class="form-control border-0 bg-light" id="floatingParola" placeholder="Parola">
-                                    <label asp-for="Parola" class="text-muted">Parola</label>
-                                    <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password-icon" style="z-index: 10; cursor: pointer;"></i>
-                                    <span asp-validation-for="Parola" class="text-danger small"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-4">
-                                <div class="form-floating">
-                                    <input asp-for="ParolaTekrar" type="password" class="form-control border-0 bg-light" id="floatingParolaTekrar" placeholder="Parola Tekrar">
-                                    <label asp-for="ParolaTekrar" class="text-muted">Parola Tekrar</label>
-                                    <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password-icon" style="z-index: 10; cursor: pointer;"></i>
-                                    <span asp-validation-for="ParolaTekrar" class="text-danger small"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg py-3 fw-bold shadow-sm rounded-3">
-                                Hesap Oluştur <i class="bi bi-check-circle-fill ms-2"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="card-footer bg-light border-0 py-3 text-center rounded-bottom-4">
-                    <span class="text-muted small">Zaten hesabınız var mı?</span>
-                    <a asp-action="Giris" class="fw-bold text-success text-decoration-none ms-1">Giriş Yap</a>
-                </div>
-            </div>
-
-            <div class="text-center mt-4 mb-5">
-                <p class="text-muted small px-4">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Kayıt olduktan sonra e-posta adresinize bir doğrulama bağlantısı gönderilecektir.
-                </p>
-            </div>
+        <div class="auth-logo-wrap">
+            <img src="~/imgs/BirFikrimVar.png" alt="Logo" class="auth-logo-img" />
         </div>
+
+        <h1 class="auth-heading">Hesap Oluştur</h1>
+        <p class="auth-subtext">Fikirlerini paylaşmak için aramıza katıl</p>
+
+        <form asp-action="Kayit" method="post" novalidate style="width:100%;">
+            <div asp-validation-summary="ModelOnly"
+                 style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); border-radius:6px; padding:10px 12px; font-size:12px; color:#fca5a5; margin-bottom:16px;"></div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+                <div>
+                    <label asp-for="Ad" class="auth-label">Ad</label>
+                    <input asp-for="Ad" class="auth-input" placeholder="Ahmet" autocomplete="given-name" />
+                    <span asp-validation-for="Ad" class="auth-err"></span>
+                </div>
+                <div>
+                    <label asp-for="Soyad" class="auth-label">Soyad</label>
+                    <input asp-for="Soyad" class="auth-input" placeholder="Kaya" autocomplete="family-name" />
+                    <span asp-validation-for="Soyad" class="auth-err"></span>
+                </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label asp-for="Email" class="auth-label">E-posta</label>
+                <input asp-for="Email" class="auth-input" placeholder="ornek@sirket.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="auth-err"></span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:22px;">
+                <div>
+                    <label asp-for="Parola" class="auth-label">Parola</label>
+                    <div style="position:relative;">
+                        <input asp-for="Parola" type="password" class="auth-input"
+                               placeholder="••••••••" id="parola-input"
+                               autocomplete="new-password" style="padding-right:42px;" />
+                        <button type="button" onclick="togglePass('parola-input','icon-p')"
+                                style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.3);font-size:15px;padding:0;">
+                            <i class="bi bi-eye-slash" id="icon-p"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Parola" class="auth-err"></span>
+                </div>
+                <div>
+                    <label asp-for="ParolaTekrar" class="auth-label">Parola Tekrar</label>
+                    <div style="position:relative;">
+                        <input asp-for="ParolaTekrar" type="password" class="auth-input"
+                               placeholder="••••••••" id="tekrar-input"
+                               autocomplete="new-password" style="padding-right:42px;" />
+                        <button type="button" onclick="togglePass('tekrar-input','icon-t')"
+                                style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.3);font-size:15px;padding:0;">
+                            <i class="bi bi-eye-slash" id="icon-t"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="ParolaTekrar" class="auth-err"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="auth-submit">
+                Hesap Oluştur
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </button>
+        </form>
+
+        <div class="auth-footer-text">
+            Zaten hesabınız var mı?
+            <a asp-controller="Account" asp-action="Giris" class="auth-footer-link">Giriş Yap</a>
+        </div>
+
+        <div class="auth-info">
+            <i class="bi bi-envelope-check" style="font-size:12px;"></i>
+            Kayıt sonrası e-posta doğrulaması gönderilecektir.
+        </div>
+
     </div>
 </div>
+
+<style>
+    body {
+        overflow: hidden !important;
+    }
+
+    .landing-page {
+        position: fixed;
+        inset: 0;
+        background: #080b12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    #bgCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+
+    .auth-inner {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 36px 32px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        backdrop-filter: blur(12px);
+    }
+
+    .auth-logo-wrap {
+        width: 72px;
+        height: 72px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        margin-bottom: 20px;
+        background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(0,0,0,0) 75%);
+        border: 1px solid rgba(249,115,22,0.22);
+        box-shadow: 0 0 0 8px rgba(249,115,22,0.05);
+    }
+
+    .auth-logo-img {
+        width: 250%;
+        height: 250%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 10px rgba(249,115,22,0.3));
+    }
+
+    .auth-heading {
+        font-size: 22px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+        margin: 0 0 6px;
+    }
+
+    .auth-subtext {
+        font-size: 13px;
+        color: rgba(255,255,255,0.38);
+        margin: 0 0 24px;
+    }
+
+    .auth-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.5);
+        margin-bottom: 6px;
+        letter-spacing: 0.02em;
+    }
+
+    .auth-input {
+        width: 100%;
+        padding: 10px 14px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        font-size: 13.5px;
+        color: #ffffff;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        font-family: inherit;
+    }
+
+        .auth-input::placeholder {
+            color: rgba(255,255,255,0.2);
+        }
+
+        .auth-input:focus {
+            border-color: rgba(249,115,22,0.5);
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+        }
+
+    .auth-err {
+        font-size: 11.5px;
+        color: #fca5a5;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .auth-submit {
+        width: 100%;
+        padding: 12px;
+        background: #f97316;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: background 0.15s, transform 0.15s;
+        font-family: inherit;
+        letter-spacing: -0.01em;
+    }
+
+        .auth-submit:hover {
+            background: #ea6c0a;
+            transform: translateY(-1px);
+        }
+
+    .auth-footer-text {
+        margin-top: 20px;
+        font-size: 12.5px;
+        color: rgba(255,255,255,0.3);
+    }
+
+    .auth-footer-link {
+        color: #f97316;
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: 4px;
+    }
+
+        .auth-footer-link:hover {
+            color: #ea6c0a;
+        }
+
+    .auth-info {
+        margin-top: 14px;
+        font-size: 11px;
+        color: rgba(255,255,255,0.18);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
+
+<script>
+    (function () {
+        var canvas = document.getElementById('bgCanvas');
+        var ctx = canvas.getContext('2d');
+        var particles = [];
+        var W, H;
+
+        function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+        function rand(a, b) { return Math.random() * (b - a) + a; }
+        function mkp() { return { x: rand(0, W), y: rand(0, H), r: rand(0.8, 2.2), vx: rand(-0.12, 0.12), vy: rand(-0.28, -0.06), alpha: rand(0.15, 0.5) }; }
+
+        function init() { resize(); particles = []; for (var i = 0; i < 120; i++) particles.push(mkp()); }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(function (p) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(249,115,22,' + p.alpha + ')';
+                ctx.fill();
+                p.x += p.vx; p.y += p.vy;
+                if (p.y < -4) { p.y = H + 4; p.x = rand(0, W); }
+                if (p.x < -4) p.x = W + 4;
+                if (p.x > W + 4) p.x = -4;
+            });
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', resize);
+        init(); draw();
+    }());
+
+    function togglePass(inputId, iconId) {
+        var input = document.getElementById(inputId);
+        var icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        }
+    }
+</script>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-   
-            const toggleIcons = document.querySelectorAll('.bi-eye-slash, .bi-eye, #toggle-password, .toggle-password-icon');
-
-            toggleIcons.forEach(icon => {
-                icon.addEventListener('click', function () {
-                  
-                    const input = this.parentElement.querySelector('input');
-
-                    if (input.type === "password") {
-                        input.type = "text";
-                        this.classList.remove("bi-eye-slash");
-                        this.classList.add("bi-eye");
-                    } else {
-                        input.type = "password";
-                        this.classList.remove("bi-eye");
-                        this.classList.add("bi-eye-slash");
-                    }
-                });
-            });
-        });
-    </script>
 }
