@@ -250,42 +250,49 @@ namespace BirFikrimVar.API.Controllers
 
             if (user == null) return NotFound(new { mesaj = "Kullanıcı bulunamadı." });
 
-            // 1. Temel Bilgileri Güncelle
-            user.Ad = model.Ad;
-            user.Soyad = model.Soyad;
-
-            if (user.Email != model.Email)
+      
+            if (!string.IsNullOrEmpty(model.YeniParola) && model.MevcutParola == model.YeniParola)
             {
-                var existingUser = await _userManager.FindByEmailAsync(model.Email);
-                if (existingUser != null && existingUser.Id != user.Id)
-                    return BadRequest(new { mesaj = "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor." });
-
-                user.Email = model.Email;
-                user.UserName = model.Email;
-                user.EmailConfirmed = false;
+                return BadRequest(new { mesaj = "Yeni şifreniz mevcut şifreniz ile aynı olamaz." });
             }
 
-            // 2. Önce Şifre Değiştirme (Eğer istenmişse)
-            if (!string.IsNullOrWhiteSpace(model.YeniParola))
+           
+            user.Ad = model.Ad;
+            user.Soyad = model.Soyad;
+            user.Email = model.Email;
+            user.UserName = model.Email;
+
+       
+            if (!string.IsNullOrEmpty(model.YeniParola))
             {
-                if (string.IsNullOrWhiteSpace(model.MevcutParola))
+                if (string.IsNullOrEmpty(model.MevcutParola))
                     return BadRequest(new { mesaj = "Şifre değiştirmek için mevcut şifrenizi girmelisiniz." });
 
                 var passwordResult = await _userManager.ChangePasswordAsync(user, model.MevcutParola, model.YeniParola);
+
                 if (!passwordResult.Succeeded)
                 {
-                    var error = passwordResult.Errors.FirstOrDefault()?.Description ?? "Şifre değiştirilemedi.";
-                    return BadRequest(new { mesaj = $"Şifre hatası: {error}" });
+              
+                    var error = passwordResult.Errors.FirstOrDefault();
+                    string mesaj = error?.Code switch
+                    {
+                        "PasswordTooShort" => "Şifre en az 8 karakter olmalıdır.",
+                        "PasswordRequiresUpper" => "Şifre en az bir büyük harf içermelidir.",
+                        "PasswordRequiresLower" => "Şifre en az bir küçük harf içermelidir.",
+                        "PasswordRequiresDigit" => "Şifre en az bir rakam içermelidir.",
+                        "PasswordRequiresNonAlphanumeric" => "Şifre en az bir özel karakter içermelidir.",
+                        "PasswordMismatch" => "Mevcut şifrenizi hatalı girdiniz.",
+                        _ => error?.Description ?? "Şifre kurallara uygun değil."
+                    };
+                    return BadRequest(new { mesaj });
                 }
             }
 
-            // 3. Son olarak User objesini güncelle
             var result = await _userManager.UpdateAsync(user);
-
             if (result.Succeeded)
-                return Ok(new { mesaj = "Profil bilgileriniz başarıyla güncellendi." });
+                return Ok(new { mesaj = "Profil başarıyla güncellendi." });
 
-            return BadRequest(new { mesaj = "Güncelleme sırasında bir hata oluştu." });
+            return BadRequest(new { mesaj = "Güncelleme başarısız." });
         }
     }
 }
