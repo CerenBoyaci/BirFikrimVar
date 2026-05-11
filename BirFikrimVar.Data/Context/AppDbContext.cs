@@ -23,6 +23,7 @@ namespace BirFikrimVar.Data.Context
 
       
         public DbSet<Degerlendirme> Degerlendirmeler { get; set; }
+        public DbSet<AdminLog> AdminLoglari { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

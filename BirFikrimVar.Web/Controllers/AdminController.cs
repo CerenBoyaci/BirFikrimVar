@@ -176,4 +176,22 @@ public class AdminController : Controller
         TempData["HataMesaji"] = "İzleme verisi alınamadı.";
         return RedirectToAction("AllIdeas");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Logs()
+    {
+        var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+        AddTokenToHeader(client);
+
+        var response = await client.GetAsync("admin/logs");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var logs = await response.Content.ReadFromJsonAsync<List<System.Text.Json.JsonElement>>();
+            return View(logs ?? new List<System.Text.Json.JsonElement>());
+        }
+
+        TempData["HataMesaji"] = "Log kayıtları çekilirken bir hata oluştu.";
+        return View(new List<System.Text.Json.JsonElement>());
+    }
 }

@@ -60,6 +60,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<BirFikrimVar.Service.Interfaces.IIdeasService, BirFikrimVar.Service.Services.IdeasService>();
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<ILogService, LogService>();
 
 var app = builder.Build();
 
