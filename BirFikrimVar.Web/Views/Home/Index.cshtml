@@ -106,276 +106,714 @@
 }
 else
 {
-    <div class="landing-page">
-        <canvas id="bgCanvas"></canvas>
+    <div class="lp-root">
 
-        <div class="landing-inner">
+        @* Arkaplan grid *@
+        <div class="lp-grid-bg"></div>
+        <div class="lp-glow-1"></div>
+        <div class="lp-glow-2"></div>
 
-            <div class="landing-logo-wrap">
-                <img src="~/imgs/BirFikrimVar.png"
-                     alt="Bir Fikrim Var Logo"
-                     class="landing-logo" />
+        @* NAV *@
+        <nav class="lp-nav">
+            <div class="lp-nav-brand">
+                <img src="~/imgs/BirFikrimVar.png" alt="Logo" class="lp-nav-logo" />
+                <span class="lp-nav-name">Bir Fikrim Var</span>
+            </div>
+            <div class="lp-nav-actions">
+                <a asp-controller="Account" asp-action="Giris" class="lp-nav-link">Giriş Yap</a>
+                <a asp-controller="Account" asp-action="Kayit" class="lp-nav-cta">Kayıt Ol</a>
+            </div>
+        </nav>
+
+        @* HERO *@
+        <section class="lp-hero">
+
+            @* Sol: metin *@
+            <div class="lp-hero-left">
+                <div class="lp-badge">
+                    <span class="lp-badge-dot"></span>
+                    Kurumsal İnovasyon Platformu
+                </div>
+
+                <h1 class="lp-h1">
+                    Fikirleri<br />
+                    <span class="lp-h1-accent">Gerçeğe</span><br />
+                    Dönüştürün
+                </h1>
+
+                <p class="lp-desc">
+                    Çalışanlarınızın fikirlerini sistematik olarak toplayın,
+                    değerlendirin ve onay süreçleriyle projeye dönüştürün.
+                </p>
+
+                <div class="lp-cta-row">
+                    <a asp-controller="Account" asp-action="Giris" class="lp-btn-primary">
+                        Platforma Giriş Yap
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a asp-controller="Account" asp-action="Kayit" class="lp-btn-ghost">
+                        Hesap Oluştur
+                    </a>
+                </div>
+
+                <div class="lp-trust">
+                    <div class="lp-trust-item">
+                        <span class="lp-trust-val">1.2K+</span>
+                        <span class="lp-trust-label">Fikir Gönderildi</span>
+                    </div>
+                    <div class="lp-trust-div"></div>
+                    <div class="lp-trust-item">
+                        <span class="lp-trust-val">%68</span>
+                        <span class="lp-trust-label">Onay Oranı</span>
+                    </div>
+                    <div class="lp-trust-div"></div>
+                    <div class="lp-trust-item">
+                        <span class="lp-trust-val">24</span>
+                        <span class="lp-trust-label">Aktif Departman</span>
+                    </div>
+                </div>
             </div>
 
-            <h1 class="landing-title">Bir Fikrim Var</h1>
-            <p class="landing-sub">
-                Hayallerinizi gerçeğe dönüştürün.<br />
-                Fikirlerinizi paylaşın, değerlendirin, hayata geçirin.
-            </p>
+            @* Sağ: dashboard preview *@
+            <div class="lp-hero-right">
+                <div class="lp-dashboard">
 
-            <div class="landing-actions">
-                <a asp-controller="Account" asp-action="Giris" class="landing-btn-primary">
-                    Giriş Yap
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                </a>
-                <a asp-controller="Account" asp-action="Kayit" class="landing-btn-secondary">
-                    Kayıt Ol
-                </a>
+                    @* Mini topbar *@
+                    <div class="lp-db-topbar">
+                        <div class="lp-db-dots">
+                            <span class="lp-dot lp-dot-red"></span>
+                            <span class="lp-dot lp-dot-yellow"></span>
+                            <span class="lp-dot lp-dot-green"></span>
+                        </div>
+                        <span class="lp-db-title">Dashboard — Bir Fikrim Var</span>
+                    </div>
+
+                    @* Mini stat row *@
+                    <div class="lp-db-stats">
+                        <div class="lp-db-stat">
+                            <div class="lp-db-stat-val" style="color:#38bdf8;">48</div>
+                            <div class="lp-db-stat-label">Toplam Fikir</div>
+                        </div>
+                        <div class="lp-db-stat">
+                            <div class="lp-db-stat-val" style="color:#fb923c;">12</div>
+                            <div class="lp-db-stat-label">Bekleyen</div>
+                        </div>
+                        <div class="lp-db-stat">
+                            <div class="lp-db-stat-val" style="color:#34d399;">23</div>
+                            <div class="lp-db-stat-label">Onaylanan</div>
+                        </div>
+                        <div class="lp-db-stat">
+                            <div class="lp-db-stat-val" style="color:#a78bfa;">7</div>
+                            <div class="lp-db-stat-label">Komisyon</div>
+                        </div>
+                    </div>
+
+                    @* Fikir kartları *@
+                    <div class="lp-db-label">Son Fikirler</div>
+
+                    <div class="lp-idea-card">
+                        <div class="lp-idea-left">
+                            <div class="lp-idea-title">Üretimde Enerji Tasarrufu</div>
+                            <div class="lp-idea-meta">Operasyon · Ayşe Kaya</div>
+                        </div>
+                        <span class="lp-idea-badge" style="background:rgba(59,130,246,0.15);color:#60a5fa;">Ön Onay</span>
+                    </div>
+
+                    <div class="lp-idea-card">
+                        <div class="lp-idea-left">
+                            <div class="lp-idea-title">Müşteri Geri Bildirim Sistemi</div>
+                            <div class="lp-idea-meta">Müşteri Deneyimi · Mert Demir</div>
+                        </div>
+                        <span class="lp-idea-badge" style="background:rgba(52,211,153,0.15);color:#34d399;">Onaylı</span>
+                    </div>
+
+                    <div class="lp-idea-card">
+                        <div class="lp-idea-left">
+                            <div class="lp-idea-title">Depo Otomasyon Önerisi</div>
+                            <div class="lp-idea-meta">Lojistik · Can Öztürk</div>
+                        </div>
+                        <span class="lp-idea-badge" style="background:rgba(167,139,250,0.15);color:#a78bfa;">Komisyon</span>
+                    </div>
+
+                    @* Progress bar *@
+                    <div class="lp-db-progress-wrap">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                            <span style="font-size:10px;color:rgba(255,255,255,0.4);">Bu ay onay oranı</span>
+                            <span style="font-size:10px;color:#34d399;font-weight:700;">%68</span>
+                        </div>
+                        <div class="lp-db-progress-track">
+                            <div class="lp-db-progress-fill"></div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
-            <div class="landing-features">
-                <div class="landing-feature">
-                   
-                    <span>Fikir Üret</span>
+        </section>
+
+        @* WORKFLOW *@
+        <section class="lp-workflow">
+            <div class="lp-wf-title">Nasıl Çalışır?</div>
+            <div class="lp-wf-steps">
+                <div class="lp-wf-step">
+                    <div class="lp-wf-icon" style="background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.2);">💡</div>
+                    <div class="lp-wf-step-name">Fikir Oluştur</div>
+                    <div class="lp-wf-step-desc">Çalışan fikir girer, SWOT doldurur</div>
                 </div>
-                <div class="landing-feature-sep"></div>
-                <div class="landing-feature">
-               
-                    <span>Onay Süreci</span>
+                <div class="lp-wf-arrow">→</div>
+                <div class="lp-wf-step">
+                    <div class="lp-wf-icon" style="background:rgba(251,146,60,0.1);border-color:rgba(251,146,60,0.2);">🔍</div>
+                    <div class="lp-wf-step-name">Ön Değerlendirme</div>
+                    <div class="lp-wf-step-desc">Ön onaycı inceler ve puanlar</div>
                 </div>
-                <div class="landing-feature-sep"></div>
-                <div class="landing-feature">
-               
-                    <span>Hayata Geçir</span>
+                <div class="lp-wf-arrow">→</div>
+                <div class="lp-wf-step">
+                    <div class="lp-wf-icon" style="background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.2);">⭐</div>
+                    <div class="lp-wf-step-name">Komisyon Onayı</div>
+                    <div class="lp-wf-step-desc">Komisyon detaylı değerlendirir</div>
+                </div>
+                <div class="lp-wf-arrow">→</div>
+                <div class="lp-wf-step">
+                    <div class="lp-wf-icon" style="background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.2);">🚀</div>
+                    <div class="lp-wf-step-name">Projeye Dönüşüm</div>
+                    <div class="lp-wf-step-desc">Onaylanan fikir hayata geçer</div>
                 </div>
             </div>
+        </section>
 
-        </div>
     </div>
 
     <style>
         body {
-            overflow: hidden !important;
+            overflow-x: hidden !important;
         }
 
-        .landing-page {
+        /* ── ROOT ── */
+        .lp-root {
+            min-height: 100vh;
+            width: 100vw;
+            background: #070b18;
+            position: relative;
+            overflow-x: hidden;
+            font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* ── ARKAPLAN ── */
+        .lp-grid-bg {
             position: fixed;
             inset: 0;
-            background: #080b12;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
+            background-image: linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+            background-size: 48px 48px;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        #bgCanvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
+        .lp-glow-1 {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(14,165,233,0.1) 0%, transparent 70%);
+            top: -150px;
+            right: -100px;
+            pointer-events: none;
             z-index: 0;
         }
 
-        .landing-inner {
+        .lp-glow-2 {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── NAV ── */
+        .lp-nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .lp-nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .lp-nav-logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 6px rgba(56,189,248,0.3));
+        }
+
+        .lp-nav-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .lp-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lp-nav-link {
+            font-size: 13.5px;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+
+            .lp-nav-link:hover {
+                color: #fff;
+            }
+
+        .lp-nav-cta {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 7px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+            .lp-nav-cta:hover {
+                background: rgba(255,255,255,0.13);
+                color: #fff;
+            }
+
+        /* ── HERO ── */
+        .lp-hero {
             position: relative;
             z-index: 1;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
             align-items: center;
-            text-align: center;
-            padding: 32px 24px;
-            max-width: 520px;
+            padding: 50px 40px 40px;
+            max-width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
         }
 
-        .landing-logo-wrap {
-            width: 280px;
-            height: 280px;
-            border-radius: 999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 32px;
-            margin-bottom: 32px;
-            background: radial-gradient(circle, rgba(249,115,22,0.1) 0%, rgba(0,0,0,0) 75%);
-            border: 1px solid rgba(249,115,22,0.22);
-            box-shadow: 0 0 0 12px rgba(249,115,22,0.05), 0 0 0 28px rgba(249,115,22,0.025);
-            animation: pulse-ring 3.5s ease-in-out infinite;
-        }
-
-        .landing-logo {
-            width: 250%;
-            height: 250%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 28px rgba(249,115,22,0.4));
-            position: relative;
-            top: 20px;
-            left: 10px;
-        }
-
-        @@keyframes pulse-ring {
-            0%, 100% {
-                box-shadow: 0 0 0 10px rgba(249,115,22,0.05), 0 0 0 24px rgba(249,115,22,0.025);
-            }
-
-            50% {
-                box-shadow: 0 0 0 14px rgba(249,115,22,0.09), 0 0 0 32px rgba(249,115,22,0.04);
-            }
-        }
-
-        .landing-title {
-            font-size: 40px;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.03em;
-            margin: 0 0 12px;
-            line-height: 1.1;
-        }
-
-        .landing-sub {
-            font-size: 15px;
-            color: rgba(255,255,255,0.42);
-            line-height: 1.7;
-            margin: 0 0 36px;
-            max-width: 360px;
-        }
-
-        .landing-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 44px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .landing-btn-primary {
+        /* Sol */
+        .lp-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 13px 30px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: rgba(56,189,248,0.85);
+            background: rgba(56,189,248,0.08);
+            border: 1px solid rgba(56,189,248,0.18);
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-bottom: 22px;
+            letter-spacing: 0.02em;
+        }
+
+        .lp-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #38bdf8;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @@keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .lp-h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.04em;
+            line-height: 1.08;
+            margin: 0 0 18px;
+        }
+
+        .lp-h1-accent {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .lp-desc {
+            font-size: 14px;
+            color: rgba(255,255,255,0.42);
+            line-height: 1.7;
+            margin: 0 0 26px;
+            max-width: 100%;
+        }
+
+        .lp-cta-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
+        }
+
+        .lp-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 26px;
             background: #f97316;
             color: #fff;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 700;
             text-decoration: none;
-            letter-spacing: -0.01em;
             transition: background 0.15s, transform 0.15s;
+            letter-spacing: -0.01em;
         }
 
-            .landing-btn-primary:hover {
+            .lp-btn-primary:hover {
                 background: #ea6c0a;
                 color: #fff;
                 transform: translateY(-1px);
             }
 
-        .landing-btn-secondary {
+        .lp-btn-ghost {
             display: inline-flex;
             align-items: center;
-            padding: 13px 30px;
-            background: rgba(255,255,255,0.06);
-            color: rgba(255,255,255,0.65);
+            padding: 12px 26px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.6);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             text-decoration: none;
-            transition: background 0.15s, color 0.15s;
+            transition: all 0.15s;
         }
 
-            .landing-btn-secondary:hover {
-                background: rgba(255,255,255,0.11);
+            .lp-btn-ghost:hover {
+                background: rgba(255,255,255,0.09);
                 color: #fff;
             }
 
-        .landing-features {
+        .lp-trust {
             display: flex;
             align-items: center;
             gap: 20px;
         }
 
-        .landing-feature {
+        .lp-trust-item {
             display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 12.5px;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .lp-trust-val {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .lp-trust-label {
+            font-size: 11px;
             color: rgba(255,255,255,0.3);
             font-weight: 500;
         }
 
-        .lf-icon {
-            font-size: 14px;
-        }
-
-        .landing-feature-sep {
+        .lp-trust-div {
             width: 1px;
-            height: 14px;
+            height: 28px;
             background: rgba(255,255,255,0.1);
         }
+
+        /* Sağ: dashboard preview */
+        .lp-dashboard {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 24px 64px rgba(0,0,0,0.4);
+        }
+
+        .lp-db-topbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .lp-db-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .lp-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .lp-dot-red {
+            background: #ef4444;
+        }
+
+        .lp-dot-yellow {
+            background: #f59e0b;
+        }
+
+        .lp-dot-green {
+            background: #22c55e;
+        }
+
+        .lp-db-title {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+            font-weight: 500;
+        }
+
+        .lp-db-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .lp-db-stat {
+            padding: 14px 12px;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+        }
+
+            .lp-db-stat:last-child {
+                border-right: none;
+            }
+
+        .lp-db-stat-val {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .lp-db-stat-label {
+            font-size: 9.5px;
+            color: rgba(255,255,255,0.3);
+            font-weight: 500;
+        }
+
+        .lp-db-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: rgba(255,255,255,0.25);
+            padding: 12px 14px 6px;
+        }
+
+        .lp-idea-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.12s;
+        }
+
+            .lp-idea-card:hover {
+                background: rgba(255,255,255,0.03);
+            }
+
+        .lp-idea-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2px;
+        }
+
+        .lp-idea-meta {
+            font-size: 10.5px;
+            color: rgba(255,255,255,0.28);
+        }
+
+        .lp-idea-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .lp-db-progress-wrap {
+            padding: 12px 14px 14px;
+        }
+
+        .lp-db-progress-track {
+            height: 4px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .lp-db-progress-fill {
+            height: 100%;
+            width: 68%;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            border-radius: 4px;
+        }
+
+        /* ── WORKFLOW ── */
+        .lp-workflow {
+            position: relative;
+            z-index: 1;
+            padding: 40px 40px 60px;
+            max-width: 100%;
+            margin: 0 auto;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .lp-wf-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.25);
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .lp-wf-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .lp-wf-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 160px;
+        }
+
+        .lp-wf-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .lp-wf-step-name {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+        }
+
+        .lp-wf-step-desc {
+            font-size: 11px;
+            color: rgba(255,255,255,0.28);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .lp-wf-arrow {
+            font-size: 18px;
+            color: rgba(255,255,255,0.15);
+            margin-top: -20px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @@media (max-width: 900px) {
+            .lp-hero {
+                grid-template-columns: 1fr;
+                padding: 30px 20px;
+                gap: 28px;
+            }
+
+            .lp-nav {
+                padding: 14px 20px;
+            }
+
+            .lp-workflow {
+                padding: 30px 20px 50px;
+            }
+
+            .lp-h1 {
+                font-size: 30px;
+            }
+
+            .lp-wf-arrow {
+                display: none;
+            }
+
+            .lp-wf-steps {
+                gap: 16px;
+            }
+
+            .lp-wf-step {
+                width: 130px;
+            }
+
+            .lp-db-stats {
+                grid-template-columns: repeat(2,1fr);
+            }
+        }
+
+        @@media (max-width: 500px) {
+            .lp-h1 {
+                font-size: 26px;
+            }
+
+            .lp-trust {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .lp-cta-row {
+                flex-direction: column;
+            }
+
+            .lp-btn-primary, .lp-btn-ghost {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
     </style>
-
-    <script>
-        (function () {
-            var canvas = document.getElementById('bgCanvas');
-            var ctx = canvas.getContext('2d');
-            var particles = [];
-            var W, H;
-
-            function resize() {
-                W = canvas.width = window.innerWidth;
-                H = canvas.height = window.innerHeight;
-            }
-
-            function rand(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-
-            function createParticle() {
-                return {
-                    x: rand(0, W),
-                    y: rand(0, H),
-                    r: rand(0.8, 2.2),
-                    vx: rand(-0.12, 0.12),
-                    vy: rand(-0.28, -0.06),
-                    alpha: rand(0.15, 0.5)
-                };
-            }
-
-            function init() {
-                resize();
-                particles = [];
-                for (var i = 0; i < 120; i++) {
-                    particles.push(createParticle());
-                }
-            }
-
-            function draw() {
-                ctx.clearRect(0, 0, W, H);
-
-                particles.forEach(function (p) {
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(249,115,22,' + p.alpha + ')';
-                    ctx.fill();
-
-                    p.x += p.vx;
-                    p.y += p.vy;
-
-                    if (p.y < -4) {
-                        p.y = H + 4;
-                        p.x = rand(0, W);
-                    }
-                    if (p.x < -4) p.x = W + 4;
-                    if (p.x > W + 4) p.x = -4;
-                });
-
-                requestAnimationFrame(draw);
-            }
-
-            window.addEventListener('resize', resize);
-            init();
-            draw();
-        }());
-    </script>
 }
