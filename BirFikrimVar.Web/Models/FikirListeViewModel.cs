@@ -18,6 +18,7 @@ namespace BirFikrimVar.Web.Models
     {
         public string Isim { get; set; } = null!;
         public double Puan { get; set; }
+        public string Rol { get; set; }
     }
 
 

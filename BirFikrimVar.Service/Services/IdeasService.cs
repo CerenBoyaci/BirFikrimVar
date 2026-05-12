@@ -64,7 +64,6 @@ namespace BirFikrimVar.Service.Services
                     .ThenInclude(kd => kd.Degerlendirici)
                 .AsQueryable();
 
-            // Yetki filtrelerini burada koru (mevcut kodun)
             if (!userRoles.Contains("Admin") && !userRoles.Contains("OnOnayci") && !userRoles.Contains("KomisyonUyesi"))
             {
                 query = query.Where(f => f.BasvuruSahibiId == userId);
@@ -80,21 +79,26 @@ namespace BirFikrimVar.Service.Services
                 BasvuruSahibiAdSoyad = f.BasvuruSahibi.Ad + " " + f.BasvuruSahibi.Soyad,
                 OlusturmaTarihi = f.OlusturmaTarihi,
 
-                // Ön onaycıların ortalamalarını isim bazlı gruplayıp alalım
+              
                 OnOnayPuanlari = f.OnOnayDegerlendirmeleri
                     .GroupBy(od => od.DegerlendiriciId)
-                    .Select(g => new PuanBilgiDto
-                    {
-                        Isim = g.First().Degerlendirici.Ad + " " + g.First().Degerlendirici.Soyad,
-                        Puan = Math.Round(g.Average(x => x.Puan), 2)
+                    .Select(g => {
+                        var d = g.First().Degerlendirici;
+                        return new PuanBilgiDto
+                        {
+                            Isim = d.Ad + " " + d.Soyad,
+                            Puan = Math.Round(g.Average(x => x.Puan), 2),
+                        
+                            Rol = "Ön Onaycı"
+                        };
                     }).ToList(),
 
-                // Komisyon üyelerinin puanlarını alalım
                 KomisyonPuanlari = f.KomisyonDegerlendirmeleri
                     .Select(kd => new PuanBilgiDto
                     {
                         Isim = kd.Degerlendirici.Ad + " " + kd.Degerlendirici.Soyad,
-                        Puan = kd.Puan
+                        Puan = kd.Puan,
+                        Rol = "Komisyon Üyesi"
                     }).ToList()
             });
         }

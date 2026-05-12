@@ -18,5 +18,6 @@ namespace BirFikrimVar.Core.Dtos.Fikir
     {
         public string Isim { get; set; }
         public double Puan { get; set; }
+        public string Rol { get; set; }
     }
 }

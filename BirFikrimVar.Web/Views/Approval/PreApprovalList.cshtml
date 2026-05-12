@@ -79,23 +79,31 @@
                             }
                         </td>
                         <td>
-                            @if (fikir.KomisyonPuanlari != null && fikir.KomisyonPuanlari.Any())
+                            @if (fikir.OnOnayPuanlari != null && fikir.OnOnayPuanlari.Any())
                             {
-                                <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                                    @foreach (var p in fikir.KomisyonPuanlari)
+                                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                                    @foreach (var p in fikir.OnOnayPuanlari)
                                     {
-                                        <span class="badge"
-                                              style="background:#fff7ed; color:#c2410c; border:1px solid #ffedd5; font-size:11px; padding:4px 8px;"
-                                              title="@p.Isim">
-                                            <i class="bi bi-award me-1"></i>@p.Puan
-                                        </span>
-                                    }
-                       
-                                    @for (int i = 0; i < (3 - fikir.KomisyonPuanlari.Count); i++)
-                                    {
-                                        <span style="width:24px; height:24px; border:1px dashed #d1d5db; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#d1d5db; font-size:10px;">
-                                            <i class="bi bi-plus"></i>
-                                        </span>
+                                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px; min-width:130px; display:flex; flex-direction:column; gap:2px;">
+                                            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                                                <span style="font-size:12px; font-weight:600; color:#1e293b;">@p.Isim</span>
+                                                <span style="font-size:12px; font-weight:700; color:#2563eb;">@p.Puan</span>
+                                            </div>
+                                            <div style="display:flex; align-items:center;">
+                                                @if (p.Rol == "Admin")
+                                                {
+                                                    <span style="font-size:9px; background:#fee2e2; color:#991b1b; padding:1px 5px; border-radius:4px; font-weight:700; text-transform:uppercase;">
+                                                        <i class="bi bi-shield-lock me-1"></i>@p.Rol
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="font-size:9px; background:#e0f2fe; color:#0369a1; padding:1px 5px; border-radius:4px; font-weight:700; text-transform:uppercase;">
+                                                        <i class="bi bi-person-badge me-1"></i>@p.Rol
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
                                     }
                                 </div>
                             }
@@ -104,7 +112,7 @@
                                 <div style="display:flex; gap:6px;">
                                     @for (int i = 0; i < 3; i++)
                                     {
-                                        <span style="width:24px; height:24px; border:1px dashed #d1d5db; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#d1d5db; font-size:10px;">
+                                        <span style="width:24px; height:24px; border:1px dashed #d1d5db; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#d1d5db; font-size:10px;" title="Puan Bekleniyor">
                                             <i class="bi bi-plus"></i>
                                         </span>
                                     }
