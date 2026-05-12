@@ -39,42 +39,49 @@ namespace BirFikrimVar.Data.Context
                 .HasForeignKey(f => f.BasvuruSahibiId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // --- BURASI DEĞİŞTİ (İsim çakışmasını engellemek için) ---
             builder.Entity<Degerlendirme>()
                 .HasOne(d => d.Degerlendirici)
-                .WithMany(k => k.Degerlendirmeler)
+                .WithMany() // Kullanici tarafında koleksiyon yoksa boş bırakabilirsin
                 .HasForeignKey(d => d.DegerlendiriciId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-         
-            // (Fikir silinirse ekleri de silinmeli)
             builder.Entity<FikirDosyasi>()
                 .HasOne(d => d.Fikir)
                 .WithMany(f => f.FikirDosyalari)
                 .HasForeignKey(d => d.FikirId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // fikir ve Değerlendirmeler ilişkisi (fikir silinirse değerlendirmeleri de silinmeli)
-            builder.Entity<Degerlendirme>()
+            // --- BURASI GÜNCELLENDİ: Degerlendirmeler yerine OnOnayDegerlendirmeleri ---
+            // Eğer OnOnayDegerlendirmesi kullanıyorsan:
+            builder.Entity<OnOnayDegerlendirmesi>()
                 .HasOne(d => d.Fikir)
-                .WithMany(f => f.Degerlendirmeler)
+                .WithMany(f => f.OnOnayDegerlendirmeleri)
                 .HasForeignKey(d => d.FikirId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // fikir ve durum geçmişi ilişkisi (fikir silinirse durum geçmişleri de silinmeli)
+            // --- BURASI GÜNCELLENDİ: DurumGecmisleri yerine FikirDurumGecmisleri ---
             builder.Entity<FikirDurumGecmisi>()
                 .HasOne(fd => fd.Fikir)
-                .WithMany(f => f.DurumGecmisleri)
+                .WithMany(f => f.FikirDurumGecmisleri) // Fikir.cs içindeki yeni isim bu
                 .HasForeignKey(fd => fd.FikirId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Komisyon için de ekleyelim:
+            builder.Entity<KomisyonDegerlendirmesi>()
+                .HasOne(d => d.Fikir)
+                .WithMany(f => f.KomisyonDegerlendirmeleri)
+                .HasForeignKey(d => d.FikirId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<Kategori>().HasData(
-        new Kategori { Id = 1, Ad = "Stratejik Uyum", AktifMi = true },
-        new Kategori { Id = 2, Ad = "Yenilikçilik", AktifMi = true },
-        new Kategori { Id = 3, Ad = "Uygulanabilirlik", AktifMi = true },
-        new Kategori { Id = 4, Ad = "Beklenen Fayda", AktifMi = true },
-        new Kategori { Id = 5, Ad = "Risk ve Sürdürülebilirlik", AktifMi = true },
-        new Kategori { Id = 6, Ad = "Kaynak İhtiyacı", AktifMi = true }
-    );
+                new Kategori { Id = 1, Ad = "Stratejik Uyum", AktifMi = true },
+                new Kategori { Id = 2, Ad = "Yenilikçilik", AktifMi = true },
+                new Kategori { Id = 3, Ad = "Uygulanabilirlik", AktifMi = true },
+                new Kategori { Id = 4, Ad = "Beklenen Fayda", AktifMi = true },
+                new Kategori { Id = 5, Ad = "Risk ve Sürdürülebilirlik", AktifMi = true },
+                new Kategori { Id = 6, Ad = "Kaynak İhtiyacı", AktifMi = true }
+            );
         }
     }
 }

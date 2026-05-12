@@ -13,14 +13,17 @@ namespace BirFikrimVar.Core.Entities
 
         public int FikirId { get; set; }
         [ForeignKey("FikirId")]
-        public Fikir Fikir { get; set; } = null!;
+        public virtual Fikir Fikir { get; set; } = null!;
 
         public int KategoriId { get; set; }
         [ForeignKey("KategoriId")]
-        public Kategori Kategori { get; set; } = null!;
+        public virtual Kategori Kategori { get; set; } = null!;
 
         [Required]
         public string DegerlendiriciId { get; set; } = null!;
+
+        [ForeignKey("DegerlendiriciId")]
+        public virtual Kullanici Degerlendirici { get; set; } = null!; 
 
         [Range(1, 10)]
         public int Puan { get; set; }

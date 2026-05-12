@@ -10,9 +10,17 @@ namespace BirFikrimVar.Web.Models
         public string Durum { get; set; }
         public string BasvuruSahibiAdSoyad { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
+        public List<PuanBilgiViewModel> OnOnayPuanlari { get; set; } = new();
+        public List<PuanBilgiViewModel> KomisyonPuanlari { get; set; } = new();
     }
 
-  
+    public class PuanBilgiViewModel
+    {
+        public string Isim { get; set; } = null!;
+        public double Puan { get; set; }
+    }
+
+
     public class FikirOlusturViewModel
     {
         [Required(ErrorMessage = "Fikir başlığı zorunludur.")]

@@ -18,6 +18,9 @@ namespace BirFikrimVar.Core.Entities
         [Required]
         public string DegerlendiriciId { get; set; } = null!;
 
+        [ForeignKey("DegerlendiriciId")]
+        public virtual Kullanici Degerlendirici { get; set; } = null!;
+
         [Range(1, 10)]
         public int Puan { get; set; }
 

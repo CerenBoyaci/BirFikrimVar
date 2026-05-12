@@ -27,6 +27,7 @@
                     <th style="width:130px;">Tarih</th>
                     <th style="width:150px;">Durum</th>
                     <th style="width:110px; text-align:right;">İşlem</th>
+                    <th>Ön Onay Puanları</th>
                 </tr>
             </thead>
             <tbody>
@@ -75,6 +76,39 @@
                                    style="color:#b45309; border-color:#fde68a; background:#fffbeb;">
                                     <i class="bi bi-arrow-repeat me-1"></i>Güncelle
                                 </a>
+                            }
+                        </td>
+                        <td>
+                            @if (fikir.KomisyonPuanlari != null && fikir.KomisyonPuanlari.Any())
+                            {
+                                <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                                    @foreach (var p in fikir.KomisyonPuanlari)
+                                    {
+                                        <span class="badge"
+                                              style="background:#fff7ed; color:#c2410c; border:1px solid #ffedd5; font-size:11px; padding:4px 8px;"
+                                              title="@p.Isim">
+                                            <i class="bi bi-award me-1"></i>@p.Puan
+                                        </span>
+                                    }
+                       
+                                    @for (int i = 0; i < (3 - fikir.KomisyonPuanlari.Count); i++)
+                                    {
+                                        <span style="width:24px; height:24px; border:1px dashed #d1d5db; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#d1d5db; font-size:10px;">
+                                            <i class="bi bi-plus"></i>
+                                        </span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div style="display:flex; gap:6px;">
+                                    @for (int i = 0; i < 3; i++)
+                                    {
+                                        <span style="width:24px; height:24px; border:1px dashed #d1d5db; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#d1d5db; font-size:10px;">
+                                            <i class="bi bi-plus"></i>
+                                        </span>
+                                    }
+                                </div>
                             }
                         </td>
                     </tr>

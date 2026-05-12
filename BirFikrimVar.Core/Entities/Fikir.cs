@@ -12,8 +12,6 @@ namespace BirFikrimVar.Core.Entities
         public string Ozet { get; set; }
         public string Kapsam { get; set; }
         public string YenilikciYan { get; set; }
-
-        // SWOT analizi alanları
         public string GucluYonler { get; set; }
         public string ZayifYonler { get; set; }
         public string Firsatlar { get; set; }
@@ -26,8 +24,12 @@ namespace BirFikrimVar.Core.Entities
         public string BasvuruSahibiId { get; set; }
         public Kullanici BasvuruSahibi { get; set; }
 
-        public ICollection<FikirDosyasi> FikirDosyalari { get; set; }
-        public ICollection<Degerlendirme> Degerlendirmeler { get; set; }
-        public ICollection<FikirDurumGecmisi> DurumGecmisleri { get; set; }
+        // --- NAVIGATION PROPERTIES (HER BİRİNDEN SADECE BİR TANE OLMALI) ---
+        public virtual ICollection<FikirDosyasi> FikirDosyalari { get; set; } = new List<FikirDosyasi>();
+        public virtual ICollection<OnOnayDegerlendirmesi> OnOnayDegerlendirmeleri { get; set; } = new List<OnOnayDegerlendirmesi>();
+        public virtual ICollection<KomisyonDegerlendirmesi> KomisyonDegerlendirmeleri { get; set; } = new List<KomisyonDegerlendirmesi>();
+
+        // Eğer veritabanında bu tablolar varsa kalsın, yoksa hata verebilir:
+        public virtual ICollection<FikirDurumGecmisi> FikirDurumGecmisleri { get; set; } = new List<FikirDurumGecmisi>();
     }
 }

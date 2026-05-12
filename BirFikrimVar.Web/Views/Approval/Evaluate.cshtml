@@ -155,7 +155,33 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        $(document).ready(function () {
+            function hesaplaOrtalama() {
+                let toplam = 0;
+                let sayi = 0;
+                $('.puan-input').each(function () {
+                    let val = parseFloat($(this).val());
+                    if (!isNaN(val)) {
+                        toplam += val;
+                        sayi++;
+                    }
+                });
+
+                if (sayi > 0) {
+                    let ort = (toplam / sayi).toFixed(2);
+                    $('.puan-ortalama-val').text(ort);
+
+                    if (ort > 6) {
+                        $('.puan-ortalama-box').css({ 'background': '#f0fdf4', 'color': '#16a34a', 'border-color': '#bbf7d0' });
+                    } else {
+                        $('.puan-ortalama-box').css({ 'background': '#fef2f2', 'color': '#dc2626', 'border-color': '#fecaca' });
+                    }
+                }
+            }
+
+            $('.puan-input').on('input', hesaplaOrtalama);
+            hesaplaOrtalama(); 
+        });
+    </script>
 }

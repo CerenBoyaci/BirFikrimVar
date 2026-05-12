@@ -24,5 +24,8 @@ namespace BirFikrimVar.Service.Interfaces
         Task<(string filePath, string fileName, string contentType)> GetAttachmentForDownloadAsync(int fikirId, int fileId, string userId, IList<string> userRoles);
         Task<IEnumerable<KategoriDto>> GetActiveCategoriesAsync();
         Task<string> DeleteIdeaAttachmentAsync(int fikirId, int fileId, string userId);
+
+
+
     }
 }

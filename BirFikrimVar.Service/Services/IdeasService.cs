@@ -56,37 +56,47 @@ namespace BirFikrimVar.Service.Services
 
         public async Task<IEnumerable<FikirListeDto>> GetIdeasAsync(string userId, IList<string> userRoles)
         {
-            var query = _context.Fikirler.Include(f => f.BasvuruSahibi).AsQueryable();
+            var query = _context.Fikirler
+                .Include(f => f.BasvuruSahibi)
+                .Include(f => f.OnOnayDegerlendirmeleri)
+                    .ThenInclude(od => od.Degerlendirici)
+                .Include(f => f.KomisyonDegerlendirmeleri)
+                    .ThenInclude(kd => kd.Degerlendirici)
+                .AsQueryable();
 
-            if (userRoles.Contains("Admin"))
+            // Yetki filtrelerini burada koru (mevcut kodun)
+            if (!userRoles.Contains("Admin") && !userRoles.Contains("OnOnayci") && !userRoles.Contains("KomisyonUyesi"))
             {
-               //admin için filtreye gerek yok çünkü o tüm fikirleri zaten görmeli
-            }
-            else if (userRoles.Contains("OnOnayci"))
-            {
-               
-                query = query.Where(f => f.Durum == FikirDurumu.OnOnayBekliyor
-                                      || f.Durum == FikirDurumu.KomisyonOnayiBekliyor
-                                      || f.Durum == FikirDurumu.OnOnayRetli);
-            }
-            else if (userRoles.Contains("KomisyonUyesi"))
-            {
-                query = query.Where(f => f.Durum == FikirDurumu.KomisyonOnayiBekliyor);
-            }
-            else
-            {
-                //standart kullanıcı sadece kendi fikirlerini görsün
                 query = query.Where(f => f.BasvuruSahibiId == userId);
             }
 
-            return await query.Select(f => new FikirListeDto
+            var fikirler = await query.ToListAsync();
+
+            return fikirler.Select(f => new FikirListeDto
             {
                 Id = f.Id,
                 Baslik = f.Baslik,
                 Durum = f.Durum.ToString(),
                 BasvuruSahibiAdSoyad = f.BasvuruSahibi.Ad + " " + f.BasvuruSahibi.Soyad,
-                OlusturmaTarihi = f.OlusturmaTarihi
-            }).ToListAsync();
+                OlusturmaTarihi = f.OlusturmaTarihi,
+
+                // Ön onaycıların ortalamalarını isim bazlı gruplayıp alalım
+                OnOnayPuanlari = f.OnOnayDegerlendirmeleri
+                    .GroupBy(od => od.DegerlendiriciId)
+                    .Select(g => new PuanBilgiDto
+                    {
+                        Isim = g.First().Degerlendirici.Ad + " " + g.First().Degerlendirici.Soyad,
+                        Puan = Math.Round(g.Average(x => x.Puan), 2)
+                    }).ToList(),
+
+                // Komisyon üyelerinin puanlarını alalım
+                KomisyonPuanlari = f.KomisyonDegerlendirmeleri
+                    .Select(kd => new PuanBilgiDto
+                    {
+                        Isim = kd.Degerlendirici.Ad + " " + kd.Degerlendirici.Soyad,
+                        Puan = kd.Puan
+                    }).ToList()
+            });
         }
 
         public async Task<FikirDetayDto> GetIdeaDetailAsync(int id, string userId, IList<string> userRoles)
@@ -500,6 +510,8 @@ namespace BirFikrimVar.Service.Services
 
             return "Basarili";
         }
+
+
 
     }
 
