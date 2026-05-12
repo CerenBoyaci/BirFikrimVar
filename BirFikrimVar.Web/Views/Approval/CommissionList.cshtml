@@ -1,68 +1,82 @@
 ﻿@model List<BirFikrimVar.Web.Models.FikirListeViewModel>
 
-@{
-    ViewData["Title"] = "Komisyon Paneli";
-    ViewData["PageTitle"] = "Komisyon Paneli";
-}
-
-<div class="card">
-    <div class="card-header">
-        <span class="card-header-title">
-            <i class="bi bi-award me-2" style="color:#9ca3af;"></i>Komisyon Onayı Bekleyen Fikirler
-        </span>
-        @if (Model != null && Model.Any())
+<table class="table">
+    <thead>
+        <tr>
+            <th style="width:60px;">ID</th>
+            <th>Başlık</th>
+            <th>Başvuru Sahibi</th>
+            <th style="width:130px;">Tarih</th>
+            <th style="width:140px;">Durum</th>
+            <th>Komisyon Değerlendirmeleri</th> 
+            <th style="width:100px; text-align:right;">İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fikir in Model)
         {
-            <span style="font-size:11.5px; color:#9ca3af; font-weight:500;">@Model.Count kayıt</span>
-        }
-    </div>
+            <tr>
+                <td class="td-muted">#@fikir.Id</td>
+                <td class="td-primary">@fikir.Baslik</td>
+                <td class="td-muted">@fikir.BasvuruSahibiAdSoyad</td>
+                <td class="td-muted">@fikir.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                <td><span class="badge badge-kom-bekliyor">Komisyon Bekliyor</span></td>
 
-    @if (Model != null && Model.Any())
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="width:60px;">ID</th>
-                    <th>Başlık</th>
-                    <th>Başvuru Sahibi</th>
-                    <th style="width:130px;">Tarih</th>
-                    <th style="width:140px;">Durum</th>
-                    <th style="width:100px; text-align:right;">İşlem</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var fikir in Model)
-                {
-                    <tr>
-                        <td class="td-muted" style="font-variant-numeric:tabular-nums;">#@fikir.Id</td>
-                        <td class="td-primary">@fikir.Baslik</td>
-                        <td class="td-muted">@fikir.BasvuruSahibiAdSoyad</td>
-                        <td class="td-muted">@fikir.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</td>
-                        <td><span class="badge badge-kom-bekliyor">Komisyon Bekliyor</span></td>
-                        <td style="text-align:right;">
-                            <a asp-action="CommissionEvaluate"
-                               asp-route-id="@fikir.Id"
-                               class="btn-table"
-                               style="color:#1d4ed8; border-color:#dbeafe; background:#eff6ff;">
-                                <i class="bi bi-star me-1"></i>Puan Ver
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <div style="padding:48px 20px; text-align:center;">
-            <div style="width:44px; height:44px; border-radius:10px; background:#f5f3ff; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
-                <i class="bi bi-award" style="font-size:20px; color:#7c3aed;"></i>
-            </div>
-            <div style="font-size:13.5px; font-weight:600; color:#111827; margin-bottom:4px;">
-                Bekleyen fikir yok
-            </div>
-            <div style="font-size:12.5px; color:#9ca3af;">
-                Şu anda komisyon değerlendirmesi bekleyen bir fikir bulunmamaktadır.
-            </div>
-        </div>
-    }
-</div>
+
+                <td>
+                    @if (fikir.KomisyonPuanlari != null && fikir.KomisyonPuanlari.Any())
+                    {
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                            @foreach (var p in fikir.KomisyonPuanlari)
+                            {
+                                <div style="background:#f5f3ff; border:1px solid #ddd6fe; border-radius:8px; padding:4px 10px; min-width:140px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <span style="font-size:11.5px; font-weight:600; color:#4c1d95;">@p.Isim</span>
+                                        <span style="font-size:12px; font-weight:700; color:#7c3aed;">@p.Puan</span>
+                                    </div>
+                                    <div style="font-size:9px; color:#8b5cf6; text-transform:uppercase; font-weight:700;">
+                                        <i class="bi bi-award-fill me-1"></i>@p.Rol
+                                    </div>
+                                </div>
+                            }
+
+
+                            @for (int i = 0; i < (3 - fikir.KomisyonPuanlari.Count); i++)
+                            {
+                                <div style="border:1px dashed #d1d5db; border-radius:8px; padding:4px 10px; min-width:140px; display:flex; align-items:center; justify-content:center; background:#f9fafb;">
+                                    <span style="font-size:10px; color:#9ca3af; font-style:italic;">Puan Bekleniyor...</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="display:flex; gap:8px;">
+                            @for (int i = 0; i < 3; i++)
+                            {
+                                <div style="border:1px dashed #d1d5db; border-radius:8px; padding:8px; min-width:140px; text-align:center; background:#f9fafb;">
+                                    <i class="bi bi-person-dash" style="color:#d1d5db;"></i>
+                                </div>
+                            }
+                        </div>
+                    }
+                </td>
+
+                <td style="text-align:right;">
+                    @if (fikir.KomisyonPuanlari.Any(p => p.Isim == User.Identity.Name || p.Isim == (User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value)))
+                    {
+                        <a asp-action="CommissionEvaluate" asp-route-id="@fikir.Id" class="btn-table" style="color:#b45309; border-color:#fde68a; background:#fffbeb;">
+                            <i class="bi bi-arrow-repeat me-1"></i>Güncelle
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="CommissionEvaluate" asp-route-id="@fikir.Id" class="btn-table" style="color:#1d4ed8; border-color:#dbeafe; background:#eff6ff;">
+                            <i class="bi bi-star me-1"></i>Puan Ver
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

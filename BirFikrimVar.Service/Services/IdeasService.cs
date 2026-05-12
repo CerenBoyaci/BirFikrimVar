@@ -212,18 +212,16 @@ namespace BirFikrimVar.Service.Services
             var fikir = await _context.Fikirler.FindAsync(fikirId);
             if (fikir == null) return "Bulunamadi";
 
-            // Güvenlik Kontrolü: Fikir doğru durumda mı?
+
             if (fikir.Durum != FikirDurumu.OnOnayBekliyor)
                 return "Fikir şu an ön onay değerlendirmesine açık değil.";
 
-            // Tekrar Kontrolü: Aynı kullanıcı daha önce puan vermiş mi?
             var mevcutMu = await _context.Set<OnOnayDegerlendirmesi>()
                 .AnyAsync(d => d.FikirId == fikirId && d.DegerlendiriciId == userId);
 
             if (mevcutMu)
                 return "Zaten puan verdiniz. Puanınızı değiştirmek için güncelleme (PUT) işlemini kullanın.";
 
-            // 1. Kategori Puanlarını Kaydet
             double toplamPuan = 0;
             foreach (var item in model.KategoriPuanlari)
             {
@@ -237,12 +235,10 @@ namespace BirFikrimVar.Service.Services
                 toplamPuan += item.Puan;
             }
 
-            // 2. Ortalama Hesaplama ve Doküman Kurallarını Uygulama
             double ortalama = toplamPuan / model.KategoriPuanlari.Count;
             var eskiDurum = fikir.Durum;
 
-            // DOKÜMAN KURALI: 6'nın üzerindeyse komisyona, 6 ve altındaysa redde (Sınır 6.0)
-            if (ortalama > 6)
+            if (ortalama >= 6)
             {
                 fikir.Durum = FikirDurumu.KomisyonOnayiBekliyor;
             }

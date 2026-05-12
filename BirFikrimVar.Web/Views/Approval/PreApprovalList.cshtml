@@ -68,7 +68,7 @@
                                     <i class="bi bi-pencil me-1"></i>Değerlendir
                                 </a>
                             }
-                            else if (fikir.Durum == "KomisyonOnayiBekliyor" || fikir.Durum == "OnOnayRetli")
+                            else if (fikir.OnOnayPuanlari.Any(p => p.Isim == User.Identity.Name || p.Isim == (User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value)))
                             {
                                 <a asp-action="Evaluate"
                                    asp-route-id="@fikir.Id"
@@ -76,6 +76,12 @@
                                    style="color:#b45309; border-color:#fde68a; background:#fffbeb;">
                                     <i class="bi bi-arrow-repeat me-1"></i>Güncelle
                                 </a>
+                            }
+                            else
+                            {
+                                <span class="badge" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:11px; font-weight:500;">
+                                    <i class="bi bi-lock-fill me-1"></i>Tamamlandı
+                                </span>
                             }
                         </td>
                         <td>
