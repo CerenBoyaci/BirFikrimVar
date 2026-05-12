@@ -1,6 +1,5 @@
 ﻿using BirFikrimVar.Core.Dtos.Auth;
 using BirFikrimVar.Core.Entities;
-using BirFikrimVar.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -18,13 +17,11 @@ namespace BirFikrimVar.API.Controllers
     {
         private readonly UserManager<Kullanici> _userManager;
         private readonly IConfiguration _configuration;
-        private readonly IEmailService _emailService;
 
-        public AuthController(UserManager<Kullanici> userManager, IConfiguration configuration, IEmailService emailService)
+        public AuthController(UserManager<Kullanici> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _configuration = configuration;
-            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -44,6 +41,7 @@ namespace BirFikrimVar.API.Controllers
                 Ad = model.Ad,
                 Soyad = model.Soyad,
                 AktifMi = true
+               
             };
 
             var result = await _userManager.CreateAsync(user, model.Parola);
@@ -55,40 +53,25 @@ namespace BirFikrimVar.API.Controllers
 
             await _userManager.AddToRoleAsync(user, "StandartKullanici");
 
-
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var webUrl = "https://localhost:7284";
-            var confirmationLink = $"{webUrl}/api/Auth/confirm-email?email={user.Email}&token={Uri.EscapeDataString(token)}";
-
-
-            string subject = "BirFikrimVar - Hesabınızı Doğrulayın";
-            string body = $@"
-    <div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'>
-        <h2 style='color: #007bff;'>Hoş Geldin {user.Ad}!</h2>
-        <p>BirFikrimVar ailesine katıldığın için teşekkürler. Hesabını aktif etmek için lütfen aşağıdaki butona tıkla:</p>
-        <div style='margin: 30px 0;'>
-            <a href='{confirmationLink}' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Hesabımı Doğrula</a>
-        </div>
-        <p style='font-size: 12px; color: #777;'>Eğer buton çalışmazsa şu bağlantıyı tarayıcına yapıştırabilirsin:</p>
-        <p style='font-size: 12px; color: #777;'>{confirmationLink}</p>
-    </div>";
-
-            try
-            {
-                await _emailService.SendEmailAsync(user.Email, subject, body);
-            }
-            catch (Exception ex)
-            {
-          
-                Console.WriteLine($"E-posta gönderim hatası: {ex.Message}");
-            }
          
-            Console.WriteLine($"\nONAY LİNKİ: {confirmationLink}\n");
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+          
+            var webUrl = "https://localhost:7112";
+            var confirmationLink = $"{webUrl}/Account/EmailOnayla?email={user.Email}&token={Uri.EscapeDataString(token)}";
+
+          
+            Console.WriteLine("\n\n################################################");
+            Console.WriteLine("YENİ KULLANICI KAYDI YAPILDI");
+            Console.WriteLine($"E-POSTA: {user.Email}");
+            Console.WriteLine($"ONAY LİNKİ (TIKLAYIN): {confirmationLink}");
+            Console.WriteLine("################################################\n\n");
 
             return Ok(new
             {
-                mesaj = "Kayıt başarılı. Lütfen e-posta adresinize gönderilen linke tıklayarak hesabınızı doğrulayın.",
-                email = user.Email
+                mesaj = "Kayıt başarılı. Lütfen e-posta adresinize gönderilen (veya log ekranındaki) linke tıklayarak hesabınızı doğrulayın.",
+                email = user.Email,
+                onayLinki = confirmationLink
             });
         }
 

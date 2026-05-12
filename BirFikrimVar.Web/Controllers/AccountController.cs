@@ -30,8 +30,11 @@ namespace BirFikrimVar.Web.Controllers
 
             if (yanit.IsSuccessStatusCode)
             {
-                
-                TempData["BasariMesaji"] = "Kayıt başarılı! Lütfen e-posta adresinize gönderilen doğrulama bağlantısına tıklayın.";
+                var responseData = await yanit.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+                var onayLinki = responseData.GetProperty("onayLinki").GetString();
+
+                TempData["BasariMesaji"] = "Kayıt başarılı! Lütfen e-posta adresinizi doğrulayarak giriş yapın.";
+                TempData["DevModeOnayLinki"] = onayLinki; 
 
                 return RedirectToAction("Giris");
             }
