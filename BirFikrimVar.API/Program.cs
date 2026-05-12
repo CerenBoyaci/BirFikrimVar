@@ -61,6 +61,7 @@ builder.Services.AddScoped<BirFikrimVar.Service.Interfaces.IIdeasService, BirFik
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILogService, LogService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 
