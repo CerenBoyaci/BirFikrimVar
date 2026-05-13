@@ -16,6 +16,11 @@ namespace BirFikrimVar.Web.Controllers
         {
             _httpClientFactory = httpClientFactory;
         }
+        [HttpGet]
+        public IActionResult OnayBasarili()
+        {
+            return View();
+        }
 
         [HttpGet]
         public IActionResult Kayit() => View();
@@ -30,9 +35,10 @@ namespace BirFikrimVar.Web.Controllers
 
             if (yanit.IsSuccessStatusCode)
             {
-                
-                TempData["BasariMesaji"] = "Kayıt başarılı! Lütfen e-posta adresinize gönderilen doğrulama bağlantısına tıklayın.";
+                TempData["IsWaitingConfirmation"] = true;
+                TempData.Keep("IsWaitingConfirmation");
 
+                TempData["BasariMesaji"] = "Kayıt başarılı! Lütfen e-posta adresinize gönderilen doğrulama bağlantısına tıklayın.";
                 return RedirectToAction("Giris");
             }
 
@@ -79,27 +85,24 @@ namespace BirFikrimVar.Web.Controllers
             {
                 var hata = await yanit.Content.ReadFromJsonAsync<ApiMesajViewModel>();
 
-                //doğrulayın içeriyorsa linki tekrar üret
+          
                 if (hata?.Mesaj.Contains("doğrulayın") == true)
                 {
-                    //api ye git
-                    var tokenResponse = await client.GetAsync($"auth/resend-confirmation-token?email={model.Email}");
+                    TempData["IsWaitingConfirmation"] = true;
+                    TempData.Keep("IsWaitingConfirmation");
 
+                
+                    var tokenResponse = await client.GetAsync($"auth/resend-confirmation-token?email={model.Email}");
                     if (tokenResponse.IsSuccessStatusCode)
                     {
                         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
                         var token = tokenData.GetProperty("token").GetString();
 
-                       
-                        var webUrl = "https://localhost:7112"; 
+                        var webUrl = "https://localhost:7112";
                         TempData["DevModeOnayLinki"] = $"{webUrl}/Account/EmailOnayla?email={model.Email}&token={Uri.EscapeDataString(token)}";
+                    }
 
-                        ModelState.AddModelError("", "E-postanız henüz doğrulanmamış. Sayfanın üstündeki test butonunu kullanarak hesabınızı onaylayabilirsiniz.");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Hesabınız doğrulanmamış ve yeni onay linki oluşturulamadı.");
-                    }
+                    ModelState.AddModelError("", "Hesabınız henüz doğrulanmamış. Lütfen e-posta adresinizi kontrol edin.");
                 }
                 else
                 {
@@ -151,28 +154,23 @@ namespace BirFikrimVar.Web.Controllers
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(token))
             {
-                TempData["HataMesaji"] = "Geçersiz veya eksik doğrulama bağlantısı.";
+                TempData["HataMesaji"] = "Geçersiz doğrulama bağlantısı.";
                 return RedirectToAction("Giris");
             }
 
             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
-
-            
             var response = await client.GetAsync($"auth/confirm-email?email={Uri.EscapeDataString(email)}&token={Uri.EscapeDataString(token)}");
 
             if (response.IsSuccessStatusCode)
             {
-                TempData["BasariMesaji"] = "E-posta adresiniz başarıyla doğrulandı. Artık giriş yapabilirsiniz.";
+                return RedirectToAction("OnayBasarili");
             }
             else
             {
-             
                 var error = await response.Content.ReadFromJsonAsync<ApiMesajViewModel>();
-                TempData["HataMesaji"] = error?.Mesaj ?? "E-posta doğrulama işlemi başarısız oldu veya token süresi doldu.";
+                TempData["HataMesaji"] = error?.Mesaj ?? "Doğrulama başarısız oldu.";
+                return RedirectToAction("Giris");
             }
-
-            
-            return RedirectToAction("Giris");
         }
 
         [Authorize]

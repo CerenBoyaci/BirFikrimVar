@@ -57,8 +57,8 @@ namespace BirFikrimVar.API.Controllers
 
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var webUrl = "https://localhost:7284";
-            var confirmationLink = $"{webUrl}/api/Auth/confirm-email?email={user.Email}&token={Uri.EscapeDataString(token)}";
+            var webMvcUrl = "https://localhost:7112";
+            var confirmationLink = $"{webMvcUrl}/Account/EmailOnayla?email={user.Email}&token={Uri.EscapeDataString(token)}";
 
 
             string subject = "BirFikrimVar - Hesabınızı Doğrulayın";
@@ -200,9 +200,9 @@ namespace BirFikrimVar.API.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (result.Succeeded)
-                return Ok(new { mesaj = "E-posta adresiniz başarıyla doğrulandı. Artık giriş yapabilirsiniz." });
+                return Ok(new { mesaj = "E-posta başarıyla doğrulandı." }); 
 
-            return BadRequest(new { mesaj = "E-posta doğrulaması başarısız oldu veya token süresi dolmuş." });
+            return BadRequest(new { mesaj = "Doğrulama başarısız." });
         }
 
         private JwtSecurityToken CreateToken(List<Claim> authClaims)

@@ -1,0 +1,16 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Hesabınız Doğrulandı";
+}
+
+<div class="text-center" style="margin-top: 100px;">
+    <div class="mb-4">
+        <i class="bi bi-check-circle-fill" style="font-size: 5rem; color: #10b981;"></i>
+    </div>
+    <h2 class="fw-bold">Harika! Hesabın Doğrulandı.</h2>
+    <p class="text-secondary mb-4">BirFikrimVar ailesine hoş geldin. Artık fikirlerini paylaşmaya başlayabilirsin.</p>
+
+    <a asp-action="Giris" asp-controller="Account" class="btn btn-primary btn-lg px-5">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+    </a>
+</div>
