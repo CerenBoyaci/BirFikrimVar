@@ -67,6 +67,42 @@
             </div>
         </div>
 
+        @* Ek Dosyalar Bölümü *@
+        @if (Model.Fikir.Dosyalar != null && Model.Fikir.Dosyalar.Any())
+        {
+            <div class="card" style="margin-top:14px;">
+                <div class="card-header">
+                    <span class="card-header-title">
+                        <i class="bi bi-paperclip me-2" style="color:#9ca3af;"></i>Ek Dosyalar
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                        @foreach (var dosya in Model.Fikir.Dosyalar)
+                        {
+                            <a asp-controller="Ideas"
+                               asp-action="DosyaIndir"
+                               asp-route-fikirId="@Model.FikirId"
+                               asp-route-dosyaId="@dosya.Id"
+                               class="btn btn-light btn-sm"
+                               style="border:1px solid #e5e7eb; display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:6px; color:#374151;">
+                                <i class="bi bi-file-earmark-arrow-down" style="color:#6b7280; font-size:16px;"></i>
+                                <span style="font-size:12.5px; font-weight:500;">@dosya.DosyaAdi</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card" style="margin-top:14px;">
+                <div class="card-body" style="padding:12px; text-align:center; color:#9ca3af; font-size:12.5px;">
+                    <i class="bi bi-info-circle me-1"></i> Bu fikir için yüklenmiş bir dosya bulunmuyor.
+                </div>
+            </div>
+        }
+
     </div>
 
     @* Sağ: Puanlama formu *@
