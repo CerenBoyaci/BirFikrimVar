@@ -99,6 +99,8 @@ namespace BirFikrimVar.API.Controllers
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Parola))
                 return Unauthorized(new { mesaj = "E-posta veya parola hatalı." });
 
+
+
             if (!user.AktifMi)
                 return Unauthorized(new { mesaj = "Hesabınız pasife alınmış." });
 
@@ -158,7 +160,12 @@ namespace BirFikrimVar.API.Controllers
             if (user == null || user.RefreshTokenEndDate <= DateTime.UtcNow)
                 return Unauthorized(new { mesaj = "Geçersiz veya süresi dolmuş oturum." });
 
-         
+            if (!user.AktifMi)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { mesaj = "Hesabınız pasif duruma getirildiği için oturum yenilenemiyor." });
+            }
+
+
             var userRoles = await _userManager.GetRolesAsync(user);
             var authClaims = new List<Claim>
     {

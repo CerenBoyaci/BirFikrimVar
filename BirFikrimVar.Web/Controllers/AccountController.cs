@@ -81,6 +81,11 @@ namespace BirFikrimVar.Web.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
+            else if (yanit.StatusCode == System.Net.HttpStatusCode.Forbidden) 
+            {
+                var hata = await yanit.Content.ReadFromJsonAsync<ApiMesajViewModel>();
+                ModelState.AddModelError("", hata?.Mesaj ?? "Hesabınız pasif durumdadır.");
+            }
             else if (yanit.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 var hata = await yanit.Content.ReadFromJsonAsync<ApiMesajViewModel>();
