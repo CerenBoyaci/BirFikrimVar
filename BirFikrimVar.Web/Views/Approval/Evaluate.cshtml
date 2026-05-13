@@ -106,9 +106,11 @@
                                    type="number"
                                    min="1"
                                    max="10"
+                                   step="1"
                                    class="form-control puan-input"
                                    placeholder="—"
                                    required
+                                   oninput="if(value != '' && value > 10) value = 10; if(value != '' && value < 1) value = 1;"
                                    style="width:64px; text-align:center; font-weight:700;" />
                         </div>
                         <span asp-validation-for="KategoriPuanlari[i].Puan"

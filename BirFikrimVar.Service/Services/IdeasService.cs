@@ -220,19 +220,23 @@ namespace BirFikrimVar.Service.Services
                 .AnyAsync(d => d.FikirId == fikirId && d.DegerlendiriciId == userId);
 
             if (mevcutMu)
-                return "Zaten puan verdiniz. Puanınızı değiştirmek için güncelleme (PUT) işlemini kullanın.";
+                return "Zaten puan verdiniz. Puanınızı değiştirmek için güncelleme işlemini kullanın.";
 
             double toplamPuan = 0;
             foreach (var item in model.KategoriPuanlari)
             {
+                int gecerliPuan = (int)item.Puan; 
+                if (gecerliPuan < 1) gecerliPuan = 1;
+                if (gecerliPuan > 10) gecerliPuan = 10;
+
                 _context.Set<OnOnayDegerlendirmesi>().Add(new OnOnayDegerlendirmesi
                 {
                     FikirId = fikirId,
                     KategoriId = item.KategoriId,
                     DegerlendiriciId = userId,
-                    Puan = item.Puan
+                    Puan = gecerliPuan 
                 });
-                toplamPuan += item.Puan;
+                toplamPuan += gecerliPuan;
             }
 
             double ortalama = toplamPuan / model.KategoriPuanlari.Count;
