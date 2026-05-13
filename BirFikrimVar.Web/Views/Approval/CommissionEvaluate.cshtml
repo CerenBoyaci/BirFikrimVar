@@ -109,10 +109,6 @@
             <form asp-action="CommissionEvaluate" method="post">
                 <input type="hidden" asp-for="FikirId" />
 
-                <div asp-validation-summary="ModelOnly"
-                     class="alert alert-danger py-2 mb-3"
-                     style="font-size:12.5px; border-radius:6px;"></div>
-
                 <div class="mb-3">
                     <label asp-for="Puan" class="form-label">
                         Nihai Puanınız
@@ -122,10 +118,13 @@
                            type="number"
                            min="1"
                            max="10"
+                           step="1"
                            class="form-control puan-input"
                            placeholder="8"
                            required
+                           oninput="if(value != '' && value > 10) value = 10; if(value != '' && value < 1) value = 1;"
                            style="font-size:20px; font-weight:700; text-align:center; padding:12px;" />
+
                     <span asp-validation-for="Puan"
                           style="font-size:11.5px; color:#dc2626; margin-top:3px; display:block;"></span>
                 </div>

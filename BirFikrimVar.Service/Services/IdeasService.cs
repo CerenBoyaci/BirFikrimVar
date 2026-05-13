@@ -332,6 +332,10 @@ namespace BirFikrimVar.Service.Services
             var fikir = await _context.Fikirler.FindAsync(fikirId);
             if (fikir == null) return "Bulunamadi";
 
+            if (model.Puan < 1 || model.Puan > 10)
+                return "Puan sadece 1 ile 10 arasında olabilir.";
+
+
             if (fikir.Durum != FikirDurumu.KomisyonOnayiBekliyor)
                 return "Fikir şu an komisyon değerlendirmesine açık değil.";
 
@@ -371,6 +375,9 @@ namespace BirFikrimVar.Service.Services
 
         public async Task<string> UpdateCommissionEvaluationAsync(int fikirId, KomisyonPuanEkleDto model, string userId)
         {
+            if (model.Puan < 1 || model.Puan > 10)
+                return "Puan sadece 1 ile 10 arasında olabilir.";
+
             var fikir = await _context.Fikirler.FindAsync(fikirId);
             if (fikir == null) return "Bulunamadi";
 
