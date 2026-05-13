@@ -125,10 +125,19 @@
         </div>
     </div>
 
-    <form asp-controller="Account" asp-action="Cikis" method="post" class="mt-1">
+    <form asp-controller="Account" asp-action="Cikis" method="post" id="actualLogoutForm" style="display:none;">
         @Html.AntiForgeryToken()
-        <button type="submit" class="menu-link" style="color:#4b5563">
-            <i class="bi bi-box-arrow-left"></i> Çıkış Yap
-        </button>
     </form>
+
+    <button type="button" class="menu-link w-100" data-bs-toggle="modal" data-bs-target="#logoutModal" style="color:#4b5563; border:none; background:none; text-align:left; outline:none;">
+        <i class="bi bi-box-arrow-left"></i> Çıkış Yap
+    </button>
 </div>
+
+<script>
+    function confirmLogout() {
+        if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
+            document.getElementById('logoutForm').submit();
+        }
+    }
+</script>
