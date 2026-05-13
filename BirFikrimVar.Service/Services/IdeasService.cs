@@ -268,21 +268,85 @@ namespace BirFikrimVar.Service.Services
             return "Basarili";
         }
 
+        /* public async Task<string> UpdatePreApprovalEvaluationAsync(int fikirId, OnOnayPuanEkleDto model, string userId)
+         {
+             var fikir = await _context.Fikirler.FindAsync(fikirId);
+             if (fikir == null) return "Bulunamadi";
+
+
+
+             var komisyonIslemiVarMi = await _context.Set<KomisyonDegerlendirmesi>()
+                 .AnyAsync(d => d.FikirId == fikirId);
+
+             if (komisyonIslemiVarMi)
+             {
+                 return "Bir komisyon üyesi değerlendirme yaptığı için ön onay puanlaması artık güncellenemez.";
+             }
+
+             // 2. Mevcut ön onay puanlarını bul
+             var mevcutDegerlendirmeler = await _context.Set<OnOnayDegerlendirmesi>()
+                 .Where(d => d.FikirId == fikirId && d.DegerlendiriciId == userId)
+                 .ToListAsync();
+
+             if (!mevcutDegerlendirmeler.Any())
+                 return "Henüz bir değerlendirmeniz bulunmuyor.";
+
+             // 3. Eski puanları sil ve yenilerini ekle
+             _context.Set<OnOnayDegerlendirmesi>().RemoveRange(mevcutDegerlendirmeler);
+
+             double toplamPuan = 0;
+             foreach (var item in model.KategoriPuanlari)
+             {
+                 _context.Set<OnOnayDegerlendirmesi>().Add(new OnOnayDegerlendirmesi
+                 {
+                     FikirId = fikirId,
+                     KategoriId = item.KategoriId,
+                     DegerlendiriciId = userId,
+                     Puan = item.Puan
+                 });
+                 toplamPuan += item.Puan;
+             }
+
+             // 4. Durumu tekrar hesapla (Puan değiştiği için durum Ret'ten Onay'a dönebilir veya tersi)
+             double ortalama = toplamPuan / model.KategoriPuanlari.Count;
+             var eskiDurum = fikir.Durum;
+
+             if (ortalama > 6) fikir.Durum = FikirDurumu.KomisyonOnayiBekliyor;
+             else fikir.Durum = FikirDurumu.OnOnayRetli;
+
+             fikir.GuncellemeTarihi = DateTime.UtcNow;
+
+             _context.FikirDurumGecmisleri.Add(new FikirDurumGecmisi
+             {
+                 FikirId = fikir.Id,
+                 EskiDurum = eskiDurum,
+                 YeniDurum = fikir.Durum,
+                 IslemYapanKullaniciId = userId,
+                 IslemTarihi = DateTime.UtcNow,
+                 Aciklama = $"Ön Onay Puanlaması güncellendi (Komisyon öncesi). Yeni Ortalama: {ortalama:F2}"
+             });
+
+             await _context.SaveChangesAsync();
+             return "Basarili";
+         }*/
+
         public async Task<string> UpdatePreApprovalEvaluationAsync(int fikirId, OnOnayPuanEkleDto model, string userId)
         {
+            // 1. Fikir var mı kontrolü
             var fikir = await _context.Fikirler.FindAsync(fikirId);
             if (fikir == null) return "Bulunamadi";
 
-
-            var komisyonIslemiVarMi = await _context.Set<KomisyonDegerlendirmesi>()
+            // 2. KRİTİK KONTROL: Komisyon üyelerinden herhangi biri değerlendirme yapmış mı?
+            // Eğer bir kişi bile puan verdiyse, ön onay puanı kilitlenir.
+            var komisyonIslemiBasladiMi = await _context.Set<KomisyonDegerlendirmesi>()
                 .AnyAsync(d => d.FikirId == fikirId);
 
-            if (komisyonIslemiVarMi)
+            if (komisyonIslemiBasladiMi)
             {
                 return "Bir komisyon üyesi değerlendirme yaptığı için ön onay puanlaması artık güncellenemez.";
             }
 
-            // 2. Mevcut ön onay puanlarını bul
+            // 3. Mevcut ön onay puanlarını bul (Sadece bu kullanıcıya ait olanlar)
             var mevcutDegerlendirmeler = await _context.Set<OnOnayDegerlendirmesi>()
                 .Where(d => d.FikirId == fikirId && d.DegerlendiriciId == userId)
                 .ToListAsync();
@@ -290,31 +354,39 @@ namespace BirFikrimVar.Service.Services
             if (!mevcutDegerlendirmeler.Any())
                 return "Henüz bir değerlendirmeniz bulunmuyor.";
 
-            // 3. Eski puanları sil ve yenilerini ekle
+            // 4. Mevcut puanları sil ve yenilerini ekle (Transaction benzeri yapı)
             _context.Set<OnOnayDegerlendirmesi>().RemoveRange(mevcutDegerlendirmeler);
 
             double toplamPuan = 0;
             foreach (var item in model.KategoriPuanlari)
             {
+                // Puanın 1-10 arasında olduğundan emin olalım (Güvenlik Katmanı)
+                int gecerliPuan = (int)item.Puan;
+                if (gecerliPuan < 1) gecerliPuan = 1;
+                if (gecerliPuan > 10) gecerliPuan = 10;
+
                 _context.Set<OnOnayDegerlendirmesi>().Add(new OnOnayDegerlendirmesi
                 {
                     FikirId = fikirId,
                     KategoriId = item.KategoriId,
                     DegerlendiriciId = userId,
-                    Puan = item.Puan
+                    Puan = gecerliPuan
                 });
-                toplamPuan += item.Puan;
+                toplamPuan += gecerliPuan;
             }
 
-            // 4. Durumu tekrar hesapla (Puan değiştiği için durum Ret'ten Onay'a dönebilir veya tersi)
+            // 5. Yeni ortalamaya göre durumu tekrar belirle (6 puan eşiği)
             double ortalama = toplamPuan / model.KategoriPuanlari.Count;
             var eskiDurum = fikir.Durum;
 
-            if (ortalama > 6) fikir.Durum = FikirDurumu.KomisyonOnayiBekliyor;
-            else fikir.Durum = FikirDurumu.OnOnayRetli;
+            if (ortalama > 6)
+                fikir.Durum = FikirDurumu.KomisyonOnayiBekliyor;
+            else
+                fikir.Durum = FikirDurumu.OnOnayRetli;
 
             fikir.GuncellemeTarihi = DateTime.UtcNow;
 
+            // 6. Loglama (Audit Log)
             _context.FikirDurumGecmisleri.Add(new FikirDurumGecmisi
             {
                 FikirId = fikir.Id,
@@ -322,7 +394,7 @@ namespace BirFikrimVar.Service.Services
                 YeniDurum = fikir.Durum,
                 IslemYapanKullaniciId = userId,
                 IslemTarihi = DateTime.UtcNow,
-                Aciklama = $"Ön Onay Puanlaması güncellendi (Komisyon öncesi). Yeni Ortalama: {ortalama:F2}"
+                Aciklama = $"Ön Onay Puanlaması güncellendi. Yeni Ortalama: {ortalama:F2}"
             });
 
             await _context.SaveChangesAsync();

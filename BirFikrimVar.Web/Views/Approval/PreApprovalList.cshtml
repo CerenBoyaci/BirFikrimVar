@@ -59,8 +59,14 @@
                             }
                         </td>
                         <td style="text-align:right;">
+                            @{
+                                
+                                var komisyonPuanlamayaBasladimi = fikir.KomisyonPuanlari != null && fikir.KomisyonPuanlari.Any();
+                            }
+
                             @if (fikir.Durum == "OnOnayBekliyor")
                             {
+                             
                                 <a asp-action="Evaluate"
                                    asp-route-id="@fikir.Id"
                                    class="btn-table"
@@ -68,8 +74,9 @@
                                     <i class="bi bi-pencil me-1"></i>Değerlendir
                                 </a>
                             }
-                            else if (fikir.OnOnayPuanlari.Any(p => p.Isim == User.Identity.Name || p.Isim == (User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value)))
+                            else if (fikir.Durum == "KomisyonOnayiBekliyor" && !komisyonPuanlamayaBasladimi)
                             {
+                              
                                 <a asp-action="Evaluate"
                                    asp-route-id="@fikir.Id"
                                    class="btn-table"
@@ -79,8 +86,9 @@
                             }
                             else
                             {
-                                <span class="badge" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:11px; font-weight:500;">
-                                    <i class="bi bi-lock-fill me-1"></i>Tamamlandı
+                               
+                                <span class="badge" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:11px; font-weight:500; padding: 6px 10px;">
+                                    <i class="bi bi-lock-fill me-1"></i>@(komisyonPuanlamayaBasladimi ? "Komisyonda / Kilitli" : "Tamamlandı")
                                 </span>
                             }
                         </td>
