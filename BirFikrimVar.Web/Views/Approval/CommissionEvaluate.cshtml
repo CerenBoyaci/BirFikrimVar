@@ -65,6 +65,37 @@
             </div>
         </div>
 
+        @* Dosyalar Bölümü *@
+        <div style="border-top:1px solid #f0f0f0; padding-top:14px;">
+            <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#9ca3af; margin-bottom:8px;">
+                <i class="bi bi-paperclip me-1"></i> Ek Dosyalar
+            </div>
+
+            @if (Model.Fikir.Dosyalar != null && Model.Fikir.Dosyalar.Any())
+            {
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    @foreach (var dosya in Model.Fikir.Dosyalar)
+                    {
+                        <a asp-controller="Ideas"
+                           asp-action="DosyaIndir"
+                           asp-route-fikirId="@Model.FikirId"
+                           asp-route-dosyaId="@dosya.Id"
+                           class="btn btn-sm btn-light"
+                           style="border: 1px solid #e5e7eb; font-size: 12px; display: flex; align-items: center; gap: 6px; padding: 5px 10px; background: #fff;">
+                            <i class="bi bi-file-earmark-arrow-down" style="color: #3b82f6;"></i>
+                            <span>@dosya.DosyaAdi</span>
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div style="font-size: 12px; color: #9ca3af; font-style: italic;">
+                    Bu fikir için yüklenmiş bir dosya bulunmamaktadır.
+                </div>
+            }
+        </div>
+
     </div>
 
     @* Sağ: Değerlendirme formu *@
