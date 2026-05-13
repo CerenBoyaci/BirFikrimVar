@@ -1,3 +1,4 @@
+using Amazon.S3;
 using BirFikrimVar.Core.Entities;
 using BirFikrimVar.Data.Context;
 using BirFikrimVar.Service.Interfaces;
@@ -58,7 +59,37 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<BirFikrimVar.Service.Interfaces.IIdeasService, BirFikrimVar.Service.Services.IdeasService>();
-builder.Services.AddScoped<IStorageService, LocalStorageService>();
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var config = new AmazonS3Config
+    {
+        // Minio yerelde genellikle 9000 portunda çalışır
+        ServiceURL = builder.Configuration["Minio:Endpoint"] ?? "http://localhost:9000",
+        ForcePathStyle = true // Minio kullanımı için bu ayar zorunludur
+    };
+
+    var accessKey = builder.Configuration["Minio:AccessKey"] ?? "minioadmin";
+    var secretKey = builder.Configuration["Minio:SecretKey"] ?? "minioadmin";
+
+    return new AmazonS3Client(accessKey, secretKey, config);
+});
+
+
+/*if (builder.Environment.IsProduction())
+{
+  
+    builder.Services.AddScoped<IStorageService, S3StorageService>();
+}*/
+// geliştirme ortamında Minio'yu test etmek için şartı 'true' yapıyoruz
+if (true)
+{
+    builder.Services.AddScoped<IStorageService, S3StorageService>();
+}
+else
+{
+   
+    builder.Services.AddScoped<IStorageService, LocalStorageService>();
+}
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<IEmailService, EmailService>();

@@ -154,12 +154,40 @@ public class IdeasController : Controller
         return RedirectToAction("Detay", new { id = fikirId });
     }
 
+    /*  [HttpGet]
+      public async Task<IActionResult> DosyaIndir(int fikirId, int dosyaId)
+      {
+          var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+          AddTokenToHeader(client);
+
+
+          var response = await client.GetAsync($"ideas/{fikirId}/attachments/{dosyaId}");
+
+          if (response.IsSuccessStatusCode)
+          {
+              var stream = await response.Content.ReadAsStreamAsync();
+              var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+
+
+              var fileName = response.Content.Headers.ContentDisposition?.FileNameStar
+                          ?? response.Content.Headers.ContentDisposition?.FileName
+                          ?? "indirilen_dosya";
+
+              return File(stream, contentType, fileName);
+          }
+
+
+          TempData["HataMesaji"] = $"Dosya indirilemedi. API Hatası: {response.StatusCode}";
+          return RedirectToAction("Detay", new { id = fikirId });
+      } */
+
+
+
     [HttpGet]
     public async Task<IActionResult> DosyaIndir(int fikirId, int dosyaId)
     {
         var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
         AddTokenToHeader(client);
-
 
         var response = await client.GetAsync($"ideas/{fikirId}/attachments/{dosyaId}");
 
@@ -168,16 +196,16 @@ public class IdeasController : Controller
             var stream = await response.Content.ReadAsStreamAsync();
             var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
 
-          
             var fileName = response.Content.Headers.ContentDisposition?.FileNameStar
                         ?? response.Content.Headers.ContentDisposition?.FileName
                         ?? "indirilen_dosya";
 
+            fileName = fileName.Trim('"');
+
             return File(stream, contentType, fileName);
         }
 
-
-        TempData["HataMesaji"] = $"Dosya indirilemedi. API Hatası: {response.StatusCode}";
+        TempData["HataMesaji"] = "Dosya indirilemedi.";
         return RedirectToAction("Detay", new { id = fikirId });
-    } 
+    }
 }

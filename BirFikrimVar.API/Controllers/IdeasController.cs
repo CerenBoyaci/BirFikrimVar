@@ -1,5 +1,6 @@
 ﻿using BirFikrimVar.Core.Dtos.Fikir;
 using BirFikrimVar.Service.Interfaces;
+using BirFikrimVar.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,10 +13,12 @@ namespace BirFikrimVar.API.Controllers
     public class IdeasController : ControllerBase
     {
         private readonly IIdeasService _ideasService;
+        private readonly IStorageService _storageService;
 
-        public IdeasController(IIdeasService ideasService)
+        public IdeasController(IIdeasService ideasService, IStorageService storageService)
         {
             _ideasService = ideasService;
+            _storageService = storageService;
         }
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -149,15 +152,31 @@ namespace BirFikrimVar.API.Controllers
             };
         }
 
+        /*  [HttpGet("{id}/attachments/{fileId}")]
+          public async Task<IActionResult> DownloadAttachment(int id, int fileId)
+          {
+              var (filePath, fileName, contentType) = await _ideasService.GetAttachmentForDownloadAsync(id, fileId, GetUserId(), GetUserRoles());
+
+              if (filePath == null) return NotFound(new { mesaj = "Dosya bulunamadı veya yetkisiz erişim." });
+
+              var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+              return File(fileBytes, contentType, fileName);
+          }*/
+
         [HttpGet("{id}/attachments/{fileId}")]
         public async Task<IActionResult> DownloadAttachment(int id, int fileId)
         {
-            var (filePath, fileName, contentType) = await _ideasService.GetAttachmentForDownloadAsync(id, fileId, GetUserId(), GetUserRoles());
+            var fileRecord = await _ideasService.GetFileRecordAsync(id, fileId);
 
-            if (filePath == null) return NotFound(new { mesaj = "Dosya bulunamadı veya yetkisiz erişim." });
+            if (fileRecord.Path == null)
+                return NotFound(new { mesaj = "Dosya kaydı bulunamadı." });
 
-            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            return File(fileBytes, contentType, fileName);
+            var (fileStream, contentType) = await _storageService.GetFileStreamAsync(fileRecord.Path);
+
+            if (fileStream == null)
+                return NotFound(new { mesaj = "Fiziksel dosya bulunamadı." });
+
+            return File(fileStream, contentType, fileRecord.OriginalName);
         }
 
         [HttpDelete("{id}/attachments/{fileId}")]

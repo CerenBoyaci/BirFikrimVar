@@ -412,17 +412,22 @@ namespace BirFikrimVar.Service.Services
             if (fikir.Durum != FikirDurumu.Taslak)
                 return "Sadece taslak durumundaki fikirlere dosya eklenebilir.";
 
-            var izinVerilenUzantilar = new[] { ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".png", ".jpg", ".jpeg" };
+            var izinVerilenMimeTypes = new[] { "application/pdf", "image/jpeg", "image/png", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" };
             long maxBoyut = 5 * 1024 * 1024; // 5 MB
 
+ 
+            foreach (var file in files)
+            {
+                if (!izinVerilenMimeTypes.Contains(file.ContentType))
+                    return $"Geçersiz içerik tipi: {file.FileName}";
+                if (file.Length > maxBoyut)
+                    return $"Dosya boyutu çok büyük (Max 5MB): {file.FileName}";
+            }
+
+          
             foreach (var file in files)
             {
                 var uzanti = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-                //döküman kuralları
-                if (!izinVerilenUzantilar.Contains(uzanti)) return $"Geçersiz dosya formatı: {file.FileName}";
-                if (file.Length > maxBoyut) return $"Dosya boyutu çok büyük (Max 5MB): {file.FileName}";
-
                 var kayitliYol = await _storageService.UploadFileAsync(file, $"Fikirler/{fikirId}");
 
                 _context.Set<FikirDosyasi>().Add(new FikirDosyasi
@@ -520,6 +525,17 @@ namespace BirFikrimVar.Service.Services
             await _context.SaveChangesAsync();
 
             return "Basarili";
+        }
+
+
+        public async Task<(string Path, string OriginalName)> GetFileRecordAsync(int fikirId, int fileId)
+        {
+            var dosya = await _context.Set<FikirDosyasi>()
+                .FirstOrDefaultAsync(d => d.Id == fileId && d.FikirId == fikirId);
+
+            if (dosya == null) return (null, null);
+
+            return (dosya.KayitliDosyaYolu, dosya.OrijinalDosyaAdi);
         }
 
 
