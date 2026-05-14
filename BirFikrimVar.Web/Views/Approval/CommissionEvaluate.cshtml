@@ -106,6 +106,12 @@
             </span>
         </div>
         <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger" style="font-size:13px; padding:10px; border-radius:6px; margin-bottom:15px;">
+                    <div asp-validation-summary="All"></div>
+                </div>
+            }
             <form asp-action="CommissionEvaluate" method="post">
                 <input type="hidden" asp-for="FikirId" />
 

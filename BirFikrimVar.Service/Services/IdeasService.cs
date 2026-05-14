@@ -457,20 +457,28 @@ namespace BirFikrimVar.Service.Services
             var fikir = await _context.Fikirler.FindAsync(fikirId);
             if (fikir == null) return "Bulunamadi";
 
+            // 1. Kullanıcı daha önce bu fikre puan vermiş mi?
             var mevcutPuan = await _context.Set<KomisyonDegerlendirmesi>()
                 .FirstOrDefaultAsync(d => d.FikirId == fikirId && d.DegerlendiriciId == userId);
 
-            if (mevcutPuan == null) return "Henüz puan vermediniz.";
+          
+            if (mevcutPuan == null)
+            {
+                var toplamPuanSayisi = await _context.Set<KomisyonDegerlendirmesi>().CountAsync(d => d.FikirId == fikirId);
+                if (toplamPuanSayisi >= 3)
+                {
+                    return "Bu fikir için 3 kişilik komisyon kotası dolmuştur. Değerlendirme yapamazsınız.";
+                }
+                return "Henüz puan vermediniz, önce puan kaydı oluşturmalısınız.";
+            }
 
-        
-           /* if (fikir.Durum == FikirDurumu.KomisyonOnayli || fikir.Durum == FikirDurumu.KomisyonOnayiRetli)
-                return "Komisyon değerlendirmesi tamamlanmış ve nihai karar verilmiş. Puan güncellenemez.";*/
-
+       
             mevcutPuan.Puan = model.Puan;
             mevcutPuan.DegerlendirmeTarihi = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 
+        
             var tumPuanlar = await _context.Set<KomisyonDegerlendirmesi>().Where(d => d.FikirId == fikirId).ToListAsync();
             if (tumPuanlar.Count == 3)
             {

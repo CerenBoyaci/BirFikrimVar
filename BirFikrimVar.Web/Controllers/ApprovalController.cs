@@ -275,6 +275,55 @@ namespace BirFikrimVar.Web.Controllers
               return View(model);
           }*/
 
+        /* [HttpPost]
+         public async Task<IActionResult> CommissionEvaluate(KomisyonDegerlendirmeViewModel model)
+         {
+             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
+             AddTokenToHeader(client);
+
+             var payload = new { Puan = model.Puan };
+
+
+             var response = await client.PostAsJsonAsync($"ideas/{model.FikirId}/commission-evaluations", payload);
+
+             if (response.IsSuccessStatusCode)
+             {
+                 TempData["BasariMesaji"] = "Komisyon değerlendirmesi kaydedildi.";
+                 return RedirectToAction("CommissionList");
+             }
+
+
+             var putResponse = await client.PutAsJsonAsync($"ideas/{model.FikirId}/commission-evaluations/me", payload);
+
+             if (putResponse.IsSuccessStatusCode)
+             {
+                 TempData["BasariMesaji"] = "Komisyon değerlendirmeniz başarıyla güncellendi.";
+                 return RedirectToAction("CommissionList");
+             }
+
+
+             var errorContent = await putResponse.Content.ReadAsStringAsync();
+             string errorMessage = "İşlem gerçekleştirilemedi.";
+
+             try
+             {
+                 var errorData = System.Text.Json.JsonSerializer.Deserialize<ApiMesajViewModel>(errorContent, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                 errorMessage = errorData?.Mesaj ?? errorMessage;
+             }
+             catch { errorMessage += $" (API: {errorContent})"; }
+
+             ModelState.AddModelError("", errorMessage);
+
+
+             var fikirResponse = await client.GetAsync($"ideas/{model.FikirId}");
+             if (fikirResponse.IsSuccessStatusCode)
+             {
+                 model.Fikir = await fikirResponse.Content.ReadFromJsonAsync<FikirDetayViewModel>();
+             }
+
+             return View(model);
+         }*/
+
         [HttpPost]
         public async Task<IActionResult> CommissionEvaluate(KomisyonDegerlendirmeViewModel model)
         {
@@ -283,7 +332,7 @@ namespace BirFikrimVar.Web.Controllers
 
             var payload = new { Puan = model.Puan };
 
-   
+  
             var response = await client.PostAsJsonAsync($"ideas/{model.FikirId}/commission-evaluations", payload);
 
             if (response.IsSuccessStatusCode)
@@ -292,7 +341,6 @@ namespace BirFikrimVar.Web.Controllers
                 return RedirectToAction("CommissionList");
             }
 
-      
             var putResponse = await client.PutAsJsonAsync($"ideas/{model.FikirId}/commission-evaluations/me", payload);
 
             if (putResponse.IsSuccessStatusCode)
@@ -301,20 +349,20 @@ namespace BirFikrimVar.Web.Controllers
                 return RedirectToAction("CommissionList");
             }
 
-        
             var errorContent = await putResponse.Content.ReadAsStringAsync();
             string errorMessage = "İşlem gerçekleştirilemedi.";
 
             try
             {
+              
                 var errorData = System.Text.Json.JsonSerializer.Deserialize<ApiMesajViewModel>(errorContent, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 errorMessage = errorData?.Mesaj ?? errorMessage;
             }
-            catch { errorMessage += $" (API: {errorContent})"; }
+            catch { }
 
             ModelState.AddModelError("", errorMessage);
 
-     
+       
             var fikirResponse = await client.GetAsync($"ideas/{model.FikirId}");
             if (fikirResponse.IsSuccessStatusCode)
             {
