@@ -20,7 +20,23 @@
                 <td class="td-primary">@fikir.Baslik</td>
                 <td class="td-muted">@fikir.BasvuruSahibiAdSoyad</td>
                 <td class="td-muted">@fikir.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</td>
-                <td><span class="badge badge-kom-bekliyor">Komisyon Bekliyor</span></td>
+                <td>
+                    @switch (fikir.Durum)
+                    {
+                        case "KomisyonOnayiBekliyor":
+                            <span class="badge badge-kom-bekliyor">Puanlama Devam Ediyor</span>
+                            break;
+                        case "KomisyonOnayli":
+                            <span class="badge badge-kom-onaylı" style="background:#f0fdf4; color:#15803d; border:1px solid #dcfce7;">Kabul Edildi</span>
+                            break;
+                        case "KomisyonOnayiRetli":
+                            <span class="badge badge-on-retli" style="background:#fef2f2; color:#b91c1c; border:1px solid #fee2e2;">Reddedildi</span>
+                            break;
+                        default:
+                            <span class="badge badge-taslak">@fikir.Durum</span>
+                            break;
+                    }
+                </td>
 
 
                 <td>

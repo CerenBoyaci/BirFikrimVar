@@ -460,16 +460,25 @@ namespace BirFikrimVar.Service.Services
             var mevcutPuan = await _context.Set<KomisyonDegerlendirmesi>()
                 .FirstOrDefaultAsync(d => d.FikirId == fikirId && d.DegerlendiriciId == userId);
 
-            if (mevcutPuan == null) return "Henüz puan vermediniz. Önce POST işlemi yapmalısınız.";
+            if (mevcutPuan == null) return "Henüz puan vermediniz.";
 
         
-            if (fikir.Durum == FikirDurumu.KomisyonOnayli || fikir.Durum == FikirDurumu.KomisyonOnayiRetli)
-                return "Komisyon değerlendirmesi tamamlanmış ve nihai karar verilmiş. Puan güncellenemez.";
+           /* if (fikir.Durum == FikirDurumu.KomisyonOnayli || fikir.Durum == FikirDurumu.KomisyonOnayiRetli)
+                return "Komisyon değerlendirmesi tamamlanmış ve nihai karar verilmiş. Puan güncellenemez.";*/
 
             mevcutPuan.Puan = model.Puan;
             mevcutPuan.DegerlendirmeTarihi = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
+
+            var tumPuanlar = await _context.Set<KomisyonDegerlendirmesi>().Where(d => d.FikirId == fikirId).ToListAsync();
+            if (tumPuanlar.Count == 3)
+            {
+                double yeniOrtalama = tumPuanlar.Average(d => d.Puan);
+                fikir.Durum = yeniOrtalama >= 8 ? FikirDurumu.KomisyonOnayli : FikirDurumu.KomisyonOnayiRetli;
+                await _context.SaveChangesAsync();
+            }
+
             return "Basarili";
         }
 
