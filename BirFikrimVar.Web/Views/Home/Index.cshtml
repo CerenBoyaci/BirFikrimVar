@@ -400,21 +400,24 @@ else
         }
 
         /* Sol Taraftaki Logo ve Yazı Grubu */
+        /* Sol Taraftaki Logo ve Yazı Grubu */
         .lp-nav-brand {
             display: flex;
             align-items: center;
-            /* Gap değerini 12px'den 4px'e düşürerek yazıyı logoya yaklaştırdık */
             gap: 4px;
-            margin-left: -10;
+            margin-left: -50;
+            /* Logoyu ve yazıyı aşağı indirmek için bu değeri artırabilirsin */
+            margin-top: 25px;
         }
 
         /* Navigasyon Logosu */
         .lp-nav-logo {
-            /* Logonun fiziksel alanını daraltmak için width değerini 130px civarına çekebilirsiniz */
-            width: 130px !important;
-            height: 130px !important;
+            width: 180px !important;
+            height: 180px !important;
             object-fit: contain;
             filter: drop-shadow(0 0 15px rgba(56,189,248,0.5));
+            /* Eğer sadece logo yukarıda kalıyorsa logoya özel margin de verebilirsin */
+            margin-top: 5px;
         }
 
         /* Marka İsmi (Bir Fikrim Var) */
@@ -425,8 +428,9 @@ else
             letter-spacing: -0.02em;
             white-space: nowrap;
             margin: 0;
-            /* Görsel bir tık daha yakınlık isterseniz negatif margin verebilirsiniz */
-            margin-left: -40px;
+            margin-left: -55px;
+            /* Yazı logoya göre çok yukarıda kalırsa burayı kullanabilirsin */
+            margin-top: 10px;
         }
 
         /* Sağ taraftaki butonlar (Giriş/Kayıt) */
