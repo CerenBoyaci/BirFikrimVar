@@ -320,7 +320,7 @@ else
                         <div class="lp-ad-step highlight">
                             <div class="lp-ad-icon pulse">4</div>
                             <div class="lp-ad-content">
-                                <div class="lp-ad-title">Fikir Hayat Bulur! 🚀</div>
+                                <div class="lp-ad-title">Fikir Hayat Bulur!</div>
                                 <p class="lp-ad-text">Onaylanan fikrin gerçeğe dönüşsün.</p>
                             </div>
                         </div>
@@ -385,54 +385,56 @@ else
         }
 
   
+        /* Navigasyon Çubuğu Genel Yapısı */
+        /* Navigasyon Çubuğu Genel Yapısı */
         .lp-nav {
             position: relative;
             z-index: 10;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 18px 40px;
+            /* Yatay padding'i 20px'den 10px'e düşürerek logoyu iyice sola yasladık */
+            padding: 10px 10px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            height: 70px; /* Nav yüksekliğini sabitledik ki kayma olmasın */
+            height: 80px;
         }
 
-    
+        /* Sol Taraftaki Logo ve Yazı Grubu */
         .lp-nav-brand {
             display: flex;
             align-items: center;
-            position: relative;
+            /* Gap değerini 12px'den 4px'e düşürerek yazıyı logoya yaklaştırdık */
+            gap: 4px;
+            margin-left: -10;
         }
 
-   
-        /* Logo Konumu - Sola iyice yaklaştırdık */
+        /* Navigasyon Logosu */
         .lp-nav-logo {
-            width: 160px !important;
-            height: auto !important;
-            position: absolute;
-            /* 20px yerine 5px yaparak iyice sola aldık */
-            left: 5px;
-            top: 75%;
-            transform: translateY(-50%);
+            /* Logonun fiziksel alanını daraltmak için width değerini 130px civarına çekebilirsiniz */
+            width: 130px !important;
+            height: 130px !important;
             object-fit: contain;
             filter: drop-shadow(0 0 15px rgba(56,189,248,0.5));
-            z-index: 11;
         }
 
-        /* Yazı Konumu - Logo sola gittiği için metni de 125px'e çektik */
+        /* Marka İsmi (Bir Fikrim Var) */
         .lp-nav-name {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             color: #fff;
             letter-spacing: -0.02em;
-            /* 145px yerine 125px yaparak logoyu takip etmesini sağladık */
-            margin-left: 125px;
             white-space: nowrap;
+            margin: 0;
+            /* Görsel bir tık daha yakınlık isterseniz negatif margin verebilirsiniz */
+            margin-left: -40px;
         }
 
+        /* Sağ taraftaki butonlar (Giriş/Kayıt) */
         .lp-nav-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
+            margin-right: 10px;
         }
 
         .lp-nav-link {
