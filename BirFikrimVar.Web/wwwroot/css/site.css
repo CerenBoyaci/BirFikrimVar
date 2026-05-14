@@ -950,3 +950,173 @@ textarea.form-control {
         padding: 26px 18px;
     }
 }
+
+/* Sidebar Ana Konteynır - Landing Page Rengi */
+.lp-sidebar {
+    background: #070b18;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff;
+    width: 210px; /* 240px'den 210px'e düşürdük, daha zarif duracak */
+    transition: all 0.3s ease;
+}
+
+/* Logo Alanı */
+.lp-sidebar-brand {
+    padding: 24px 20px;
+    display: flex;
+    align-items: center;
+    text-decoration: none !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.lp-sb-logo {
+    width: 110px;
+    height: auto;
+    position: absolute;
+    left: -5px; /* Landing page'deki gibi sola taşırılmış */
+    top: 50%;
+    transform: translateY(-50%);
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
+}
+
+.lp-sb-name {
+
+    margin-left: 60px; /* Yazıyı logonun yanına iter */
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+/* Menü Listesi */
+.lp-sidebar-menu {
+    flex: 1;
+    overflow-y: scroll; /* Kaydırma özelliği çalışsın ama... */
+    padding: 10px 12px;
+    scrollbar-width: none; /* Firefox için barı gizler */
+    -ms-overflow-style: none; /* IE ve Edge için barı gizler */
+}
+    .lp-sidebar-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+.lp-menu-section {
+    margin-bottom: 20px;
+}
+
+.lp-menu-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-left: 12px;
+    margin-bottom: 8px;
+}
+
+.lp-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    color: rgba(255, 255, 255, 0.45);
+    text-decoration: none !important;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 2px;
+}
+
+    .lp-menu-link i {
+        font-size: 16px;
+    }
+
+    .lp-menu-link:hover {
+        background: rgba(255, 255, 255, 0.04);
+        color: #fff;
+    }
+
+    /* AKTİF DURUM - Landing Page Mavi Neon Efekti */
+    .lp-menu-link.active {
+        background: rgba(56, 189, 248, 0.08);
+        color: #38bdf8;
+        font-weight: 600;
+        box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.15);
+    }
+
+        .lp-menu-link.active i {
+            color: #38bdf8;
+        }
+
+/* Footer / Kullanıcı Alanı */
+.lp-sidebar-footer {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lp-user-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lp-user-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #f97316, #ea580c); /* Landing page turuncusu */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.lp-user-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.lp-user-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lp-user-role {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.lp-logout-btn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.3);
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+    .lp-logout-btn:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.2);
+    }

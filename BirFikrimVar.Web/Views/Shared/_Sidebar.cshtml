@@ -1,145 +1,103 @@
-﻿@*
-  
-*@
-
-@{
-    var name = User.Identity?.Name ?? "";
-    var initials = name.Length >= 2
-        ? name.Substring(0, 2).ToUpper()
-        : name.ToUpper();
-
+﻿@{
+    var name = User.Identity?.Name ?? "Kullanıcı";
+    var initials = name.Length >= 2 ? name.Substring(0, 2).ToUpper() : name.ToUpper();
     var ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
+    // Aktiflik kontrolü: Hem controller hem action tam eşleşmeli
     string IsActive(string c, string a)
-        => ctrl.Equals(c, StringComparison.OrdinalIgnoreCase)
-           && action.Equals(a, StringComparison.OrdinalIgnoreCase)
-           ? "active" : "";
-
-    string IsActiveCtrl(string c)
-        => ctrl.Equals(c, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+        => string.Equals(ctrl, c, StringComparison.OrdinalIgnoreCase) &&
+           string.Equals(action, a, StringComparison.OrdinalIgnoreCase) ? "active" : "";
 }
 
-<a asp-controller="Home" asp-action="Index" class="sidebar-brand">
-    <div class="sidebar-brand-icon" style="background: none; padding: 0;">
-        <img src="~/imgs/BirFikrimVar.png" alt="Logo" style="width: 90px; height: 90px; object-fit: contain;" />
-    </div>
-    <span class="sidebar-brand-name">Bir Fikrim Var</span>
-</a>
-
-<nav class="sidebar-menu">
-
-    <p class="menu-heading">Genel</p>
-    <a asp-controller="Home" asp-action="Index"
-       class="menu-link @IsActive("Home", "Index")">
-        <i class="bi bi-grid-1x2"></i> Dashboard
-    </a>
-    <a asp-controller="Account" asp-action="Profil"
-       class="menu-link @IsActive("Account", "Profil")">
-        <i class="bi bi-grid-1x2"></i> Kullanıcı Bilgileri
+<div class="lp-sidebar">
+    @* --- BRAND / LOGO AREA --- *@
+    <a asp-controller="Home" asp-action="Index" class="lp-sidebar-brand">
+        <img src="~/imgs/BirFikrimVar.png" alt="Logo" class="lp-sb-logo" />
+        <span class="lp-sb-name">Bir Fikrim Var</span>
     </a>
 
-    @if (!User.IsInRole("OnOnayci") && !User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
-    {
-        <p class="menu-heading">Başvurular</p>
-        <a asp-controller="Ideas" asp-action="Index"
-           class="menu-link @IsActive("Ideas", "Index")">
-            <i class="bi bi-collection"></i> Fikirlerim
-        </a>
-        <a asp-controller="Ideas" asp-action="Olustur"
-           class="menu-link @IsActive("Ideas", "Olustur")">
-            <i class="bi bi-plus-square"></i> Yeni Fikir
-        </a>
-    }
-
-    @if (User.IsInRole("OnOnayci") || User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
-    {
-        <p class="menu-heading">Değerlendirme</p>
-
-        @if (User.IsInRole("OnOnayci") || User.IsInRole("Admin"))
-        {
-            <a asp-controller="Approval" asp-action="PreApprovalList"
-               class="menu-link @IsActive("Approval", "PreApprovalList")">
-                <i class="bi bi-ui-checks"></i> Ön Onay Paneli
+    @* --- NAVIGATION --- *@
+    <nav class="lp-sidebar-menu">
+        <div class="lp-menu-section">
+            <p class="lp-menu-label">Genel</p>
+            <a asp-controller="Home" asp-action="Index" class="lp-menu-link @IsActive("Home", "Index")">
+                <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>
-          
+            <a asp-controller="Account" asp-action="Profil" class="lp-menu-link @IsActive("Account", "Profil")">
+                <i class="bi bi-person-circle"></i> <span>Kullanıcı Bilgileri</span>
+            </a>
+        </div>
+
+        @if (!User.IsInRole("OnOnayci") && !User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
+        {
+            <div class="lp-menu-section">
+                <p class="lp-menu-label">Başvurular</p>
+                <a asp-controller="Ideas" asp-action="Index" class="lp-menu-link @IsActive("Ideas", "Index")">
+                    <i class="bi bi-collection"></i> <span>Fikirlerim</span>
+                </a>
+                <a asp-controller="Ideas" asp-action="Olustur" class="lp-menu-link @IsActive("Ideas", "Olustur")">
+                    <i class="bi bi-plus-square"></i> <span>Yeni Fikir</span>
+                </a>
+            </div>
         }
 
-        @if (User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
+        @if (User.IsInRole("OnOnayci") || User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
         {
-            <a asp-controller="Approval" asp-action="CommissionList"
-               class="menu-link @IsActive("Approval", "CommissionList")">
-                <i class="bi bi-award"></i> Komisyon Paneli
-            </a>
-        }
-    }
-
-    @if (User.IsInRole("Admin"))
-    {
-        <p class="menu-heading">Yönetim</p>
-        <a asp-controller="Admin" asp-action="AllIdeas"
-           class="menu-link @IsActive("Admin", "AllIdeas")">
-            <i class="bi bi-inboxes"></i> Tüm Fikirler
-        </a>
-        <a asp-controller="Admin" asp-action="Users"
-           class="menu-link @IsActive("Admin", "Users")">
-            <i class="bi bi-people"></i> Kullanıcı Yönetimi
-        </a>
-        <a asp-controller="Admin" asp-action="Categories"
-           class="menu-link @IsActive("Admin", "Categories")">
-            <i class="bi bi-tags"></i> Kategori Yönetimi
-        </a>
-        <a asp-controller="Admin" asp-action="Logs"
-           class="menu-link @IsActive("Admin", "Logs")">
-            <i class="bi bi-tags"></i> Admin-Log Kayıtları
-        </a>
-       
-    }
-
-</nav>
-
-<div class="sidebar-footer">
-    <div class="sidebar-user">
-        <div class="sidebar-avatar">@initials</div>
-        <div>
-            <div class="sidebar-username">@name</div>
-            <div class="sidebar-userrole">
-                @if (User.IsInRole("Admin"))
+            <div class="lp-menu-section">
+                <p class="lp-menu-label">Değerlendirme</p>
+                @if (User.IsInRole("OnOnayci") || User.IsInRole("Admin"))
                 {
-                    <text>Sistem Yöneticisi</text>
+                    <a asp-controller="Approval" asp-action="PreApprovalList" class="lp-menu-link @IsActive("Approval", "PreApprovalList")">
+                        <i class="bi bi-ui-checks"></i> <span>Ön Onay Paneli</span>
+                    </a>
                 }
-                else if (User.IsInRole("OnOnayci"))
+                @if (User.IsInRole("KomisyonUyesi") || User.IsInRole("Admin"))
                 {
-
-                    <text>Ön Onaycı</text>
-                }
-                else if (User.IsInRole("KomisyonUyesi"))
-                {
-
-                    <text>Komisyon Üyesi</text>
-                }
-                else
-                {
-
-                    <text>Standart Kullanıcı</text>
+                    <a asp-controller="Approval" asp-action="CommissionList" class="lp-menu-link @IsActive("Approval", "CommissionList")">
+                        <i class="bi bi-award"></i> <span>Komisyon Paneli</span>
+                    </a>
                 }
             </div>
-        </div>
-    </div>
-
-    <form asp-controller="Account" asp-action="Cikis" method="post" id="actualLogoutForm" style="display:none;">
-        @Html.AntiForgeryToken()
-    </form>
-
-    <button type="button" class="menu-link w-100" data-bs-toggle="modal" data-bs-target="#logoutModal" style="color:#4b5563; border:none; background:none; text-align:left; outline:none;">
-        <i class="bi bi-box-arrow-left"></i> Çıkış Yap
-    </button>
-</div>
-
-<script>
-    function confirmLogout() {
-        if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-            document.getElementById('logoutForm').submit();
         }
-    }
-</script>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="lp-menu-section">
+                <p class="lp-menu-label">Yönetim</p>
+                <a asp-controller="Admin" asp-action="AllIdeas" class="lp-menu-link @IsActive("Admin", "AllIdeas")">
+                    <i class="bi bi-inboxes"></i> <span>Tüm Fikirler</span>
+                </a>
+                <a asp-controller="Admin" asp-action="Users" class="lp-menu-link @IsActive("Admin", "Users")">
+                    <i class="bi bi-people"></i> <span>Kullanıcı Yönetimi</span>
+                </a>
+                <a asp-controller="Admin" asp-action="Categories" class="lp-menu-link @IsActive("Admin", "Categories")">
+                    <i class="bi bi-tags"></i> <span>Kategori Yönetimi</span>
+                </a>
+                <a asp-controller="Admin" asp-action="Logs" class="lp-menu-link @IsActive("Admin", "Logs")">
+                    <i class="bi bi-terminal"></i> <span>Sistem Logları</span>
+                </a>
+            </div>
+        }
+    </nav>
+
+    @* --- FOOTER / USER --- *@
+    <div class="lp-sidebar-footer">
+        <div class="lp-user-box">
+            <div class="lp-user-avatar">@initials</div>
+            <div class="lp-user-meta">
+                <span class="lp-user-name">@name</span>
+                <span class="lp-user-role">
+                    @(User.IsInRole("Admin") ? "Yönetici" : User.IsInRole("OnOnayci") ? "Ön Onaycı" : User.IsInRole("KomisyonUyesi") ? "Komisyon" : "Kullanıcı")
+                </span>
+            </div>
+        </div>
+
+        <form asp-controller="Account" asp-action="Cikis" method="post" id="actualLogoutForm" style="display:none;">
+            @Html.AntiForgeryToken()
+        </form>
+        <button type="button" class="lp-logout-btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
+            <i class="bi bi-box-arrow-left"></i>
+        </button>
+    </div>
+</div>
