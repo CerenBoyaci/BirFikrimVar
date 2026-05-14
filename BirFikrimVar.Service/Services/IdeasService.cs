@@ -242,7 +242,7 @@ namespace BirFikrimVar.Service.Services
             double ortalama = toplamPuan / model.KategoriPuanlari.Count;
             var eskiDurum = fikir.Durum;
 
-            if (ortalama >= 6)
+            if (ortalama > 6)
             {
                 fikir.Durum = FikirDurumu.KomisyonOnayiBekliyor;
             }
