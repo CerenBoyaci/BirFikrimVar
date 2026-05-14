@@ -25,6 +25,7 @@ namespace BirFikrimVar.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "OnOnayci,Admin")]
         public async Task<IActionResult> PreApprovalList()
         {
             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
@@ -49,6 +50,7 @@ namespace BirFikrimVar.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "OnOnayci,Admin")]
         public async Task<IActionResult> Evaluate(int id)
         {
             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
@@ -157,6 +159,7 @@ namespace BirFikrimVar.Web.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "KomisyonUyesi,Admin")]
         public async Task<IActionResult> CommissionList()
         {
             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");
@@ -170,7 +173,7 @@ namespace BirFikrimVar.Web.Controllers
 
                 if (model != null)
                 {
-                    // BURASI KRİTİK: Onaylanmış veya reddedilmiş olanları da listede tutuyoruz ki güncelleme yapılabilsin
+                  
                     model = model.Where(f => f.Durum == "KomisyonOnayiBekliyor"
                                          || f.Durum == "KomisyonOnayli"
                                          || f.Durum == "KomisyonOnayiRetli").ToList();
@@ -183,6 +186,7 @@ namespace BirFikrimVar.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "KomisyonUyesi,Admin")]
         public async Task<IActionResult> CommissionEvaluate(int id)
         {
             var client = _httpClientFactory.CreateClient("BirFikrimVarAPI");

@@ -22,6 +22,13 @@ namespace BirFikrimVar.Web.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         [HttpGet]
         public IActionResult Kayit() => View();
 
