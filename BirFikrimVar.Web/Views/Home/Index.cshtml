@@ -7,101 +7,181 @@
 @if (User.Identity?.IsAuthenticated == true)
 {
     <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
-        <img src="~/imgs/BirFikrimVar.png"
-             alt="Bir Fikrim Var"
-             style="width:42px; height:42px; border-radius:10px; object-fit:cover; border:1px solid #f0f0f0;" />
+     
         <div>
-            <div style="font-size:16px; font-weight:800; color:#111827; letter-spacing:-0.02em;">
-                Hoş geldin, @User.Identity?.Name 👋
-            </div>
+           
             <div style="font-size:12px; color:#9ca3af; margin-top:1px;">
-                İşte fikir sisteminin genel durumu
+                Fikir Yönetim Sistemi süreç bilgilendirme ekranı
             </div>
         </div>
     </div>
 
     <div class="stat-grid">
+
         <div class="stat-card">
             <div class="stat-card-top">
-                <div class="stat-icon si-orange">💡</div>
-                <span class="stat-trend up">+6</span>
+               
+                <span class="stat-trend up">1. Aşama</span>
             </div>
             <div class="stat-card-bottom">
-                <div class="stat-value">48</div>
-                <div class="stat-label">Toplam Fikir</div>
+                <div class="stat-value">Fikir Başvurusu</div>
+                <div class="stat-label">
+                    Kullanıcı tarafından sisteme yeni fikir kaydı oluşturulur
+                </div>
             </div>
         </div>
+
         <div class="stat-card">
             <div class="stat-card-top">
-                <div class="stat-icon si-blue">⏳</div>
-                <span class="stat-trend warn">Bekliyor</span>
+               
+                <span class="stat-trend warn">2. Aşama</span>
             </div>
             <div class="stat-card-bottom">
-                <div class="stat-value">12</div>
-                <div class="stat-label">Ön Onay Bekleyen</div>
+                <div class="stat-value">Ön Değerlendirme</div>
+                <div class="stat-label">
+                    İlgili birim tarafından ön inceleme süreci yürütülür
+                </div>
             </div>
         </div>
+
         <div class="stat-card">
             <div class="stat-card-top">
-                <div class="stat-icon si-violet">📋</div>
-                <span class="stat-trend warn">Bekliyor</span>
+               
+                <span class="stat-trend warn">3. Aşama</span>
             </div>
             <div class="stat-card-bottom">
-                <div class="stat-value">7</div>
-                <div class="stat-label">Komisyon Bekleyen</div>
+                <div class="stat-value">Komisyon İncelemesi</div>
+                <div class="stat-label">
+                    Komisyon tarafından detaylı değerlendirme gerçekleştirilir
+                </div>
             </div>
         </div>
+
         <div class="stat-card">
             <div class="stat-card-top">
-                <div class="stat-icon si-green">✅</div>
-                <span class="stat-trend up">%48</span>
+             
+                <span class="stat-trend up">4. Aşama</span>
             </div>
             <div class="stat-card-bottom">
-                <div class="stat-value">23</div>
-                <div class="stat-label">Onaylanan Fikirler</div>
+                <div class="stat-value">Proje Süreci</div>
+                <div class="stat-label">
+                    Onaylanan fikirler proje sürecine dahil edilir
+                </div>
             </div>
         </div>
+
     </div>
 
     <div class="card mt-3">
+
         <div class="card-header">
-            <span class="card-header-title">Son Fikirler</span>
-            <a asp-controller="Ideas" asp-action="Index" class="btn-table">Tümünü gör →</a>
+            <span class="card-header-title">
+                Fikir Yönetim Sistemi İşleyiş Süreci
+            </span>
+
+            <a asp-controller="Ideas" asp-action="Index" class="btn-table">
+                Tüm Başvurular →
+            </a>
         </div>
+
         <table class="table">
+
             <thead>
                 <tr>
-                    <th>Başlık</th>
-                    <th>Kategori</th>
-                    <th>Tarih</th>
+                    <th>Süreç Adımı</th>
+                    <th>Açıklama</th>
+                    <th>Sorumlu Birim</th>
                     <th>Durum</th>
                     <th></th>
                 </tr>
             </thead>
+
             <tbody>
+
                 <tr>
-                    <td class="td-primary">Üretim sürecinde enerji tasarrufu</td>
-                    <td class="td-muted">Operasyon</td>
-                    <td class="td-muted">08.05.25</td>
-                    <td><span class="badge badge-on-bekliyor">Ön Onay Bekliyor</span></td>
-                    <td><a href="#" class="btn-table">Detay</a></td>
+                    <td class="td-primary">Fikir Başvurusu</td>
+
+                    <td class="td-muted">
+                        Kullanıcı tarafından sistem üzerinden fikir başvurusu gerçekleştirilir
+                    </td>
+
+                    <td class="td-muted">
+                        Personel
+                    </td>
+
+                    <td>
+                        <span class="badge badge-taslak">
+                            Başvuru Kaydı Oluşturuldu
+                        </span>
+                    </td>
+
+                    
                 </tr>
+
                 <tr>
-                    <td class="td-primary">Müşteri geri bildirim sistemi</td>
-                    <td class="td-muted">Müşteri Deneyimi</td>
-                    <td class="td-muted">06.05.25</td>
-                    <td><span class="badge badge-kom-onaylı">Komisyon Onaylı</span></td>
-                    <td><a href="#" class="btn-table">Detay</a></td>
+                    <td class="td-primary">Ön Değerlendirme Süreci</td>
+
+                    <td class="td-muted">
+                        Başvuru, ilgili birim tarafından uygunluk kriterlerine göre incelenir
+                    </td>
+
+                    <td class="td-muted">
+                        Ön Değerlendirme Ekibi
+                    </td>
+
+                    <td>
+                        <span class="badge badge-on-bekliyor">
+                            Değerlendirme Devam Ediyor
+                        </span>
+                    </td>
+
+                    
                 </tr>
+
                 <tr>
-                    <td class="td-primary">Depo otomasyon önerisi</td>
-                    <td class="td-muted">Lojistik</td>
-                    <td class="td-muted">01.05.25</td>
-                    <td><span class="badge badge-taslak">Taslak</span></td>
-                    <td><a href="#" class="btn-table">Detay</a></td>
+                    <td class="td-primary">Komisyon Değerlendirmesi</td>
+
+                    <td class="td-muted">
+                        Komisyon tarafından teknik ve operasyonel inceleme yapılır
+                    </td>
+
+                    <td class="td-muted">
+                        Değerlendirme Komisyonu
+                    </td>
+
+                    <td>
+                        <span class="badge badge-kom-onaylı">
+                            Komisyon İncelemesi Tamamlandı
+                        </span>
+                    </td>
+
+                  
                 </tr>
+
+                <tr>
+                    <td class="td-primary">Projelendirme Süreci</td>
+
+                    <td class="td-muted">
+                        Uygun bulunan fikirler proje planına dahil edilerek uygulamaya alınır
+                    </td>
+
+                    <td class="td-muted">
+                        Yönetim ve Proje Ekibi
+                    </td>
+
+                    <td>
+                        <span class="badge badge-kom-onaylı">
+                            Uygulama Süreci Başlatıldı
+                        </span>
+                    </td>
+
+                    
+                </tr>
+
             </tbody>
+
         </table>
+
     </div>
 }
 else
