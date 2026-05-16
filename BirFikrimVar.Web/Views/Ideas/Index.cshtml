@@ -19,6 +19,24 @@
 
     @if (Model != null && Model.Any())
     {
+        <div style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; background: #f9fafb;">
+            <div class="d-flex align-items-center gap-2">
+                <div style="position: relative; width: 220px;">
+                    <select id="clientDurumFiltre"
+                            class="form-select"
+                            style="font-size: 13px; border-color: #d1d5db; border-radius: 6px; padding: 6px 12px; width: 100%;"
+                            onchange="fikirleriFiltreleVeSirala()">
+                        <option value="TUMU">Tüm Durumlar</option>
+                        <option value="Taslak">Taslak</option>
+                        <option value="OnOnayBekliyor">Ön Onay Bekliyor</option>
+                        <option value="OnOnayRetli">Ön Onay Retli</option>
+                        <option value="KomisyonOnayiBekliyor">Komisyon Bekliyor</option>
+                        <option value="KomisyonOnayli">Komisyon Onaylı</option>
+                        <option value="KomisyonOnayiRetli">Komisyon Retli</option>
+                    </select>
+                </div>
+            </div>
+        </div>
         <table class="table">
             <thead>
                 <tr>
@@ -28,7 +46,7 @@
                     <th style="width:160px; text-align:right;">İşlemler</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="fikirTabloGv">
                 @foreach (var item in Model)
                 {
                     var (badgeClass, badgeLabel) = item.Durum switch
@@ -42,7 +60,7 @@
                         _ => ("badge-taslak", item.Durum)
                     };
 
-                    <tr>
+                    <tr data-durum="@item.Durum" data-tarih="@item.OlusturmaTarihi.ToString("yyyy-MM-ddTHH:mm:ss")">
                         <td class="td-primary">@item.Baslik</td>
                         <td class="td-muted">@item.OlusturmaTarihi.ToShortDateString()</td>
                         <td><span class="badge @badgeClass">@badgeLabel</span></td>
@@ -92,4 +110,54 @@
             </a>
         </div>
     }
+    <div id="jsBosUyarisi" style="padding:48px 20px; text-align:center; display:none;">
+        <div style="width:44px; height:44px; border-radius:10px; background:#fff7ed; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+            <i class="bi bi-search" style="font-size:20px; color:#f97316;"></i>
+        </div>
+        <div style="font-size:13.5px; font-weight:600; color:#111827; margin-bottom:4px;">
+            Aranan kritere uygun fikir bulunamadı
+        </div>
+    </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        fikirleriFiltreleVeSirala();
+    });
+
+    function fikirleriFiltreleVeSirala() {
+        const tbody = document.getElementById("fikirTabloGv");
+        if (!tbody) return;
+
+        const secilenDurum = document.getElementById("clientDurumFiltre").value;
+        const satirlar = Array.from(tbody.querySelectorAll("tr"));
+        let gorunurSatirSayisi = 0;
+
+
+        satirlar.sort((a, b) => {
+            const tarihA = new Date(a.getAttribute("data-tarih"));
+            const tarihB = new Date(b.getAttribute("data-tarih"));
+            return tarihB - tarihA;
+        });
+
+        satirlar.forEach(satir => {
+            const satirDurum = satir.getAttribute("data-durum");
+
+            if (secilenDurum === "TUMU" || satirDurum === secilenDurum) {
+                satir.style.display = "";
+                gorunurSatirSayisi++;
+            } else {
+                satir.style.display = "none";
+            }
+            tbody.appendChild(satir);
+        });
+
+        const bosUyarisi = document.getElementById("jsBosUyarisi");
+        if (gorunurSatirSayisi === 0) {
+            bosUyarisi.style.display = "block";
+        } else {
+            bosUyarisi.style.display = "none";
+        }
+    }
+</script>
