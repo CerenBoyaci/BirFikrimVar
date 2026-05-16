@@ -57,7 +57,7 @@ namespace BirFikrimVar.API.Controllers
 
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var webMvcUrl = "https://localhost:7112";
+            var webMvcUrl = _configuration["AppSettings:WebMvcUrl"] ?? "http://localhost:5001";
             var confirmationLink = $"{webMvcUrl}/Account/EmailOnayla?email={user.Email}&token={Uri.EscapeDataString(token)}";
 
 

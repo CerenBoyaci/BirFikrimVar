@@ -1,0 +1,10 @@
+﻿**/bin/
+**/obj/
+.vs/
+**/.vs/
+.git/
+.gitignore
+README.md
+**/appsettings.Development.json
+**/PROJE_YAPİLACAKLAR/
+**/Yapilacaklar/
