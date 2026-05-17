@@ -1,82 +1,132 @@
 ﻿services:
   postgres:
     image: postgres:16
-    container_name: birfikrimvar-postgres
     restart: unless-stopped
 
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1499270510cA.
-      POSTGRES_DB: BirFikrimVarDb
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "1499270510cA."
+      POSTGRES_DB: "BirFikrimVarDb"
 
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
 
     volumes:
       - birfikrimvar_pgdata:/var/lib/postgresql/data
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d BirFikrimVarDb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   minio:
     image: minio/minio
-    container_name: birfikrimvar-minio
     restart: unless-stopped
 
     command: server /data --console-address ":9001"
 
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin123"
 
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
 
     volumes:
       - birfikrimvar_minio:/data
+
+  minio-init:
+    image: minio/mc
+    restart: "no"
+
+    depends_on:
+      - minio
+
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 minioadmin minioadmin123; do
+        echo 'MinIO bekleniyor...';
+        sleep 2;
+      done;
+      mc mb -p local/birfikrimvar-uploads || true;
+      echo 'MinIO bucket hazır: birfikrimvar-uploads';
+      exit 0;
+      "
 
   api:
     build:
       context: .
       dockerfile: BirFikrimVar.API/Dockerfile
 
-    container_name: birfikrimvar-api
     restart: unless-stopped
 
     depends_on:
-      - postgres
-      - minio
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      minio-init:
+        condition: service_completed_successfully
 
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=BirFikrimVarDb;Username=postgres;Password=1499270510cA.;Include Error Detail=true
-      AppSettings__WebMvcUrl: http://localhost:5001
-      Minio__Endpoint: http://minio:9000
-      Minio__AccessKey: minioadmin
-      Minio__SecretKey: minioadmin123
-      Minio__BucketName: birfikrimvar-uploads
-    ports:
-      - "5000:8080"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
 
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=BirFikrimVarDb;Username=postgres;Password=1499270510cA.;Include Error Detail=true"
+
+      AppSettings__WebMvcUrl: "http://localhost:${WEB_PORT:-5001}"
+
+      JwtSettings__Secret: "BirFikrimVarDockerDevSecretKey_2026_EnAz32Karakter"
+      JwtSettings__Issuer: "BirFikrimVar.API"
+      JwtSettings__Audience: "BirFikrimVar.Web"
+
+      Minio__Endpoint: "http://minio:9000"
+      Minio__AccessKey: "minioadmin"
+      Minio__SecretKey: "minioadmin123"
+      Minio__BucketName: "birfikrimvar-uploads"
+
+    ports:
+      - "${API_PORT:-5000}:8080"
 
   web:
     build:
       context: .
       dockerfile: BirFikrimVar.Web/Dockerfile
 
-    container_name: birfikrimvar-web
     restart: unless-stopped
 
     depends_on:
       - api
 
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      AppSettings__ApiBaseUrl: http://api:8080/api/
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
+      AppSettings__ApiBaseUrl: "http://api:8080/api/"
 
     ports:
-      - "5001:8080"
+      - "${WEB_PORT:-5001}:8080"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin123"
+
+    ports:
+      - "${PGADMIN_PORT:-8080}:80"
+
+    volumes:
+      - birfikrimvar_pgadmin:/var/lib/pgadmin
+
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   birfikrimvar_pgdata:
   birfikrimvar_minio:
+  birfikrimvar_pgadmin:
